@@ -34,6 +34,10 @@ func take_damage(amount: int) -> void:
 	if _resolved or health <= 0:
 		return
 	health -= amount
+	# Damage feedback: brief white flash
+	modulate = Color(1.5, 1.5, 1.5, 1.0)
+	var tween := create_tween()
+	tween.tween_property(self, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.1)
 	if health <= 0:
 		_die()
 

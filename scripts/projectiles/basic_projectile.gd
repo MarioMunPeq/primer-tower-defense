@@ -8,6 +8,8 @@ extends Node2D
 ## tower and accumulating.
 const MAX_LIFETIME := 5.0
 
+signal impact
+
 var _damage: int = 1
 var _target: Node2D = null
 var _age := 0.0
@@ -36,6 +38,7 @@ func _physics_process(delta: float) -> void:
 	if distance <= step:
 		if _target.has_method("take_damage"):
 			_target.take_damage(_damage)
+		impact.emit(global_position)
 		_free_self()
 		return
 

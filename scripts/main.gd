@@ -9,6 +9,7 @@ const ATLAS_ROAD := Vector2i(1, 0)
 
 const BASIC_TOWER := preload("res://scenes/towers/basic_tower.tscn")
 const BASIC_TOWER_SCRIPT := preload("res://scripts/towers/basic_tower.gd")
+const IMPACT_EFFECT := preload("res://scenes/effects/impact_effect.tscn")
 
 const TOWER_COST := 50
 const BASE_HP_MAX := 100
@@ -43,6 +44,7 @@ func _ready():
 	$EndScreen/Center/VBox/RestartButton.pressed.connect(_on_restart_pressed)
 	_update_money_ui()
 	_update_base_ui()
+	_update_tower_info_panel()
 
 func _setup_tilemap():
 	var ts := TileSet.new()
@@ -166,8 +168,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_select_tower(_towers[tile])
 		else:
 			if _selected_tower != null:
-				_selected_tower = null
-				_update_range_preview()
+				_deselect_tower()
 			_try_place_tower(world_pos)
 
 ## Converts a world position to tilemap coordinates. Returns (-1,-1) off-map.
@@ -195,11 +196,18 @@ func _try_place_tower(world_pos: Vector2) -> void:
 	var tower := BASIC_TOWER.instantiate()
 	tower.position = _tile_center(tile)
 	$Towers.add_child(tower)
+	# Connect tower impact signal for visual feedback
+	tower.impact.connect(_on_tower_impact)
 	_towers[tile] = tower
 	_money -= TOWER_COST
 	_update_money_ui()
 	queue_redraw()
 	_update_range_preview()
+
+func _on_tower_impact(position: Vector2) -> void:
+	var effect := IMPACT_EFFECT.instantiate()
+	effect.position = position
+	add_child(effect)
 
 func _tile_center(tile: Vector2i) -> Vector2:
 	return Vector2(tile.x * TILE_SIZE + TILE_SIZE / 2.0, tile.y * TILE_SIZE + TILE_SIZE / 2.0)
@@ -227,8 +235,19 @@ func _draw() -> void:
 func _select_tower(tower: Node2D) -> void:
 	if _selected_tower == tower:
 		return
+	_deselect_tower()
 	_selected_tower = tower
+	# Add selection outline
+	tower.modulate = Color(0.8, 1.0, 1.0, 1.0)
 	_update_range_preview()
+	_update_tower_info_panel()
+
+func _deselect_tower() -> void:
+	if _selected_tower != null and is_instance_valid(_selected_tower):
+		_selected_tower.modulate = Color(1.0, 1.0, 1.0, 1.0)
+	_selected_tower = null
+	_update_range_preview()
+	_update_tower_info_panel()
 
 ## Chooses what the RangePreview should draw: the selected tower's range, or the
 ## placement preview that follows the cursor.
@@ -253,3 +272,15 @@ func _update_range_preview() -> void:
 	else:
 		color = Color(0.3, 1.0, 0.3, 0.9)
 	$RangePreview.show_range(_tile_center(tile), _preview_range(), color)
+
+func _update_tower_info_panel() -> void:
+	var panel = $UI/TowerInfoPanel
+	if is_instance_valid(_selected_tower):
+		var tower: Node2D = _selected_tower
+		panel.visible = true
+		panel.get_node("VBox/DamageLabel").text = "Damage: %d" % tower.damage
+		panel.get_node("VBox/RangeLabel").text = "Range: %d" % tower.range
+		panel.get_node("VBox/AttackSpeedLabel").text = "Attack Speed: %.1f" % tower.attack_speed
+		panel.get_node("VBox/CostLabel").text = "Cost: $%d" % tower.cost
+	else:
+		panel.visible = false

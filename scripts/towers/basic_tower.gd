@@ -15,7 +15,15 @@ const MAX_PROJECTILES := 8
 @export var attack_cooldown: float = 0.8
 @export var cost: int = 50
 
+## Attack speed in attacks per second (derived from cooldown for UI).
+@export var attack_speed: float:
+	get:
+		return 1.0 / attack_cooldown
+
 const BASIC_PROJECTILE := preload("res://scenes/projectiles/basic_projectile.tscn")
+
+signal fired
+signal impact(position: Vector2)
 
 var _targets: Array = []
 var _cooldown_left: float = 0.0
@@ -93,3 +101,21 @@ func _fire(target: Node2D) -> void:
 	# Spawn slightly above the tower's center so it looks like it was fired.
 	proj.position = Vector2(0, -32)
 	add_child(proj)
+
+	# Forward projectile impact to tower level for visual effects
+	proj.impact.connect(_on_projectile_impact)
+
+	# Fire feedback
+	_fire_feedback()
+	fired.emit()
+
+func _on_projectile_impact(position: Vector2) -> void:
+	impact.emit(position)
+
+func _fire_feedback() -> void:
+	# Brief scale pulse + white flash via modulate
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(self, "modulate", Color(1.5, 1.5, 1.5, 1.0), 0.05)
+	tween.tween_property(self, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.15)
+	tween.tween_property(self, "scale", Vector2(1.1, 1.1), 0.05)
+	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.15)

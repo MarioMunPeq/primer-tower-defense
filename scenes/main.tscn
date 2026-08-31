@@ -51,6 +51,55 @@ theme_override_colors/font_color = Color(0.6, 1, 0.6, 1)
 theme_override_font_sizes/font_size = 32
 text = ""
 
+[node name="TowerInfoPanel" type="PanelContainer" parent="UI"]
+layout_mode = 2
+anchors_preset = 1
+anchor_right = 1.0
+offset_left = 980.0
+offset_top = 8.0
+offset_right = 1260.0
+offset_bottom = 220.0
+visible = false
+
+[node name="VBox" type="VBoxContainer" parent="UI/TowerInfoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+theme_override_margins/margin_left = 12
+theme_override_margins/margin_top = 12
+theme_override_margins/margin_right = 12
+theme_override_margins/margin_bottom = 12
+
+[node name="Title" type="Label" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 24
+horizontal_alignment = 1
+text = "TOWER"
+
+[node name="DamageLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.8, 1)
+theme_override_font_sizes/font_size = 20
+text = "Damage: 0"
+
+[node name="RangeLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 1, 0.8, 1)
+theme_override_font_sizes/font_size = 20
+text = "Range: 0"
+
+[node name="AttackSpeedLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "Attack Speed: 0.0"
+
+[node name="CostLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 0.6, 1)
+theme_override_font_sizes/font_size = 20
+text = "Cost: $0"
+
 [node name="EndScreen" type="CanvasLayer" parent="."]
 process_mode = 3
 visible = false

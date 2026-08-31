@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bkq8s7j4m9n2p"]
+
+[ext_resource type="Script" path="res://scripts/effects/impact_effect.gd" id="1_impact"]
+
+[node name="ImpactEffect" type="Node2D"]
+script = ExtResource("1_impact")
