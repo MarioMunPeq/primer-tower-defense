@@ -1,3 +1,14 @@
-[gd_scene format=3 uid="uid://d25s0dg06vagc"]
+[gd_scene load_steps=2 format=3 uid="uid://d25s0dg06vagc"]
 
-[node name="Main" type="Node2D" unique_id=1299538824]
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Map" type="TileMapLayer" parent="."]
+
+[node name="EnemyPath" type="Path2D" parent="."]
+
+[node name="Entry" type="Marker2D" parent="."]
+
+[node name="Exit" type="Marker2D" parent="."]
