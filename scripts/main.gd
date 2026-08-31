@@ -64,6 +64,9 @@ func _ready():
 	$UI/TowerShop/VBox/BasicButton.pressed.connect(func(): _set_tower_type(0))
 	$UI/TowerShop/VBox/RapidButton.pressed.connect(func(): _set_tower_type(1))
 	
+	# Connect upgrade button
+	$UI/TowerInfoPanel/VBox/UpgradeButton.pressed.connect(_on_upgrade_pressed)
+	
 	_update_money_ui()
 	_update_base_ui()
 	_update_tower_info_panel()
@@ -306,8 +309,36 @@ func _update_tower_info_panel() -> void:
 		panel.get_node("VBox/RangeLabel").text = "Range: %d" % tower.range
 		panel.get_node("VBox/AttackSpeedLabel").text = "Attack Speed: %.1f" % tower.attack_speed
 		panel.get_node("VBox/CostLabel").text = "Cost: $%d" % tower.cost
+		panel.get_node("VBox/LevelLabel").text = "Level: %d" % tower.level
+		
+		var upgrade_btn = panel.get_node("VBox/UpgradeButton")
+		var upgrade_cost: int = tower.get_upgrade_cost()
+		if upgrade_cost >= 0:
+			upgrade_btn.text = "UPGRADE $%d" % upgrade_cost
+			upgrade_btn.disabled = (_money < upgrade_cost)
+		else:
+			upgrade_btn.text = "MAX LEVEL"
+			upgrade_btn.disabled = true
 	else:
 		panel.visible = false
+
+func _on_upgrade_pressed() -> void:
+	if not is_instance_valid(_selected_tower):
+		return
+	var tower: Node2D = _selected_tower
+	var cost: int = tower.get_upgrade_cost()
+	if cost < 0:
+		return
+	if _money < cost:
+		return
+	
+	_money -= cost
+	_money = max(_money, 0)
+	_update_money_ui()
+	
+	tower.try_upgrade()
+	_update_tower_info_panel()
+	_update_range_preview()
 
 func _set_tower_type(type_idx: int) -> void:
 	_tower_type_to_place = type_idx

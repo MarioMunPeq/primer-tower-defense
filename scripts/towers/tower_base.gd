@@ -1,7 +1,6 @@
 extends Node2D
 ## Base tower class: shared logic for all tower types.
-## Subclasses only need to set @export stats (range, damage, attack_cooldown, cost, MAX_PROJECTILES).
-## Uses basic_projectile by default; override _make_projectile() for custom projectiles.
+## Subclasses must define STATS_PER_LEVEL dictionary and UPGRADE_COSTS array.
 
 ## Safety cap on in-flight projectiles. Set in scene file per tower type.
 @export var MAX_PROJECTILES := 8
@@ -14,6 +13,20 @@ extends Node2D
 @export var attack_cooldown: float = 0.8
 @export var cost: int = 50
 
+## Current tower level (1-based). Starts at 1, max 3.
+var level: int = 1
+
+## Max level for this tower type. Subclasses should override.
+var max_level: int = 3
+
+## Stats for each level: Array of Dictionaries {damage, range, attack_cooldown}
+## Index 0 = level 1, index 1 = level 2, etc.
+var STATS_PER_LEVEL: Array = []
+
+## Upgrade costs per level: Array of ints where index i = cost to upgrade from level i+1 to i+2
+## So UPGRADE_COSTS[0] = cost from level 1->2, UPGRADE_COSTS[1] = cost from level 2->3
+var UPGRADE_COSTS: Array = []
+
 ## Attack speed in attacks per second (derived from cooldown for UI).
 @export var attack_speed: float:
 	get:
@@ -21,6 +34,7 @@ extends Node2D
 
 signal fired
 signal impact(position: Vector2)
+signal upgraded(new_level: int)
 
 var _targets: Array = []
 var _cooldown_left: float = 0.0
@@ -29,6 +43,7 @@ func _ready() -> void:
 	$DetectionArea/CollisionShape2D.shape.radius = range
 	$DetectionArea.area_entered.connect(_on_area_entered)
 	$DetectionArea.area_exited.connect(_on_area_exited)
+	_apply_level_stats()
 
 func _on_area_entered(area: Area2D) -> void:
 	var enemy: Node2D = area.get_parent()
@@ -120,3 +135,44 @@ func _fire_feedback() -> void:
 	tween.tween_property(self, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.15)
 	tween.tween_property(self, "scale", Vector2(1.1, 1.1), 0.05)
 	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.15)
+
+## Applies the current level's stats to the tower's properties.
+## Called on _ready and after each upgrade.
+func _apply_level_stats() -> void:
+	if level < 1 or level > STATS_PER_LEVEL.size():
+		return
+	var stats: Dictionary = STATS_PER_LEVEL[level - 1]
+	damage = stats.damage
+	range = stats.range
+	attack_cooldown = stats.attack_cooldown
+	# Update detection area radius
+	if is_instance_valid($DetectionArea) and is_instance_valid($DetectionArea/CollisionShape2D):
+		$DetectionArea/CollisionShape2D.shape.radius = range
+
+## Returns the cost to upgrade to the next level, or -1 if at max level.
+func get_upgrade_cost() -> int:
+	if level >= max_level or level > UPGRADE_COSTS.size():
+		return -1
+	return UPGRADE_COSTS[level - 1]
+
+## Attempts to upgrade the tower to the next level.
+## Returns true if upgrade succeeded, false otherwise.
+func try_upgrade() -> bool:
+	if level >= max_level:
+		return false
+	var cost := get_upgrade_cost()
+	if cost < 0:
+		return false
+	level += 1
+	_apply_level_stats()
+	_upgrade_feedback()
+	upgraded.emit(level)
+	return true
+
+## Visual feedback when tower upgrades.
+func _upgrade_feedback() -> void:
+	var tween := create_tween().set_parallel(true)
+	tween.tween_property(self, "modulate", Color(0.5, 1.5, 0.5, 1.0), 0.1)
+	tween.tween_property(self, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.2)
+	tween.tween_property(self, "scale", Vector2(1.2, 1.2), 0.1)
+	tween.tween_property(self, "scale", Vector2(1.0, 1.0), 0.2)

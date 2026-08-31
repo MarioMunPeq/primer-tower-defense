@@ -58,7 +58,7 @@ anchor_right = 1.0
 offset_left = 980.0
 offset_top = 8.0
 offset_right = 1260.0
-offset_bottom = 220.0
+offset_bottom = 360.0
 visible = false
 
 [node name="VBox" type="VBoxContainer" parent="UI/TowerInfoPanel"]
@@ -75,6 +75,12 @@ theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 text = "TOWER"
+
+[node name="LevelLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 1, 0.8, 1)
+theme_override_font_sizes/font_size = 20
+text = "Level: 1"
 
 [node name="DamageLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
 layout_mode = 2
@@ -99,6 +105,13 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 0.6, 1)
 theme_override_font_sizes/font_size = 20
 text = "Cost: $0"
+
+[node name="UpgradeButton" type="Button" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(200, 40)
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "UPGRADE"
 
 [node name="TowerShop" type="PanelContainer" parent="UI"]
 layout_mode = 2
