@@ -4,8 +4,22 @@ const TILE_SIZE := 128
 const MAP_COLS := 10
 const MAP_ROWS := 5
 
-const ATLAS_GRASS := Vector2i(0, 0)
-const ATLAS_ROAD := Vector2i(1, 0)
+# Atlas tile coordinates (atlas_x, atlas_y) in the 128x128 map_atlas.png grid
+# Extremely conservative: only row 0 confirmed to exist
+enum AtlasTile {
+	# Row 0
+	GRASS      = 0,   # (0,0)
+	ROAD_H       = 1,   # (1,0) - original road tile
+}
+
+# Atlas coordinate lookup: AtlasTile enum value -> Vector2i(atlas_x, atlas_y)
+const ATLAS_COORDS: Dictionary = {
+	AtlasTile.GRASS: Vector2i(0, 0),
+	AtlasTile.ROAD_H: Vector2i(1, 0),
+}
+
+const ATLAS_GRASS := Vector2i(0, 0)    # GRASS
+const ATLAS_ROAD_H := Vector2i(1, 0)   # ROAD_H
 
 const BASIC_TOWER := preload("res://scenes/towers/basic_tower.tscn")
 const BASIC_TOWER_SCRIPT := preload("res://scripts/towers/basic_tower.gd")
@@ -80,59 +94,113 @@ func _setup_tilemap():
 	source.texture = preload("res://assets/tilesets/map_atlas.png")
 	source.texture_region_size = Vector2i(TILE_SIZE, TILE_SIZE)
 
-	source.create_tile(ATLAS_GRASS)
-	source.create_tile(ATLAS_ROAD)
+	# Row 0 only - confirmed from original working code
+	source.create_tile(Vector2i(0, 0))   # GRASS
+	source.create_tile(Vector2i(1, 0))   # ROAD_H (original road)
 
 	ts.add_source(source, 0)
 	$Map.tile_set = ts
 
+func _atlas(tile: AtlasTile) -> Vector2i:
+	return ATLAS_COORDS[tile]
+
 func _paint_map():
-	# Fill the whole map with grass
+	# ============================================================
+	# BASE TERRAIN - Fill with grass (only tile available in atlas)
+	# ============================================================
 	for y in range(MAP_ROWS):
 		for x in range(MAP_COLS):
-			$Map.set_cell(Vector2i(x, y), 0, ATLAS_GRASS)
+			$Map.set_cell(Vector2i(x, y), 0, _atlas(AtlasTile.GRASS))
 
-	# Serpentine path (grid 10x5):
-	# Row 1: entry from left, travel right to col 8
-	for x in range(0, 9):
-		_paint_road(x, 1)
-	# Turn down at col 8
-	_paint_road(8, 2)
-	# Row 3: travel left from col 8 to col 1
-	for x in range(1, 9):
-		_paint_road(x, 3)
-	# Turn down at col 1
-	_paint_road(1, 4)
-	# Row 4: travel right toward exit (right edge)
-	for x in range(2, 10):
-		_paint_road(x, 4)
+	# ============================================================
+	# PATH LAYOUT - Complex path with strategic curves
+	# ============================================================
+	# Path flow: Left entry (row 1) -> right -> down -> left -> down -> right -> exit
+	#
+	# Row 0 (y=0):  [ ][ ][ ][ ][ ][ ][ ][ ][ ][ ]
+	# Row 1 (y=1):  [E][H][H][H][H][H][H][H][ ][ ]  Entry at (0,1), horizontal to (7,1)
+	# Row 2 (y=2):  [ ][ ][ ][ ][ ][ ][ ][H ][ ][ ]  Vertical down at (7,2)
+	# Row 3 (y=3):  [ ][ ][H][H][H][H][H][H][ ][ ]  Horizontal left at (7,3) to (2,3)
+	# Row 4 (y=4):  [ ][ ][H ][ ][ ][H][H][H][H][H]  Vertical down at (2,4), horizontal right to exit
 
-func _paint_road(x: int, y: int):
-	$Map.set_cell(Vector2i(x, y), 0, ATLAS_ROAD)
+	# ---- ROW 1: Horizontal road from entry to first turn ----
+	# Entry road: use ROAD_H for entry tile
+	for x in range(0, 8):
+		$Map.set_cell(Vector2i(x, 1), 0, _atlas(AtlasTile.ROAD_H))
+
+	# ---- ROW 2: Vertical road down (using H tile) ----
+	$Map.set_cell(Vector2i(7, 2), 0, _atlas(AtlasTile.ROAD_H))
+
+	# ---- ROW 3: Horizontal left from (7,3) to (2,3) ----
+	for x in range(2, 8):
+		$Map.set_cell(Vector2i(x, 3), 0, _atlas(AtlasTile.ROAD_H))
+
+	# ---- ROW 4: Vertical down at (2,4), then horizontal right to exit ----
+	$Map.set_cell(Vector2i(2, 4), 0, _atlas(AtlasTile.ROAD_H))
+	for x in range(5, 10):
+		$Map.set_cell(Vector2i(x, 4), 0, _atlas(AtlasTile.ROAD_H))
+
+	# ============================================================
+	# DECORATIVE ELEMENTS - Skip (not in conservative atlas)
+	# ============================================================
+
+func _set_dirt_patch(x: int, y: int, w: int, h: int) -> void:
+	# Dirt tiles not available in conservative atlas - no-op for now
+	pass
+
+func _set_decor(x: int, y: int, tile: AtlasTile) -> void:
+	# Decorative tiles not available in conservative atlas - no-op for now
+	pass
 
 func _tile_center_x(tx: int) -> float:
 	return tx * TILE_SIZE + TILE_SIZE / 2.0
 
+func _tile_center_y(ty: int) -> float:
+	return ty * TILE_SIZE + TILE_SIZE / 2.0
+
 func _setup_path():
 	var path := Curve2D.new()
 
-	var row_1_y := _tile_center_x(1)
-	var row_3_y := _tile_center_x(3)
-	var row_4_y := _tile_center_x(4)
+	# Path follows the visual road centers exactly:
+	# Entry from left -> (0,1) -> horizontal right -> (7,1) turn down
+	# -> (7,2) vertical -> (7,3) turn left -> (6,3) to (3,3) horizontal
+	# -> (2,3) turn down -> (2,4) vertical -> (5,4) turn right
+	# -> (6,4) to (8,4) horizontal -> Exit right
 
-	path.add_point(Vector2(-TILE_SIZE, row_1_y))                 # off-screen entry
-	path.add_point(Vector2(_tile_center_x(8), row_1_y))          # right end of row 1
-	path.add_point(Vector2(_tile_center_x(8), row_3_y))          # bottom of the first turn
-	path.add_point(Vector2(_tile_center_x(1), row_3_y))          # left end of row 3
-	path.add_point(Vector2(_tile_center_x(1), row_4_y))          # bottom of second turn
-	path.add_point(Vector2(MAP_COLS * TILE_SIZE + TILE_SIZE / 2.0, row_4_y))  # off-screen exit
+	var y1 := _tile_center_y(1)  # Row 1: y=192
+	var y2 := _tile_center_y(2)  # Row 2: y=320
+	var y3 := _tile_center_y(3)  # Row 3: y=448
+	var y4 := _tile_center_y(4)  # Row 4: y=576
+
+	var x0 := _tile_center_x(0)  # Col 0: x=64
+	var x2 := _tile_center_x(2)  # Col 2: x=320
+	var x3 := _tile_center_x(3)  # Col 3: x=448
+	var x5 := _tile_center_x(5)  # Col 5: x=704
+	var x6 := _tile_center_x(6)  # Col 6: x=832
+	var x7 := _tile_center_x(7)  # Col 7: x=960
+	var x8 := _tile_center_x(8)  # Col 8: x=1088
+	var x9 := _tile_center_x(9)  # Col 9: x=1216
+
+	path.add_point(Vector2(-TILE_SIZE, y1))          # Off-screen entry left of (0,1)
+	path.add_point(Vector2(x0, y1))                  # Center of (0,1) - entry tile
+	path.add_point(Vector2(x6, y1))                  # Center of (6,1) - before first turn
+	path.add_point(Vector2(x7, y1))                  # Center of (7,1) - top-right corner
+	path.add_point(Vector2(x7, y2))                  # Center of (7,2) - vertical
+	path.add_point(Vector2(x7, y3))                  # Center of (7,3) - bottom-right corner
+	path.add_point(Vector2(x3, y3))                  # Center of (3,3) - along horizontal
+	path.add_point(Vector2(x2, y3))                  # Center of (2,3) - top-left corner
+	path.add_point(Vector2(x2, y4))                  # Center of (2,4) - vertical
+	path.add_point(Vector2(x5, y4))                  # Center of (5,4) - bottom-left corner
+	path.add_point(Vector2(x8, y4))                  # Center of (8,4) - before exit
+	path.add_point(Vector2(x9, y4))                  # Center of (9,4) - exit tile
+	path.add_point(Vector2(MAP_COLS * TILE_SIZE + TILE_SIZE / 2.0, y4))  # Off-screen exit right
 
 	$EnemyPath.curve = path
 
 	var entry: Marker2D = $Entry
-	entry.position = Vector2(-TILE_SIZE / 2.0, row_1_y)
+	entry.position = Vector2(-TILE_SIZE / 2.0, y1)
 	var exit: Marker2D = $Exit
-	exit.position = Vector2(MAP_COLS * TILE_SIZE + TILE_SIZE / 2.0, row_4_y)
+	exit.position = Vector2(MAP_COLS * TILE_SIZE + TILE_SIZE / 2.0, y4)
 
 func _on_wave_started(current_wave: int) -> void:
 	$UI/WaveLabel.text = "WAVE %d" % current_wave
@@ -204,13 +272,19 @@ func _mouse_to_tile(world_pos: Vector2) -> Vector2i:
 		return Vector2i(-1, -1)
 	return tile
 
-## Can only place on a grass tile that does not already hold a tower.
+## Can only place on a terrain tile (grass/dirt/sand) that does not already hold a tower.
+## Road tiles (atlas rows 2-6) and decorative tiles (row 7+) are not placeable.
 func _can_place(tile: Vector2i) -> bool:
 	if tile == Vector2i(-1, -1):
 		return false
 	if _towers.has(tile):
 		return false
-	return $Map.get_cell_atlas_coords(tile) == ATLAS_GRASS
+	var coords: Vector2i = $Map.get_cell_atlas_coords(tile)
+	if coords == Vector2i(-1, -1):
+		return false
+	# Allow placement on terrain tiles (atlas row 0 = grass variants, row 1 = dirt/sand)
+	# Block road tiles (rows 2-6) and decorative (row 7+)
+	return coords.y <= 1
 
 func _try_place_tower(world_pos: Vector2) -> void:
 	var tile := _mouse_to_tile(world_pos)
