@@ -9,10 +9,15 @@ const ATLAS_ROAD := Vector2i(1, 0)
 
 const BASIC_TOWER := preload("res://scenes/towers/basic_tower.tscn")
 const BASIC_TOWER_SCRIPT := preload("res://scripts/towers/basic_tower.gd")
+const RAPID_TOWER := preload("res://scenes/towers/rapid_tower.tscn")
+const RAPID_TOWER_SCRIPT := preload("res://scripts/towers/rapid_tower.gd")
 const IMPACT_EFFECT := preload("res://scenes/effects/impact_effect.tscn")
 
-const TOWER_COST := 50
 const BASE_HP_MAX := 100
+
+## Which tower type is currently selected for placement.
+## 0 = Basic Tower, 1 = Rapid Tower
+var _tower_type_to_place := 0
 
 var _towers := {}
 var _hover_tile := Vector2i(-1, -1)
@@ -21,11 +26,23 @@ var _selected_tower: Node2D = null
 var _base_hp: int = BASE_HP_MAX
 var _game_ended := false
 
-## The placement-preview range comes straight from the tower script's single
-## source constant (equivalent to BasicTower.range) — no scene is instantiated
-## just to read a number, so this is free to call.
+## The placement-preview range comes from the currently selected tower type.
 func _preview_range() -> float:
-	return BASIC_TOWER_SCRIPT.RANGE
+	if _tower_type_to_place == 0:
+		return BASIC_TOWER_SCRIPT.RANGE
+	return RAPID_TOWER_SCRIPT.RANGE
+
+## Cost of the currently selected tower type.
+func _preview_cost() -> int:
+	if _tower_type_to_place == 0:
+		return BASIC_TOWER_SCRIPT.COST
+	return RAPID_TOWER_SCRIPT.COST
+
+## Scene of the currently selected tower type.
+func _preview_scene() -> PackedScene:
+	if _tower_type_to_place == 0:
+		return BASIC_TOWER
+	return RAPID_TOWER
 
 func _ready():
 	_setup_tilemap()
@@ -42,9 +59,15 @@ func _ready():
 	$WaveSpawner.game_complete.connect(_on_victory)
 	$WaveSpawner.setup($EnemyPath)
 	$EndScreen/Center/VBox/RestartButton.pressed.connect(_on_restart_pressed)
+	
+	# Connect tower selection buttons
+	$UI/TowerShop/VBox/BasicButton.pressed.connect(func(): _set_tower_type(0))
+	$UI/TowerShop/VBox/RapidButton.pressed.connect(func(): _set_tower_type(1))
+	
 	_update_money_ui()
 	_update_base_ui()
 	_update_tower_info_panel()
+	_update_shop_ui()
 
 func _setup_tilemap():
 	var ts := TileSet.new()
@@ -190,16 +213,17 @@ func _try_place_tower(world_pos: Vector2) -> void:
 	var tile := _mouse_to_tile(world_pos)
 	if not _can_place(tile):
 		return
-	if _money < TOWER_COST:
+	var cost := _preview_cost()
+	if _money < cost:
 		return
 
-	var tower := BASIC_TOWER.instantiate()
+	var tower := _preview_scene().instantiate()
 	tower.position = _tile_center(tile)
 	$Towers.add_child(tower)
 	# Connect tower impact signal for visual feedback
 	tower.impact.connect(_on_tower_impact)
 	_towers[tile] = tower
-	_money -= TOWER_COST
+	_money -= cost
 	_update_money_ui()
 	queue_redraw()
 	_update_range_preview()
@@ -220,7 +244,7 @@ func _draw() -> void:
 		return
 
 	var placeable := _can_place(_hover_tile)
-	var affordable := _money >= TOWER_COST
+	var affordable := _money >= _preview_cost()
 	var tile_pos := Vector2(_hover_tile.x * TILE_SIZE, _hover_tile.y * TILE_SIZE)
 	var color: Color
 	if not placeable:
@@ -263,7 +287,7 @@ func _update_range_preview() -> void:
 		return
 
 	var valid := _can_place(tile)
-	var affordable := _money >= TOWER_COST
+	var affordable := _money >= _preview_cost()
 	var color: Color
 	if not valid:
 		color = Color(1.0, 0.3, 0.3, 0.9)
@@ -284,3 +308,13 @@ func _update_tower_info_panel() -> void:
 		panel.get_node("VBox/CostLabel").text = "Cost: $%d" % tower.cost
 	else:
 		panel.visible = false
+
+func _set_tower_type(type_idx: int) -> void:
+	_tower_type_to_place = type_idx
+	_update_shop_ui()
+	_update_range_preview()
+
+func _update_shop_ui() -> void:
+	var shop = $UI/TowerShop
+	shop.get_node("VBox/BasicButton").disabled = (_tower_type_to_place == 0)
+	shop.get_node("VBox/RapidButton").disabled = (_tower_type_to_place == 1)

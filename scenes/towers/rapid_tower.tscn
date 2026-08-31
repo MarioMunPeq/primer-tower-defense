@@ -1,18 +1,18 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile204.png" id="1_sprite"]
-[ext_resource type="Script" path="res://scripts/towers/basic_tower.gd" id="2_script"]
+[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile205.png" id="1_sprite"]
+[ext_resource type="Script" path="res://scripts/towers/rapid_tower.gd" id="2_script"]
 
 [sub_resource type="CircleShape2D" id="SubResource_1"]
-radius = 180.0
+radius = 150.0
 
-[node name="BasicTower" type="Node2D"]
+[node name="RapidTower" type="Node2D"]
 script = ExtResource("2_script")
-script/range = 180.0
+script/range = 150.0
 script/damage = 1
-script/attack_cooldown = 0.8
-script/cost = 50
-script/MAX_PROJECTILES = 8
+script/attack_cooldown = 0.33
+script/cost = 75
+script/MAX_PROJECTILES = 12
 
 [node name="Sprite" type="Sprite2D" parent="."]
 texture = ExtResource("1_sprite")
