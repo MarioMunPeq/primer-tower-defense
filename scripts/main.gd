@@ -7,7 +7,6 @@ const MAP_ROWS := 5
 const ATLAS_GRASS := Vector2i(0, 0)
 const ATLAS_ROAD := Vector2i(1, 0)
 
-const BASIC_ENEMY := preload("res://scenes/enemies/basic_enemy.tscn")
 const BASIC_TOWER := preload("res://scenes/towers/basic_tower.tscn")
 
 const TOWER_RANGE := 180.0
@@ -19,11 +18,13 @@ func _ready():
 	_setup_tilemap()
 	_paint_map()
 	_setup_path()
-	_spawn_enemy()
 
 	var towers := Node2D.new()
 	towers.name = "Towers"
 	add_child(towers)
+
+	$WaveSpawner.wave_started.connect(_on_wave_started)
+	$WaveSpawner.setup($EnemyPath)
 
 func _setup_tilemap():
 	var ts := TileSet.new()
@@ -87,15 +88,8 @@ func _setup_path():
 	var exit: Marker2D = $Exit
 	exit.position = Vector2(MAP_COLS * TILE_SIZE + TILE_SIZE / 2.0, row_4_y)
 
-func _spawn_enemy():
-	# The enemy is placed under a PathFollow2D so it smoothly follows EnemyPath.
-	var follow := PathFollow2D.new()
-	follow.rotates = false
-	follow.loop = false
-	$EnemyPath.add_child(follow)
-
-	var enemy := BASIC_ENEMY.instantiate()
-	follow.add_child(enemy)
+func _on_wave_started(current_wave: int) -> void:
+	$UI/WaveLabel.text = "WAVE %d" % current_wave
 
 ## Updates the hovered tile (for placement feedback) and redraws when it changes.
 func _process(_delta: float) -> void:
