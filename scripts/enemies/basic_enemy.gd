@@ -6,6 +6,7 @@ extends Node2D
 ## damaged by towers.
 
 signal died(reward_amount: int)
+signal reached_base
 
 @export var speed: float = 100.0
 # HP is low enough that the starting two towers (100$ / 50$ each) can kill
@@ -13,8 +14,9 @@ signal died(reward_amount: int)
 @export var health: int = 4
 @export var reward: int = 10
 
-func _ready() -> void:
-	print("BasicEnemy spawned at ", global_position)
+## Guarantees the enemy finishes exactly once (dies OR reaches the base), never
+## both, so its reward/damage signals are emitted at most one time.
+var _resolved := false
 
 func _physics_process(delta: float) -> void:
 	var follow := get_parent() as PathFollow2D
@@ -29,22 +31,31 @@ func _physics_process(delta: float) -> void:
 ## Applies damage to the enemy. When health reaches zero the enemy dies and
 ## emits the `died` signal (for reward), then frees its PathFollow2D.
 func take_damage(amount: int) -> void:
-	if health <= 0:
+	if _resolved or health <= 0:
 		return
 	health -= amount
 	if health <= 0:
 		_die()
 
 func _die() -> void:
+	if _resolved:
+		return
+	_resolved = true
 	died.emit(reward)
-	if is_instance_valid(get_parent()) and get_parent() is PathFollow2D:
-		get_parent().queue_free()
-	else:
-		queue_free()
+	_free_follow()
 
-## Called when the enemy completes the path. Frees the PathFollow2D (and this
-## node as its child) so nothing lingers in the scene.
+## Called when the enemy completes the path. Emits `reached_base` so the game
+## can damage the base (no reward for a leaked enemy), then frees itself.
 func _reach_end() -> void:
-	print("BasicEnemy reached end, freeing")
-	if is_instance_valid(get_parent()) and get_parent() is PathFollow2D:
-		get_parent().queue_free()
+	if _resolved:
+		return
+	_resolved = true
+	reached_base.emit()
+	_free_follow()
+
+func _free_follow() -> void:
+	var parent := get_parent()
+	if is_instance_valid(parent) and parent is PathFollow2D:
+		parent.queue_free()
+	elif is_inside_tree():
+		queue_free()

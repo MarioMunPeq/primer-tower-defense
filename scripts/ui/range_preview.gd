@@ -9,13 +9,19 @@ var _radius := 0.0
 var _color := Color.WHITE
 
 ## Activates the circle. radius must be the real tower range in world px.
+## Only redraws when the visible state actually changes (geometry, color, or
+## shown/hidden), so idle frames do zero draw work.
 func show_range(center: Vector2, radius: float, color: Color) -> void:
+	if center == _center and is_equal_approx(radius, _radius) and color == _color:
+		return
 	_center = center
 	_radius = radius
 	_color = color
 	queue_redraw()
 
 func hide_range() -> void:
+	if _center == Vector2(INF, INF):
+		return
 	_center = Vector2(INF, INF)
 	queue_redraw()
 

@@ -8,23 +8,23 @@ const ATLAS_GRASS := Vector2i(0, 0)
 const ATLAS_ROAD := Vector2i(1, 0)
 
 const BASIC_TOWER := preload("res://scenes/towers/basic_tower.tscn")
+const BASIC_TOWER_SCRIPT := preload("res://scripts/towers/basic_tower.gd")
 
 const TOWER_COST := 50
+const BASE_HP_MAX := 100
 
 var _towers := {}
 var _hover_tile := Vector2i(-1, -1)
 var _money: int = 100
 var _selected_tower: Node2D = null
-var _tower_range: float = -1.0
+var _base_hp: int = BASE_HP_MAX
+var _game_ended := false
 
-## Reads the real attack range from the BasicTower scene, cached once so the
-## preview drawn around the cursor always matches actual tower range.
-func _get_tower_range() -> float:
-	if _tower_range < 0.0:
-		var dummy := BASIC_TOWER.instantiate()
-		_tower_range = dummy.range
-		dummy.free()
-	return _tower_range
+## The placement-preview range comes straight from the tower script's single
+## source constant (equivalent to BasicTower.range) — no scene is instantiated
+## just to read a number, so this is free to call.
+func _preview_range() -> float:
+	return BASIC_TOWER_SCRIPT.RANGE
 
 func _ready():
 	_setup_tilemap()
@@ -37,8 +37,12 @@ func _ready():
 
 	$WaveSpawner.wave_started.connect(_on_wave_started)
 	$WaveSpawner.enemy_rewarded.connect(_on_enemy_rewarded)
+	$WaveSpawner.enemy_reached_base.connect(_on_enemy_reached_base)
+	$WaveSpawner.game_complete.connect(_on_victory)
 	$WaveSpawner.setup($EnemyPath)
+	$EndScreen/Center/VBox/RestartButton.pressed.connect(_on_restart_pressed)
 	_update_money_ui()
+	_update_base_ui()
 
 func _setup_tilemap():
 	var ts := TileSet.new()
@@ -108,17 +112,51 @@ func _on_wave_started(current_wave: int) -> void:
 func _on_enemy_rewarded(amount: int) -> void:
 	_money += amount
 	_update_money_ui()
+	_update_range_preview()
 
 func _update_money_ui() -> void:
 	$UI/MoneyLabel.text = "MONEY: $%d" % _money
 
-## Updates the hovered tile (for placement feedback) and the range preview.
+func _update_base_ui() -> void:
+	$UI/BaseLabel.text = "BASE: %d HP" % _base_hp
+
+## An enemy reached the exit: damage the base (no reward). Ends the game with a
+## loss when the base drops to zero or below.
+func _on_enemy_reached_base(damage: int) -> void:
+	if _game_ended:
+		return
+	_base_hp -= damage
+	_update_base_ui()
+	if _base_hp <= 0:
+		_base_hp = 0
+		_end_game("GAME OVER")
+
+## Called by the wave spawner when the last wave's enemies are all gone.
+func _on_victory() -> void:
+	_end_game("YOU WIN")
+
+func _end_game(text: String) -> void:
+	if _game_ended:
+		return
+	_game_ended = true
+	$EndScreen/Center/VBox/StatusLabel.text = text
+	$EndScreen.visible = true
+	get_tree().paused = true
+
+func _on_restart_pressed() -> void:
+	get_tree().paused = false
+	$WaveSpawner.begin_teardown()
+	get_tree().reload_current_scene()
+
+## Minimal per-frame work: track the hovered tile for placement feedback.
+## The range preview is NOT redrawn every frame — only when the hover tile
+## changes (below) or when selection/placement/money changes (event handlers).
 func _process(_delta: float) -> void:
 	var tile := _mouse_to_tile(get_global_mouse_position())
 	if tile != _hover_tile:
 		_hover_tile = tile
 		queue_redraw()
-	_update_range_preview()
+		_update_range_preview()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -127,7 +165,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		if _towers.has(tile):
 			_select_tower(_towers[tile])
 		else:
-			_selected_tower = null
+			if _selected_tower != null:
+				_selected_tower = null
+				_update_range_preview()
 			_try_place_tower(world_pos)
 
 ## Converts a world position to tilemap coordinates. Returns (-1,-1) off-map.
@@ -159,6 +199,7 @@ func _try_place_tower(world_pos: Vector2) -> void:
 	_money -= TOWER_COST
 	_update_money_ui()
 	queue_redraw()
+	_update_range_preview()
 
 func _tile_center(tile: Vector2i) -> Vector2:
 	return Vector2(tile.x * TILE_SIZE + TILE_SIZE / 2.0, tile.y * TILE_SIZE + TILE_SIZE / 2.0)
@@ -184,7 +225,10 @@ func _draw() -> void:
 
 ## Selects a placed tower. The preview then shows that tower's real range.
 func _select_tower(tower: Node2D) -> void:
+	if _selected_tower == tower:
+		return
 	_selected_tower = tower
+	_update_range_preview()
 
 ## Chooses what the RangePreview should draw: the selected tower's range, or the
 ## placement preview that follows the cursor.
@@ -208,4 +252,4 @@ func _update_range_preview() -> void:
 		color = Color(1.0, 0.8, 0.2, 0.9)
 	else:
 		color = Color(0.3, 1.0, 0.3, 0.9)
-	$RangePreview.show_range(_tile_center(tile), _get_tower_range(), color)
+	$RangePreview.show_range(_tile_center(tile), _preview_range(), color)
