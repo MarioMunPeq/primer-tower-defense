@@ -9,10 +9,22 @@ const ATLAS_ROAD := Vector2i(1, 0)
 
 const BASIC_TOWER := preload("res://scenes/towers/basic_tower.tscn")
 
-const TOWER_RANGE := 180.0
+const TOWER_COST := 50
 
 var _towers := {}
 var _hover_tile := Vector2i(-1, -1)
+var _money: int = 100
+var _selected_tower: Node2D = null
+var _tower_range: float = -1.0
+
+## Reads the real attack range from the BasicTower scene, cached once so the
+## preview drawn around the cursor always matches actual tower range.
+func _get_tower_range() -> float:
+	if _tower_range < 0.0:
+		var dummy := BASIC_TOWER.instantiate()
+		_tower_range = dummy.range
+		dummy.free()
+	return _tower_range
 
 func _ready():
 	_setup_tilemap()
@@ -24,7 +36,9 @@ func _ready():
 	add_child(towers)
 
 	$WaveSpawner.wave_started.connect(_on_wave_started)
+	$WaveSpawner.enemy_rewarded.connect(_on_enemy_rewarded)
 	$WaveSpawner.setup($EnemyPath)
+	_update_money_ui()
 
 func _setup_tilemap():
 	var ts := TileSet.new()
@@ -91,16 +105,30 @@ func _setup_path():
 func _on_wave_started(current_wave: int) -> void:
 	$UI/WaveLabel.text = "WAVE %d" % current_wave
 
-## Updates the hovered tile (for placement feedback) and redraws when it changes.
+func _on_enemy_rewarded(amount: int) -> void:
+	_money += amount
+	_update_money_ui()
+
+func _update_money_ui() -> void:
+	$UI/MoneyLabel.text = "MONEY: $%d" % _money
+
+## Updates the hovered tile (for placement feedback) and the range preview.
 func _process(_delta: float) -> void:
 	var tile := _mouse_to_tile(get_global_mouse_position())
 	if tile != _hover_tile:
 		_hover_tile = tile
 		queue_redraw()
+	_update_range_preview()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		_try_place_tower(get_global_mouse_position())
+		var world_pos := get_global_mouse_position()
+		var tile := _mouse_to_tile(world_pos)
+		if _towers.has(tile):
+			_select_tower(_towers[tile])
+		else:
+			_selected_tower = null
+			_try_place_tower(world_pos)
 
 ## Converts a world position to tilemap coordinates. Returns (-1,-1) off-map.
 func _mouse_to_tile(world_pos: Vector2) -> Vector2i:
@@ -121,27 +149,63 @@ func _try_place_tower(world_pos: Vector2) -> void:
 	var tile := _mouse_to_tile(world_pos)
 	if not _can_place(tile):
 		return
+	if _money < TOWER_COST:
+		return
 
 	var tower := BASIC_TOWER.instantiate()
 	tower.position = _tile_center(tile)
 	$Towers.add_child(tower)
 	_towers[tile] = tower
+	_money -= TOWER_COST
+	_update_money_ui()
 	queue_redraw()
 
 func _tile_center(tile: Vector2i) -> Vector2:
 	return Vector2(tile.x * TILE_SIZE + TILE_SIZE / 2.0, tile.y * TILE_SIZE + TILE_SIZE / 2.0)
 
-## Placement feedback: highlights the hovered tile (green if placeable, red if
-## not) and draws a translucent range circle when placing is allowed.
+## Placement feedback: green = valid + can afford, yellow = valid but too poor,
+## red = invalid (road / off-map / occupied). The range circle is drawn by the
+## RangePreview node instead.
 func _draw() -> void:
 	if _hover_tile == Vector2i(-1, -1):
 		return
 
 	var placeable := _can_place(_hover_tile)
+	var affordable := _money >= TOWER_COST
 	var tile_pos := Vector2(_hover_tile.x * TILE_SIZE, _hover_tile.y * TILE_SIZE)
-	var color := Color(0.3, 1.0, 0.3, 0.45) if placeable else Color(1.0, 0.3, 0.3, 0.45)
+	var color: Color
+	if not placeable:
+		color = Color(1.0, 0.3, 0.3, 0.45)
+	elif not affordable:
+		color = Color(1.0, 0.8, 0.2, 0.45)
+	else:
+		color = Color(0.3, 1.0, 0.3, 0.45)
 	draw_rect(Rect2(tile_pos, Vector2(TILE_SIZE, TILE_SIZE)), color, true)
 
-	if placeable:
-		var center := tile_pos + Vector2(TILE_SIZE / 2.0, TILE_SIZE / 2.0)
-		draw_circle(center, TOWER_RANGE, Color(1.0, 1.0, 1.0, 0.12))
+## Selects a placed tower. The preview then shows that tower's real range.
+func _select_tower(tower: Node2D) -> void:
+	_selected_tower = tower
+
+## Chooses what the RangePreview should draw: the selected tower's range, or the
+## placement preview that follows the cursor.
+func _update_range_preview() -> void:
+	if is_instance_valid(_selected_tower):
+		var tower: Node2D = _selected_tower
+		$RangePreview.show_range(tower.position, tower.range, Color(0.4, 0.9, 1.0))
+		return
+
+	var tile := _hover_tile
+	if tile == Vector2i(-1, -1):
+		$RangePreview.hide_range()
+		return
+
+	var valid := _can_place(tile)
+	var affordable := _money >= TOWER_COST
+	var color: Color
+	if not valid:
+		color = Color(1.0, 0.3, 0.3, 0.9)
+	elif not affordable:
+		color = Color(1.0, 0.8, 0.2, 0.9)
+	else:
+		color = Color(0.3, 1.0, 0.3, 0.9)
+	$RangePreview.show_range(_tile_center(tile), _get_tower_range(), color)

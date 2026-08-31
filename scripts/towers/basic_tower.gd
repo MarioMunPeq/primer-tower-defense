@@ -5,6 +5,7 @@ extends Node2D
 @export var range: float = 180.0
 @export var damage: int = 1
 @export var attack_cooldown: float = 0.8
+@export var cost: int = 50
 
 const BASIC_PROJECTILE := preload("res://scenes/projectiles/basic_projectile.tscn")
 

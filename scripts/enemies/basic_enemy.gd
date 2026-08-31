@@ -5,8 +5,13 @@ extends Node2D
 ## curve, which moves this node along the path. It has health and can be
 ## damaged by towers.
 
+signal died(reward_amount: int)
+
 @export var speed: float = 100.0
-@export var health: int = 10
+# HP is low enough that the starting two towers (100$ / 50$ each) can kill
+# enemies, so the money loop is playable from the start.
+@export var health: int = 4
+@export var reward: int = 10
 
 func _ready() -> void:
 	print("BasicEnemy spawned at ", global_position)
@@ -22,16 +27,17 @@ func _physics_process(delta: float) -> void:
 		_reach_end()
 
 ## Applies damage to the enemy. When health reaches zero the enemy dies and
-## frees its PathFollow2D (and this node as its child).
+## emits the `died` signal (for reward), then frees its PathFollow2D.
 func take_damage(amount: int) -> void:
+	if health <= 0:
+		return
 	health -= amount
 	if health <= 0:
 		_die()
 
 func _die() -> void:
-	if not is_instance_valid(get_parent()):
-		return
-	if get_parent() is PathFollow2D:
+	died.emit(reward)
+	if is_instance_valid(get_parent()) and get_parent() is PathFollow2D:
 		get_parent().queue_free()
 	else:
 		queue_free()

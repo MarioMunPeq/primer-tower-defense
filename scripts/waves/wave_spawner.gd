@@ -3,6 +3,7 @@ extends Node2D
 ## waits for the wave to clear, then starts the next wave after a short rest.
 
 signal wave_started(current_wave: int)
+signal enemy_rewarded(amount: int)
 
 const BASIC_ENEMY := preload("res://scenes/enemies/basic_enemy.tscn")
 
@@ -78,9 +79,13 @@ func _spawn_enemy() -> void:
 
 	_alive += 1
 	enemy.tree_exited.connect(_on_enemy_gone)
+	enemy.died.connect(_on_enemy_died)
 
 func _on_enemy_gone() -> void:
 	_alive -= 1
+
+func _on_enemy_died(reward_amount: int) -> void:
+	enemy_rewarded.emit(reward_amount)
 
 ## NOTE (future milestone): enemies that reach the end currently just free
 ## themselves in basic_enemy.gd (_reach_end). When base lives are added, hook
