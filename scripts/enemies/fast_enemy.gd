@@ -1,8 +1,8 @@
 extends "res://scripts/enemies/enemy_base.gd"
-## Basic enemy: balanced stats.
+## Fast enemy: low HP, high speed.
 
 func _init() -> void:
-	speed = 100.0
-	health = 4
-	reward = 10
+	speed = 170.0
+	health = 2
+	reward = 15
 	base_damage = 1

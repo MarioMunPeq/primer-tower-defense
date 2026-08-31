@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile291.png" id="1_sprite"]
+[ext_resource type="Script" path="res://scripts/enemies/tank_enemy.gd" id="2_script"]
+
+[sub_resource type="CircleShape2D" id="SubResource_1"]
+radius = 52.0
+
+[node name="TankEnemy" type="Node2D"]
+script = ExtResource("2_script")
+script/speed = 55.0
+script/health = 8
+script/reward = 25
+script/base_damage = 2
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_sprite")
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("SubResource_1")
