@@ -8,12 +8,22 @@ const ATLAS_GRASS := Vector2i(0, 0)
 const ATLAS_ROAD := Vector2i(1, 0)
 
 const BASIC_ENEMY := preload("res://scenes/enemies/basic_enemy.tscn")
+const BASIC_TOWER := preload("res://scenes/towers/basic_tower.tscn")
+
+const TOWER_RANGE := 180.0
+
+var _towers := {}
+var _hover_tile := Vector2i(-1, -1)
 
 func _ready():
 	_setup_tilemap()
 	_paint_map()
 	_setup_path()
 	_spawn_enemy()
+
+	var towers := Node2D.new()
+	towers.name = "Towers"
+	add_child(towers)
 
 func _setup_tilemap():
 	var ts := TileSet.new()
@@ -86,3 +96,58 @@ func _spawn_enemy():
 
 	var enemy := BASIC_ENEMY.instantiate()
 	follow.add_child(enemy)
+
+## Updates the hovered tile (for placement feedback) and redraws when it changes.
+func _process(_delta: float) -> void:
+	var tile := _mouse_to_tile(get_global_mouse_position())
+	if tile != _hover_tile:
+		_hover_tile = tile
+		queue_redraw()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		_try_place_tower(get_global_mouse_position())
+
+## Converts a world position to tilemap coordinates. Returns (-1,-1) off-map.
+func _mouse_to_tile(world_pos: Vector2) -> Vector2i:
+	var tile := Vector2i(floori(world_pos.x / TILE_SIZE), floori(world_pos.y / TILE_SIZE))
+	if tile.x < 0 or tile.y < 0 or tile.x >= MAP_COLS or tile.y >= MAP_ROWS:
+		return Vector2i(-1, -1)
+	return tile
+
+## Can only place on a grass tile that does not already hold a tower.
+func _can_place(tile: Vector2i) -> bool:
+	if tile == Vector2i(-1, -1):
+		return false
+	if _towers.has(tile):
+		return false
+	return $Map.get_cell_atlas_coords(tile) == ATLAS_GRASS
+
+func _try_place_tower(world_pos: Vector2) -> void:
+	var tile := _mouse_to_tile(world_pos)
+	if not _can_place(tile):
+		return
+
+	var tower := BASIC_TOWER.instantiate()
+	tower.position = _tile_center(tile)
+	$Towers.add_child(tower)
+	_towers[tile] = tower
+	queue_redraw()
+
+func _tile_center(tile: Vector2i) -> Vector2:
+	return Vector2(tile.x * TILE_SIZE + TILE_SIZE / 2.0, tile.y * TILE_SIZE + TILE_SIZE / 2.0)
+
+## Placement feedback: highlights the hovered tile (green if placeable, red if
+## not) and draws a translucent range circle when placing is allowed.
+func _draw() -> void:
+	if _hover_tile == Vector2i(-1, -1):
+		return
+
+	var placeable := _can_place(_hover_tile)
+	var tile_pos := Vector2(_hover_tile.x * TILE_SIZE, _hover_tile.y * TILE_SIZE)
+	var color := Color(0.3, 1.0, 0.3, 0.45) if placeable else Color(1.0, 0.3, 0.3, 0.45)
+	draw_rect(Rect2(tile_pos, Vector2(TILE_SIZE, TILE_SIZE)), color, true)
+
+	if placeable:
+		var center := tile_pos + Vector2(TILE_SIZE / 2.0, TILE_SIZE / 2.0)
+		draw_circle(center, TOWER_RANGE, Color(1.0, 1.0, 1.0, 0.12))
