@@ -4,15 +4,16 @@ const TILE_SIZE := 128
 const MAP_COLS := 14
 const MAP_ROWS := 8
 
-# Atlas tile coordinates (atlas_x, atlas_y) in the 512x128 map_atlas.png grid.
-# The atlas is 4 tiles wide: GRASS, ROAD, SAND, GRASS_DARK.
-# - GRASS: non-buildable terrain filler (decorative green)
-# - ROAD:  the path enemies traverse
-# - SAND:  buildable island (the only place towers can be placed)
-# - GRASS_DARK: a slightly darker green for visual variety (decorative)
+# Atlas tile coordinates (atlas_x, atlas_y) in the 1024x256 map_atlas.png grid.
+# - GRASS: non-buildable terrain filler (decorative green, tile038)
+# - ROAD:  road interior fill (tile050, pure brown - no green seams)
+# - SAND:  buildable island (the only place towers can be placed), tile029
+# - GRASS_DARK: a slightly darker green for visual variety (decorative), tile045
+# The road edge/variants below are the ROAD terrain family: they are needed so
+# `set_cells_terrain_connect` can pick the right transition for every cell.
 enum AtlasTile {
 	GRASS      = 0,   # (0,0)  tile038
-	ROAD       = 1,   # (1,0)  tile002
+	ROAD       = 1,   # (1,0)  tile050 - clean road fill
 	SAND       = 2,   # (2,0)  tile029 - buildable island
 	GRASS_DARK = 3,   # (3,0)  tile045 - decorative darker green
 }
@@ -25,21 +26,29 @@ const ATLAS_COORDS: Dictionary = {
 	AtlasTile.GRASS_DARK: Vector2i(3, 0),
 }
 
-const ATLAS_GRASS := Vector2i(0, 0)    # GRASS
-const ATLAS_ROAD := Vector2i(1, 0)     # ROAD
-const ATLAS_SAND := Vector2i(2, 0)     # SAND
-const ATLAS_GRASS_DARK := Vector2i(3, 0)  # GRASS_DARK
+const ATLAS_GRASS := Vector2i(0, 0)          # GRASS
+const ATLAS_ROAD := Vector2i(1, 0)           # ROAD fill (pure brown)
+const ATLAS_SAND := Vector2i(2, 0)           # SAND
+const ATLAS_GRASS_DARK := Vector2i(3, 0)     # GRASS_DARK
+const ATLAS_ROAD_H := Vector2i(0, 1)         # ROAD straight horizontal
+const ATLAS_ROAD_V := Vector2i(1, 1)         # ROAD straight vertical
+const ATLAS_ROAD_CORNER_WS := Vector2i(2, 1) # ROAD corner: from W, exits S
+const ATLAS_ROAD_CORNER_NE := Vector2i(3, 1) # ROAD corner: from N, exits E
+const ATLAS_ROAD_END_E := Vector2i(4, 1)     # ROAD end: only E neighbour is road
+const ATLAS_ROAD_END_W := Vector2i(5, 1)     # ROAD end: only W neighbour is road
 
 const BASIC_TOWER := preload("res://scenes/towers/basic_tower.tscn")
 const BASIC_TOWER_SCRIPT := preload("res://scripts/towers/basic_tower.gd")
 const RAPID_TOWER := preload("res://scenes/towers/rapid_tower.tscn")
 const RAPID_TOWER_SCRIPT := preload("res://scripts/towers/rapid_tower.gd")
+const SNIPER_TOWER := preload("res://scenes/towers/sniper_tower.tscn")
+const SNIPER_TOWER_SCRIPT := preload("res://scripts/towers/sniper_tower.gd")
 const IMPACT_EFFECT := preload("res://scenes/effects/impact_effect.tscn")
 
 const BASE_HP_MAX := 100
 
 ## Which tower type is currently selected for placement.
-## 0 = Basic Tower, 1 = Rapid Tower
+## 0 = Basic Tower, 1 = Rapid Tower, 2 = Sniper Tower
 var _tower_type_to_place := 0
 
 var _towers := {}
@@ -54,19 +63,25 @@ var _game_ended := false
 func _preview_range() -> float:
 	if _tower_type_to_place == 0:
 		return BASIC_TOWER_SCRIPT.RANGE
-	return RAPID_TOWER_SCRIPT.RANGE
+	elif _tower_type_to_place == 1:
+		return RAPID_TOWER_SCRIPT.RANGE
+	return SNIPER_TOWER_SCRIPT.RANGE
 
 ## Cost of the currently selected tower type.
 func _preview_cost() -> int:
 	if _tower_type_to_place == 0:
 		return BASIC_TOWER_SCRIPT.COST
-	return RAPID_TOWER_SCRIPT.COST
+	elif _tower_type_to_place == 1:
+		return RAPID_TOWER_SCRIPT.COST
+	return SNIPER_TOWER_SCRIPT.COST
 
 ## Scene of the currently selected tower type.
 func _preview_scene() -> PackedScene:
 	if _tower_type_to_place == 0:
 		return BASIC_TOWER
-	return RAPID_TOWER
+	elif _tower_type_to_place == 1:
+		return RAPID_TOWER
+	return SNIPER_TOWER
 
 func _ready():
 	_setup_tilemap()
@@ -88,6 +103,7 @@ func _ready():
 	# Connect tower selection buttons
 	$UI/TowerShop/VBox/ShopGrid/BasicCard.pressed.connect(func(): _set_tower_type(0))
 	$UI/TowerShop/VBox/ShopGrid/RapidCard.pressed.connect(func(): _set_tower_type(1))
+	$UI/TowerShop/VBox/ShopGrid/SniperCard.pressed.connect(func(): _set_tower_type(2))
 	
 	# Connect upgrade + sell buttons
 	$UI/TowerInfoPanel/VBox/Actions/UpgradeButton.pressed.connect(_on_upgrade_pressed)
@@ -115,13 +131,48 @@ func _setup_tilemap():
 	source.texture = preload("res://assets/tilesets/map_atlas.png")
 	source.texture_region_size = Vector2i(TILE_SIZE, TILE_SIZE)
 
-	# 4-tile atlas: GRASS, ROAD, SAND, GRASS_DARK
-	source.create_tile(Vector2i(0, 0))   # GRASS
-	source.create_tile(Vector2i(1, 0))   # ROAD
-	source.create_tile(Vector2i(2, 0))   # SAND
-	source.create_tile(Vector2i(3, 0))   # GRASS_DARK
+	# Atlas grid (8x2 of 128px): row 0 base tiles, row 1 road terrain family.
+	for coord in [
+		ATLAS_GRASS, ATLAS_ROAD, ATLAS_SAND, ATLAS_GRASS_DARK,
+		ATLAS_ROAD_H, ATLAS_ROAD_V, ATLAS_ROAD_CORNER_WS, ATLAS_ROAD_CORNER_NE,
+		ATLAS_ROAD_END_E, ATLAS_ROAD_END_W
+	]:
+		source.create_tile(coord)
 
 	ts.add_source(source, 0)
+
+	# Terrain set with a single ROAD terrain. Only orthogonal sides matter
+	# (MATCH_SIDES): each road cell then picks its transition tile automatically
+	# from the road status of its 4 direct neighbours.
+	# NOTE: add_terrain_set/add_terrain return void in Godot 4.7, so we read the
+	# new indexes back via the counters.
+	ts.add_terrain_set()
+	var terrain_set: int = ts.get_terrain_sets_count() - 1
+	ts.add_terrain(terrain_set)
+	var road_terrain: int = ts.get_terrains_count(terrain_set) - 1
+	ts.set_terrain_name(terrain_set, road_terrain, "Road")
+	ts.set_terrain_set_mode(terrain_set, TileSet.TERRAIN_MODE_MATCH_SIDES)
+
+	# Peering bits per road-family tile. Order of keys is not important.
+	var road_peering := {
+		ATLAS_ROAD: [
+			TileSet.CELL_NEIGHBOR_TOP_SIDE, TileSet.CELL_NEIGHBOR_BOTTOM_SIDE,
+			TileSet.CELL_NEIGHBOR_LEFT_SIDE, TileSet.CELL_NEIGHBOR_RIGHT_SIDE,
+		],
+		ATLAS_ROAD_H: [TileSet.CELL_NEIGHBOR_LEFT_SIDE, TileSet.CELL_NEIGHBOR_RIGHT_SIDE],
+		ATLAS_ROAD_V: [TileSet.CELL_NEIGHBOR_TOP_SIDE, TileSet.CELL_NEIGHBOR_BOTTOM_SIDE],
+		ATLAS_ROAD_CORNER_WS: [TileSet.CELL_NEIGHBOR_LEFT_SIDE, TileSet.CELL_NEIGHBOR_BOTTOM_SIDE],
+		ATLAS_ROAD_CORNER_NE: [TileSet.CELL_NEIGHBOR_TOP_SIDE, TileSet.CELL_NEIGHBOR_RIGHT_SIDE],
+		ATLAS_ROAD_END_E: [TileSet.CELL_NEIGHBOR_RIGHT_SIDE],
+		ATLAS_ROAD_END_W: [TileSet.CELL_NEIGHBOR_LEFT_SIDE],
+	}
+	for coord in road_peering:
+		var data: TileData = source.get_tile_data(coord, 0)
+		data.terrain_set = terrain_set
+		data.terrain = road_terrain
+		for bit in road_peering[coord]:
+			data.set_terrain_peering_bit(bit, road_terrain)
+
 	$Map.tile_set = ts
 
 func _atlas(tile: AtlasTile) -> Vector2i:
@@ -140,44 +191,57 @@ func _paint_map():
 	# E = entry road, X = exit road, H = road, T = buildable island
 	# Row 0:  all grass
 	# Row 1:  E H H (cols 0-2), grass to col 13
-	# Row 2:  H at col 2; T islands at cols 4-5 and 8-9
-	# Row 3:  H cols 2-10 (horizontal road)
+	# Row 2:  H at col 2; T islands at cols 4-5 and 8-9, 12-13
+	# Row 3:  H cols 2-10 (horizontal road); T at cols 12-13
 	# Row 4:  T at cols 1-2; H at col 10; T at cols 12-13
-	# Row 5:  T at cols 1-2, 4-5, 8-9, 12-13; H at cols 10-11
-	# Row 6:  H at col 10
+	# Row 5:  T at cols 1-2, 4-5, 8-9, 12-13; H at col 10
+	# Row 6:  H at col 10; T at cols 12-13
 	# Row 7:  H at cols 10,11,12; X at col 13
 	# ============================================================
 
+	# Road cells are collected first and painted with the ROAD terrain at the
+	# end so the edge transitions follow the neighbours automatically.
+	var road_cells: Array[Vector2i] = []
+
 	# ---- ROW 1: entry + horizontal road (cols 0-2) ----
 	for x in range(0, 3):
-		$Map.set_cell(Vector2i(x, 1), 0, _atlas(AtlasTile.ROAD))
+		road_cells.append(Vector2i(x, 1))
 
-	# ---- ROW 2: vertical road at col 2; islands at 4-5, 8-9 ----
-	$Map.set_cell(Vector2i(2, 2), 0, _atlas(AtlasTile.ROAD))
-	for x in [4, 5, 8, 9]:
+	# ---- ROW 2: vertical road at col 2; islands at 4-5, 8-9, 12-13 ----
+	road_cells.append(Vector2i(2, 2))
+	for x in [4, 5, 8, 9, 12, 13]:
 		$Map.set_cell(Vector2i(x, 2), 0, _atlas(AtlasTile.SAND))
 
-	# ---- ROW 3: horizontal road cols 2-10 ----
+	# ---- ROW 3: horizontal road cols 2-10; island at 12-13 ----
 	for x in range(2, 11):
-		$Map.set_cell(Vector2i(x, 3), 0, _atlas(AtlasTile.ROAD))
+		road_cells.append(Vector2i(x, 3))
+	for x in [12, 13]:
+		$Map.set_cell(Vector2i(x, 3), 0, _atlas(AtlasTile.SAND))
 
 	# ---- ROW 4: islands at 1-2, 12-13; road at col 10 ----
 	for x in [1, 2, 12, 13]:
 		$Map.set_cell(Vector2i(x, 4), 0, _atlas(AtlasTile.SAND))
-	$Map.set_cell(Vector2i(10, 4), 0, _atlas(AtlasTile.ROAD))
+	road_cells.append(Vector2i(10, 4))
 
-	# ---- ROW 5: islands at 1-2, 4-5, 8-9, 12-13; road at cols 10-11 ----
+	# ---- ROW 5: islands at 1-2, 4-5, 8-9, 12-13; road at col 10 ----
 	for x in [1, 2, 4, 5, 8, 9, 12, 13]:
 		$Map.set_cell(Vector2i(x, 5), 0, _atlas(AtlasTile.SAND))
-	for x in [10, 11]:
-		$Map.set_cell(Vector2i(x, 5), 0, _atlas(AtlasTile.ROAD))
+	road_cells.append(Vector2i(10, 5))
 
-	# ---- ROW 6: vertical road at col 10 ----
-	$Map.set_cell(Vector2i(10, 6), 0, _atlas(AtlasTile.ROAD))
+	# ---- ROW 6: vertical road at col 10; island at 12-13 ----
+	road_cells.append(Vector2i(10, 6))
+	for x in [12, 13]:
+		$Map.set_cell(Vector2i(x, 6), 0, _atlas(AtlasTile.SAND))
 
 	# ---- ROW 7: road cols 10-13 (exit on the right) ----
 	for x in range(10, 14):
-		$Map.set_cell(Vector2i(x, 7), 0, _atlas(AtlasTile.ROAD))
+		road_cells.append(Vector2i(x, 7))
+
+	# ============================================================
+	# ROAD - painted via the terrain connect so the road borders blend into
+	# the grass automatically (peering bits in the TileSet).
+	# ============================================================
+	$Map.set_cells_terrain_connect(road_cells, 0, 0, true)
 
 	# ============================================================
 	# DECORATIVE VARIETY - a few darker grass patches in empty space
@@ -531,18 +595,23 @@ func _set_tower_type(type_idx: int) -> void:
 
 func _update_shop_ui() -> void:
 	var grid = $UI/TowerShop/VBox/ShopGrid
-	var basic_btn: Button = grid.get_node("BasicCard")
-	var rapid_btn: Button = grid.get_node("RapidCard")
+	var cards := {
+		0: grid.get_node("BasicCard"),
+		1: grid.get_node("RapidCard"),
+		2: grid.get_node("SniperCard"),
+	}
+	var scripts := {
+		0: BASIC_TOWER_SCRIPT,
+		1: RAPID_TOWER_SCRIPT,
+		2: SNIPER_TOWER_SCRIPT,
+	}
 
-	# Give each card its lock state and cost label, then highlight the active one.
+	# Give each card its lock state and cost label. Then highlight the active one.
 	# (Never use `disabled`: it greys the button out, which conflicts with the
 	# bright "selected" highlight and stops re-clicking to confirm.)
-	for card in [basic_btn, rapid_btn]:
-		var cost := 0
-		if card == basic_btn:
-			cost = BASIC_TOWER_SCRIPT.COST
-		else:
-			cost = RAPID_TOWER_SCRIPT.COST
+	for idx in cards:
+		var card: Button = cards[idx]
+		var cost: int = scripts[idx].COST
 		var unlocked: bool = _money >= cost
 		card.get_node("CardLock").visible = not unlocked
 		if not unlocked:
@@ -550,26 +619,15 @@ func _update_shop_ui() -> void:
 		else:
 			card.modulate = Color(1.0, 1.0, 1.0, 1.0)
 		card.get_node("CardCostBg/CardCost").text = "$%d" % cost
+		card.disabled = false
+		card.theme_type_variation = ""
+		card.pivot_offset = card.size / 2.0
+		card.scale = Vector2.ONE
 
-	var active: Button = null
-	var inactive: Button = null
-	if _tower_type_to_place == 0:
-		active = basic_btn
-		inactive = rapid_btn
-	else:
-		active = rapid_btn
-		inactive = basic_btn
-
-	for btn in [active, inactive]:
-		btn.disabled = false
-		btn.theme_type_variation = ""
-		btn.pivot_offset = btn.size / 2.0
-		btn.scale = Vector2.ONE
-
-	if active != null:
-		active.theme_type_variation = "TowerCardSelected"
-		active.pivot_offset = active.size / 2.0
-		active.scale = Vector2(1.05, 1.05)
+	var active: Button = cards[_tower_type_to_place]
+	active.theme_type_variation = "TowerCardSelected"
+	active.pivot_offset = active.size / 2.0
+	active.scale = Vector2(1.05, 1.05)
 	_update_shop_desc()
 
 ## Small info line below the tower grid describing the selected tower.
@@ -579,10 +637,14 @@ func _update_shop_desc() -> void:
 		desc = "Basic Tower\nDMG %d • RNG %d\n%.2f/s — $%d" % [
 			BASIC_TOWER_SCRIPT.DAMAGE, BASIC_TOWER_SCRIPT.RANGE,
 			1.0 / BASIC_TOWER_SCRIPT.ATTACK_COOLDOWN, BASIC_TOWER_SCRIPT.COST]
-	else:
+	elif _tower_type_to_place == 1:
 		desc = "Rapid Tower\nDMG %d • RNG %d\n%.2f/s — $%d" % [
 			RAPID_TOWER_SCRIPT.DAMAGE, RAPID_TOWER_SCRIPT.RANGE,
 			1.0 / RAPID_TOWER_SCRIPT.ATTACK_COOLDOWN, RAPID_TOWER_SCRIPT.COST]
+	else:
+		desc = "Sniper Tower\nDMG %d • RNG %d\n%.2f/s — $%d" % [
+			SNIPER_TOWER_SCRIPT.DAMAGE, SNIPER_TOWER_SCRIPT.RANGE,
+			1.0 / SNIPER_TOWER_SCRIPT.ATTACK_COOLDOWN, SNIPER_TOWER_SCRIPT.COST]
 	$UI/TowerShop/VBox/ShopDesc.text = desc
 
 func _set_speed(multiplier: int) -> void:
