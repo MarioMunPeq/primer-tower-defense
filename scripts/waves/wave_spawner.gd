@@ -70,10 +70,6 @@ const WAVES: Array[Dictionary] = [
 const TOTAL_WAVES := 5
 const INTER_WAVE_DELAY := 3.0
 
-## Damage dealt to the base each time an enemy reaches the end.
-## Note: actual damage comes from enemy's base_damage property now.
-const BASE_ENEMY_DAMAGE := 10
-
 ## Safety ceiling on simultaneously-live enemies. Far above normal gameplay
 ## (50 simultaneous is the design target); prevents a runaway-spawn bug from
 ## creating unbounded nodes. Reaching it logs a clear warning instead of
@@ -218,10 +214,6 @@ func _on_enemy_gone() -> void:
 func _on_enemy_died(reward_amount: int) -> void:
 	enemy_rewarded.emit(reward_amount)
 
-func _on_enemy_reached_base() -> void:
-	# Enemy's base_damage property determines damage
-	var damage := BASE_ENEMY_DAMAGE  # fallback
-	# Note: We can't easily get the enemy's base_damage here since the enemy is already freed.
-	# The enemy itself could emit the damage amount, but for now we use the constant.
-	# In the future, the enemy signal could carry the damage amount.
+func _on_enemy_reached_base(damage: int) -> void:
+	# Damage was already read from the enemy's own base_damage before it freed.
 	enemy_reached_base.emit(damage)

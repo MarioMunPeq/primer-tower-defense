@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/effects/death_effect.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/particles/glow.png" id="2_glow"]
+
+[sub_resource type="ParticleProcessMaterial" id="PPMaterial"]
+direction = Vector3(0, -1, 0)
+spread = 45.0
+initial_velocity_min = 40.0
+initial_velocity_max = 160.0
+gravity = Vector3(0, 220, 0)
+scale_min = 6.0
+scale_max = 16.0
+
+[node name="DeathEffect" type="GPUParticles2D"]
+texture = ExtResource("2_glow")
+amount = 14
+lifetime = 0.45
+explosiveness = 1.0
+randomness = 0.85
+one_shot = true
+process_material = SubResource("PPMaterial")
+script = ExtResource("1_script")

@@ -44,6 +44,7 @@ const RAPID_TOWER_SCRIPT := preload("res://scripts/towers/rapid_tower.gd")
 const SNIPER_TOWER := preload("res://scenes/towers/sniper_tower.tscn")
 const SNIPER_TOWER_SCRIPT := preload("res://scripts/towers/sniper_tower.gd")
 const IMPACT_EFFECT := preload("res://scenes/effects/impact_effect.tscn")
+const GameFx := preload("res://scripts/effects/game_fx.gd")
 
 const BASE_HP_MAX := 100
 
@@ -92,6 +93,16 @@ func _ready():
 	var towers := Node2D.new()
 	towers.name = "Towers"
 	add_child(towers)
+
+	# World effect layers shared by all enemies: death particles + pooled damage
+	# numbers (registered on GameFx so enemies can trigger them without plumbing).
+	var fx := Node2D.new()
+	fx.name = "Fx"
+	add_child(fx)
+	var damage_pool := preload("res://scripts/ui/damage_number_pool.gd").new()
+	damage_pool.name = "DamageNumbers"
+	add_child(damage_pool)
+	GameFx.register(fx, damage_pool)
 
 	$WaveSpawner.wave_started.connect(_on_wave_started)
 	$WaveSpawner.enemy_rewarded.connect(_on_enemy_rewarded)

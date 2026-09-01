@@ -11,6 +11,7 @@ script = ExtResource("2_script")
 script/speed = 100.0
 script/health = 4
 script/reward = 10
+script/base_damage = 1
 
 [node name="Sprite" type="Sprite2D" parent="."]
 texture = ExtResource("1_sprite")

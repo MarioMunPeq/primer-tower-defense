@@ -8,18 +8,15 @@ radius = 40.0
 
 [node name="FastEnemy" type="Node2D"]
 script = ExtResource("2_script")
-script/speed = 170.0
+script/speed = 180.0
 script/health = 2
 script/reward = 15
 script/base_damage = 1
+script/hp_bar_width = 34.0
+script/ring_color = Color(0.35, 0.85, 1, 0.25)
+script/death_start_color = Color(0.3, 0.8, 1, 1)
+script/death_end_color = Color(0.9, 1, 1, 1)
 
 [node name="Sprite" type="Sprite2D" parent="."]
+scale = Vector2(0.72, 0.72)
 texture = ExtResource("1_sprite")
-
-[node name="Hitbox" type="Area2D" parent="."]
-collision_layer = 2
-collision_mask = 0
-monitoring = false
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
-shape = SubResource("SubResource_1")
