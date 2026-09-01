@@ -45,6 +45,8 @@ const SNIPER_TOWER := preload("res://scenes/towers/sniper_tower.tscn")
 const SNIPER_TOWER_SCRIPT := preload("res://scripts/towers/sniper_tower.gd")
 const IMPACT_EFFECT := preload("res://scenes/effects/impact_effect.tscn")
 const GameFx := preload("res://scripts/effects/game_fx.gd")
+const TooltipScene := preload("res://scenes/ui/tooltip.tscn")
+const PauseMenuScene := preload("res://scenes/ui/pause_menu.tscn")
 
 const BASE_HP_MAX := 100
 
@@ -59,6 +61,9 @@ var _money: int = 100
 var _selected_tower: Node2D = null
 var _base_hp: int = BASE_HP_MAX
 var _game_ended := false
+var _tooltip: Tooltip = null
+var _hovered_tower: Node2D = null
+var _hovered_enemy: Node2D = null
 
 ## The placement-preview range comes from the currently selected tower type.
 func _preview_range() -> float:
@@ -104,12 +109,36 @@ func _ready():
 	add_child(damage_pool)
 	GameFx.register(fx, damage_pool)
 
+	# Tooltip for UI hover info (tower cards, placed towers, enemies)
+	var tooltip := TooltipScene.instantiate()
+	tooltip.name = "Tooltip"
+	$UI.add_child(tooltip)
+	_tooltip = tooltip
+
+	# Connect tower card hover for tooltips
+	var grid = $UI/TowerShop/VBox/ShopGrid
+	var cards := {
+		0: grid.get_node("BasicCard"),
+		1: grid.get_node("RapidCard"),
+		2: grid.get_node("SniperCard"),
+	}
+	var scripts := {
+		0: BASIC_TOWER_SCRIPT,
+		1: RAPID_TOWER_SCRIPT,
+		2: SNIPER_TOWER_SCRIPT,
+	}
+	for idx in cards:
+		var card: Button = cards[idx]
+		card.mouse_entered.connect(func(idx=idx): _show_tower_card_tooltip(idx))
+		card.mouse_exited.connect(_hide_tooltip)
+
 	$WaveSpawner.wave_started.connect(_on_wave_started)
 	$WaveSpawner.enemy_rewarded.connect(_on_enemy_rewarded)
 	$WaveSpawner.enemy_reached_base.connect(_on_enemy_reached_base)
 	$WaveSpawner.game_complete.connect(_on_victory)
 	$WaveSpawner.setup($EnemyPath)
 	$EndScreen/EndPanel/Center/VBox/RestartButton.pressed.connect(_on_restart_pressed)
+	$EndScreen/EndPanel/Center/VBox/MainMenuButton.pressed.connect(_on_main_menu_pressed)
 	
 	# Connect tower selection buttons
 	$UI/TowerShop/VBox/ShopGrid/BasicCard.pressed.connect(func(): _set_tower_type(0))
@@ -384,10 +413,14 @@ func _end_game(text: String) -> void:
 	var waves_survived: int = $WaveSpawner._display_wave
 	if text == "YOU WIN":
 		waves_survived = 5
-	end_panel.get_node("EndStats").text = "Waves Survived: %d" % waves_survived
+	end_panel.get_node("EndStats").text = "Oleadas: %d\nDinero: $%d\nVida base: %d" % [waves_survived, _money, _base_hp]
 	
 	$EndScreen.visible = true
 	get_tree().paused = true
+
+func _on_main_menu_pressed() -> void:
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://scenes/ui/main_menu.tscn")
 
 ## Minimal per-frame work: track the hovered tile for placement feedback.
 ## The range preview is NOT redrawn every frame — only when the hover tile
@@ -399,6 +432,7 @@ func _process(_delta: float) -> void:
 		queue_redraw()
 		_update_range_preview()
 		_update_placement_preview()
+	_check_hover_tooltips()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -674,11 +708,32 @@ func _set_speed(multiplier: int) -> void:
 func _on_pause_pressed() -> void:
 	if _game_ended:
 		return
-	var tree := get_tree()
-	tree.paused = not tree.paused
+	var menu := PauseMenuScene.instantiate()
+	menu.resume_requested.connect(_on_pause_resume)
+	menu.restart_requested.connect(_on_pause_restart)
+	menu.main_menu_requested.connect(_on_pause_main_menu)
+	$UI.add_child(menu)
+	get_tree().paused = true
 	var btn: Button = $UI/HUDBar/HUDTop/SpeedPanel/PauseButton
-	btn.text = "▶" if tree.paused else "❚❚"
-	btn.theme_type_variation = "speed_active" if tree.paused else "speed"
+	btn.text = "▶"
+	btn.theme_type_variation = "speed_active"
+
+func _on_pause_resume() -> void:
+	get_tree().paused = false
+	var btn: Button = $UI/HUDBar/HUDTop/SpeedPanel/PauseButton
+	btn.text = "❚❚"
+	btn.theme_type_variation = "speed"
+
+func _on_pause_restart() -> void:
+	get_tree().paused = false
+	Engine.time_scale = 1.0
+	_set_speed(1)
+	$WaveSpawner.begin_teardown()
+	get_tree().reload_current_scene()
+
+func _on_pause_main_menu() -> void:
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://scenes/ui/main_menu.tscn")
 
 func _on_restart_pressed() -> void:
 	get_tree().paused = false
@@ -705,3 +760,102 @@ func _update_wave_state_ui() -> void:
 	else:
 		wave_label.text = "IDLE"
 		wave_label.add_theme_color_override("font_color", Color(0.6, 0.7, 0.85, 1))
+
+## Tooltip for tower cards in the shop
+func _show_tower_card_tooltip(idx: int) -> void:
+	if _tooltip == null:
+		return
+	var scripts: Dictionary = {0: BASIC_TOWER_SCRIPT, 1: RAPID_TOWER_SCRIPT, 2: SNIPER_TOWER_SCRIPT}
+	var scr := scripts[idx] as GDScript
+	var name: String = ["Basic", "Rapid", "Sniper"][idx]
+	var descr: String = ["Ideal contra oleadas rápidas y numerosas.",
+		"Dispara rápido, alcance corto. Para enemigos débiles y rápidos.",
+		"Alto daño, gran alcance, cadencia lenta. Para tanques y jefes."][idx]
+	var text: String = "%s Tower\nDMG %d  RNG %d  %.2f/s\n$%d\n%s" % [
+		name, scr.DAMAGE, scr.RANGE, 1.0 / scr.ATTACK_COOLDOWN, scr.COST, descr]
+	_tooltip.show_for(text)
+
+## Tooltip for a placed tower on the map
+func _show_tower_tooltip(tower: Node2D) -> void:
+	if _tooltip == null:
+		return
+	var name := tower.name.get_slice("Tower", 0).strip_edges().to_upper()
+	var text := "%s Tower (Lvl %d)\nDMG %d  RNG %d  %.2f/s" % [
+		name, tower.level, tower.damage, tower.range, tower.attack_speed]
+	_tooltip.show_for(text)
+
+## Tooltip for an enemy on the map
+func _show_enemy_tooltip(enemy: Node2D) -> void:
+	if _tooltip == null:
+		return
+	var etype := enemy.name.get_slice("Enemy", 0).strip_edges().to_upper()
+	var text := "%s\nHP %d/%d  SPD %.0f" % [etype, enemy.health, enemy.max_health, enemy.speed]
+	_tooltip.show_for(text)
+
+func _hide_tooltip() -> void:
+	if _tooltip != null:
+		_tooltip.hide_tooltip()
+
+## Checks hover over placed towers and enemies each frame for tooltips
+func _check_hover_tooltips() -> void:
+	if _tooltip == null:
+		return
+	var mouse_pos := get_global_mouse_position()
+	
+	# Check placed towers
+	var tower := _find_tower_at(mouse_pos)
+	if tower != _hovered_tower:
+		if _hovered_tower != null:
+			_hide_tooltip()
+		if tower != null:
+			_show_tower_tooltip(tower)
+		_hovered_tower = tower
+		return
+	
+	# Check enemies (only if no tower hovered)
+	if tower == null:
+		var enemy := _find_enemy_at(mouse_pos)
+		if enemy != _hovered_enemy:
+			if _hovered_enemy != null:
+				_hide_tooltip()
+			if enemy != null:
+				_show_enemy_tooltip(enemy)
+			_hovered_enemy = enemy
+		return
+	
+	# No tower or enemy under cursor
+	if _hovered_tower != null or _hovered_enemy != null:
+		_hide_tooltip()
+		_hovered_tower = null
+		_hovered_enemy = null
+
+func _find_tower_at(world_pos: Vector2) -> Node2D:
+	for tile in _towers:
+		var t: Node2D = _towers[tile]
+		if is_instance_valid(t):
+			var hb := t.get_node_or_null("Hitbox") as Area2D
+			if hb != null:
+				var shape := hb.get_node_or_null("CollisionShape2D") as CollisionShape2D
+				if shape != null and shape.shape is CircleShape2D:
+					var circle: CircleShape2D = shape.shape
+					var radius := circle.radius * maxf(hb.global_scale.x, hb.global_scale.y)
+					if hb.global_position.distance_to(world_pos) <= radius:
+						return t
+	return null
+
+func _find_enemy_at(world_pos: Vector2) -> Node2D:
+	# Enemies are children of PathFollow2D under EnemyPath
+	var path := $EnemyPath
+	for pf in path.get_children():
+		if pf is PathFollow2D:
+			for child in pf.get_children():
+				if child is Node2D and child.has_method("take_damage"):
+					var hb := child.get_node_or_null("Hitbox") as Area2D
+					if hb != null:
+						var shape := hb.get_node_or_null("CollisionShape2D") as CollisionShape2D
+						if shape != null and shape.shape is CircleShape2D:
+							var circle: CircleShape2D = shape.shape
+							var radius := circle.radius * maxf(hb.global_scale.x, hb.global_scale.y)
+							if hb.global_position.distance_to(world_pos) <= radius:
+								return child
+	return null

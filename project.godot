@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Primer Tower defense"
-run/main_scene="uid://d25s0dg06vagc"
+run/main_scene="uid://dhq2n7f4k9m1p"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
 
