@@ -357,6 +357,7 @@ func _update_wave_progress() -> void:
 
 func _update_money_ui() -> void:
 	$UI/HUDBar/HUDTop/ResourcesPanel/HBox/MoneyLabel.text = "%d" % _money
+	_update_shop_ui()
 
 func _update_base_ui() -> void:
 	$UI/HUDBar/HUDTop/ResourcesPanel/HBox/BaseLabel.text = "%d" % _base_hp
@@ -455,9 +456,9 @@ func _on_tower_impact(position: Vector2) -> void:
 func _tile_center(tile: Vector2i) -> Vector2:
 	return Vector2(tile.x * TILE_SIZE + TILE_SIZE / 2.0, tile.y * TILE_SIZE + TILE_SIZE / 2.0)
 
-## Placement feedback: green = valid + can afford, yellow = valid but too poor,
-## red = invalid (road / off-map / occupied). The range circle is drawn by the
-## RangePreview node instead.
+## Placement feedback: shows ghost tower + range circle while placing.
+## Tile rect: red = invalid, yellow = valid but poor, green = valid + affordable.
+## Ghost tower: red tint if invalid, yellow if valid but poor, white (alpha 0.6) if ok.
 func _draw() -> void:
 	if _hover_tile == Vector2i(-1, -1):
 		return
@@ -465,26 +466,29 @@ func _draw() -> void:
 	var placeable := _can_place(_hover_tile)
 	var affordable := _money >= _preview_cost()
 	var tile_pos := Vector2(_hover_tile.x * TILE_SIZE, _hover_tile.y * TILE_SIZE)
-	var color: Color
+	var rect_color: Color
 	if not placeable:
-		color = Color(1.0, 0.3, 0.3, 0.45)
+		rect_color = Color(1.0, 0.3, 0.3, 0.45)
 	elif not affordable:
-		color = Color(1.0, 0.8, 0.2, 0.45)
+		rect_color = Color(1.0, 0.8, 0.2, 0.45)
 	else:
-		color = Color(0.3, 1.0, 0.3, 0.45)
-	draw_rect(Rect2(tile_pos, Vector2(TILE_SIZE, TILE_SIZE)), color, true)
+		rect_color = Color(0.3, 1.0, 0.3, 0.45)
+	draw_rect(Rect2(tile_pos, Vector2(TILE_SIZE, TILE_SIZE)), rect_color, true)
 
-	# Draw ghost tower preview
-	if _can_place(_hover_tile) and _money >= _preview_cost():
-		var ghost_scene := _preview_scene()
-		var ghost := ghost_scene.instantiate()
-		ghost.position = _tile_center(_hover_tile)
-		ghost.modulate = Color(1.0, 1.0, 1.0, 0.5)
-		# Draw just the sprite
-		if ghost.has_node("Sprite"):
-			var sprite: Sprite2D = ghost.get_node("Sprite")
-			if sprite.texture:
-				draw_texture(sprite.texture, _tile_center(_hover_tile) - sprite.texture.get_size() / 2, ghost.modulate)
+	# Draw ghost tower preview (always while placing, tinted by validity)
+	var ghost_scene := _preview_scene()
+	var ghost := ghost_scene.instantiate()
+	ghost.position = _tile_center(_hover_tile)
+	if not placeable:
+		ghost.modulate = Color(1.0, 0.3, 0.3, 0.6)
+	elif not affordable:
+		ghost.modulate = Color(1.0, 0.8, 0.2, 0.6)
+	else:
+		ghost.modulate = Color(1.0, 1.0, 1.0, 0.6)
+	if ghost.has_node("Sprite"):
+		var sprite: Sprite2D = ghost.get_node("Sprite")
+		if sprite.texture:
+			draw_texture(sprite.texture, _tile_center(_hover_tile) - sprite.texture.get_size() / 2, ghost.modulate)
 
 ## Selects a placed tower. The preview then shows that tower's real range.
 func _select_tower(tower: Node2D) -> void:

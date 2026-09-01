@@ -7,7 +7,7 @@ var _freeing := false
 func _ready() -> void:
 	one_shot = true
 	emitting = true
-	get_tree().create_timer(0.8, true).timeout.connect(_on_timer)
+	get_tree().create_timer(0.5, true).timeout.connect(_on_timer)
 
 ## Sets the per-type colour ramp (start -> end) right after instantiation.
 func setup(start_color: Color, end_color: Color) -> void:
