@@ -1,13 +1,20 @@
-[gd_scene load_steps=4 format=3 uid="uid://d25s0dg06vagc"]
+[gd_scene load_steps=10 format=3 uid="uid://d25s0dg06vagc"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/waves/wave_spawner.gd" id="2_spawner"]
 [ext_resource type="Script" path="res://scripts/ui/range_preview.gd" id="3_preview"]
+[ext_resource type="Theme" path="res://ui_theme.tres" id="4_theme"]
+[ext_resource type="TileSet" path="res://tileset_main.tres" id="5_tileset"]
+[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile204.png" id="6_basicicon"]
+[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile205.png" id="7_rapidicon"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
 
 [node name="Map" type="TileMapLayer" parent="."]
+tile_set = ExtResource("5_tileset")
+
+[node name="Camera2D" type="Camera2D" parent="."]
 
 [node name="EnemyPath" type="Path2D" parent="."]
 
@@ -21,132 +28,416 @@ script = ExtResource("2_spawner")
 [node name="RangePreview" type="Node2D" parent="."]
 script = ExtResource("3_preview")
 
+[node name="PlacementPreview" type="Node2D" parent="."]
+
 [node name="UI" type="CanvasLayer" parent="."]
+process_mode = 3
+theme = ExtResource("4_theme")
 
-[node name="WaveLabel" type="Label" parent="UI"]
-offset_left = 0.0
-offset_top = 8.0
-offset_right = 1280.0
-offset_bottom = 48.0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 32
-horizontal_alignment = 1
-text = ""
-
-[node name="MoneyLabel" type="Label" parent="UI"]
-offset_left = 20.0
-offset_top = 8.0
-offset_right = 400.0
-offset_bottom = 48.0
-theme_override_colors/font_color = Color(1, 1, 0.5, 1)
-theme_override_font_sizes/font_size = 32
-text = ""
-
-[node name="BaseLabel" type="Label" parent="UI"]
-offset_left = 20.0
-offset_top = 48.0
-offset_right = 400.0
-offset_bottom = 92.0
-theme_override_colors/font_color = Color(0.6, 1, 0.6, 1)
-theme_override_font_sizes/font_size = 32
-text = ""
-
-[node name="TowerInfoPanel" type="PanelContainer" parent="UI"]
-layout_mode = 2
-anchors_preset = 1
+[node name="HUDBar" type="PanelContainer" parent="UI"]
+layout_mode = 3
+anchors_preset = 10
+theme_type_variation = &"HUDBar"
 anchor_right = 1.0
-offset_left = 980.0
-offset_top = 8.0
-offset_right = 1260.0
-offset_bottom = 360.0
-visible = false
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 64.0
+grow_horizontal = 2
 
-[node name="VBox" type="VBoxContainer" parent="UI/TowerInfoPanel"]
+[node name="HUDTop" type="HBoxContainer" parent="UI/HUDBar"]
+layout_mode = 2
+theme_override_constants/separation = 12
+theme_override_margins/margin_left = 18
+theme_override_margins/margin_top = 10
+theme_override_margins/margin_right = 18
+theme_override_margins/margin_bottom = 10
+
+[node name="ResourcesPanel" type="PanelContainer" parent="UI/HUDBar/HUDTop"]
+layout_mode = 2
+theme_type_variation = &"HUDChip"
+size_flags_horizontal = 1
+
+[node name="HBox" type="HBoxContainer" parent="UI/HUDBar/HUDTop/ResourcesPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+theme_override_margins/margin_left = 16
+theme_override_margins/margin_top = 6
+theme_override_margins/margin_right = 16
+theme_override_margins/margin_bottom = 6
+
+[node name="MoneyIcon" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+layout_mode = 2
+theme_type_variation = &"hud_money"
+text = "$"
+
+[node name="MoneyLabel" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+layout_mode = 2
+theme_type_variation = &"hud_money"
+text = "100"
+
+[node name="Separator1" type="VSeparator" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(20, 0)
+
+[node name="LivesIcon" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+layout_mode = 2
+theme_type_variation = &"hud_lives"
+text = "❤"
+
+[node name="BaseLabel" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+layout_mode = 2
+theme_type_variation = &"hud_lives"
+text = "100"
+
+[node name="Spacer" type="Control" parent="UI/HUDBar/HUDTop"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="WavePanel" type="PanelContainer" parent="UI/HUDBar/HUDTop"]
+layout_mode = 2
+theme_type_variation = &"HUDChip"
+size_flags_horizontal = 1
+
+[node name="VBox" type="VBoxContainer" parent="UI/HUDBar/HUDTop/WavePanel"]
+layout_mode = 2
+theme_override_constants/separation = 4
+theme_override_margins/margin_left = 18
+theme_override_margins/margin_top = 5
+theme_override_margins/margin_right = 18
+theme_override_margins/margin_bottom = 5
+
+[node name="WaveRow" type="HBoxContainer" parent="UI/HUDBar/HUDTop/WavePanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="WaveLabel" type="Label" parent="UI/HUDBar/HUDTop/WavePanel/VBox/WaveRow"]
+layout_mode = 2
+theme_type_variation = &"hud_wave"
+size_flags_horizontal = 1
+horizontal_alignment = 1
+text = "WAVE 1/5"
+
+[node name="WaveStateLabel" type="Label" parent="UI/HUDBar/HUDTop/WavePanel/VBox/WaveRow"]
+layout_mode = 2
+theme_type_variation = &"hud_label"
+text = "PREPARING"
+
+[node name="EnemyProgress" type="ProgressBar" parent="UI/HUDBar/HUDTop/WavePanel/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(220, 16)
+show_percentage = false
+max_value = 1.0
+value = 0.0
+
+[node name="Spacer2" type="Control" parent="UI/HUDBar/HUDTop"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SpeedPanel" type="HBoxContainer" parent="UI/HUDBar/HUDTop"]
 layout_mode = 2
 theme_override_constants/separation = 8
-theme_override_margins/margin_left = 12
-theme_override_margins/margin_top = 12
-theme_override_margins/margin_right = 12
-theme_override_margins/margin_bottom = 12
 
-[node name="Title" type="Label" parent="UI/TowerInfoPanel/VBox"]
+[node name="Speed1Button" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
-horizontal_alignment = 1
-text = "TOWER"
+custom_minimum_size = Vector2(52, 40)
+theme_type_variation = &"speed_active"
+text = "1x"
 
-[node name="LevelLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+[node name="Speed2Button" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 1, 0.8, 1)
-theme_override_font_sizes/font_size = 20
-text = "Level: 1"
+custom_minimum_size = Vector2(52, 40)
+theme_type_variation = &"speed"
+text = "2x"
 
-[node name="DamageLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+[node name="Speed3Button" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.8, 1)
-theme_override_font_sizes/font_size = 20
-text = "Damage: 0"
+custom_minimum_size = Vector2(52, 40)
+theme_type_variation = &"speed"
+text = "3x"
 
-[node name="RangeLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+[node name="PauseButton" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 1, 0.8, 1)
-theme_override_font_sizes/font_size = 20
-text = "Range: 0"
-
-[node name="AttackSpeedLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.8, 1, 1)
-theme_override_font_sizes/font_size = 20
-text = "Attack Speed: 0.0"
-
-[node name="CostLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 0.6, 1)
-theme_override_font_sizes/font_size = 20
-text = "Cost: $0"
-
-[node name="UpgradeButton" type="Button" parent="UI/TowerInfoPanel/VBox"]
-layout_mode = 2
-custom_minimum_size = Vector2(200, 40)
-theme_override_font_sizes/font_size = 20
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-text = "UPGRADE"
+custom_minimum_size = Vector2(52, 40)
+theme_type_variation = &"speed"
+text = "❚❚"
 
 [node name="TowerShop" type="PanelContainer" parent="UI"]
 layout_mode = 2
-anchors_preset = 0
-offset_left = 20.0
-offset_top = 100.0
-offset_right = 260.0
-offset_bottom = 220.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -196.0
+offset_top = 76.0
+offset_right = -16.0
+offset_bottom = 700.0
+grow_horizontal = 0
 
 [node name="VBox" type="VBoxContainer" parent="UI/TowerShop"]
 layout_mode = 2
 theme_override_constants/separation = 12
 theme_override_margins/margin_left = 12
-theme_override_margins/margin_top = 12
+theme_override_margins/margin_top = 14
 theme_override_margins/margin_right = 12
-theme_override_margins/margin_bottom = 12
+theme_override_margins/margin_bottom = 14
 
-[node name="Title" type="Label" parent="UI/TowerShop/VBox"]
+[node name="ShopTitle" type="Label" parent="UI/TowerShop/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
+theme_type_variation = &"title"
 horizontal_alignment = 1
-text = "TOWERS"
+text = "TORRES"
 
-[node name="BasicButton" type="Button" parent="UI/TowerShop/VBox"]
+[node name="ShopGrid" type="GridContainer" parent="UI/TowerShop/VBox"]
 layout_mode = 2
-custom_minimum_size = Vector2(200, 50)
-theme_override_font_sizes/font_size = 20
-text = "BASIC\n$50"
+columns = 2
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+alignment = 1
 
-[node name="RapidButton" type="Button" parent="UI/TowerShop/VBox"]
+[node name="BasicCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid"]
 layout_mode = 2
-custom_minimum_size = Vector2(200, 50)
-theme_override_font_sizes/font_size = 20
-text = "RAPID\n$75"
+custom_minimum_size = Vector2(80, 80)
+mouse_default_cursor_shape = 2
+theme_type_variation = &"TowerCard"
+
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/BasicCard"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("6_basicicon")
+
+[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ShopGrid/BasicCard"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -26.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"CostOverlay"
+
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ShopGrid/BasicCard/CardCostBg"]
+layout_mode = 2
+theme_type_variation = &"card_cost"
+horizontal_alignment = 1
+text = "$50"
+
+[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ShopGrid/BasicCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.05, 0.09, 0.14, 0.72)
+visible = false
+
+[node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/BasicCard/CardLock"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"card_stat"
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "🔒"
+
+[node name="RapidCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 80)
+mouse_default_cursor_shape = 2
+theme_type_variation = &"TowerCard"
+
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/RapidCard"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("7_rapidicon")
+
+[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ShopGrid/RapidCard"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -26.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"CostOverlay"
+
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ShopGrid/RapidCard/CardCostBg"]
+layout_mode = 2
+theme_type_variation = &"card_cost"
+horizontal_alignment = 1
+text = "$75"
+
+[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ShopGrid/RapidCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.05, 0.09, 0.14, 0.72)
+visible = false
+
+[node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/RapidCard/CardLock"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_type_variation = &"card_stat"
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "🔒"
+
+[node name="Separator" type="HSeparator" parent="UI/TowerShop/VBox"]
+layout_mode = 2
+
+[node name="ShopDesc" type="Label" parent="UI/TowerShop/VBox"]
+layout_mode = 2
+theme_type_variation = &"body"
+text = "Basic Tower
+DMG 1 • RNG 180
+0.80/s — $50"
+
+[node name="TowerInfoPanel" type="PanelContainer" parent="UI"]
+layout_mode = 2
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 18.0
+offset_top = -240.0
+offset_right = 330.0
+offset_bottom = -18.0
+grow_vertical = 0
+visible = false
+
+[node name="VBox" type="VBoxContainer" parent="UI/TowerInfoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+theme_override_margins/margin_left = 16
+theme_override_margins/margin_top = 14
+theme_override_margins/margin_right = 16
+theme_override_margins/margin_bottom = 14
+
+[node name="TowerTypeLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_type_variation = &"tower_name"
+horizontal_alignment = 1
+text = "BASIC TOWER"
+
+[node name="LevelLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_type_variation = &"subtitle"
+horizontal_alignment = 1
+text = "Level: 1"
+
+[node name="StatsGrid" type="GridContainer" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+columns = 2
+theme_override_constants/h_separation = 16
+theme_override_constants/v_separation = 6
+
+[node name="StatDamageIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_type_variation = &"stat_label"
+text = "Damage"
+
+[node name="StatDamageValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_type_variation = &"stat_value"
+horizontal_alignment = 2
+text = "1"
+
+[node name="StatRangeIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_type_variation = &"stat_label"
+text = "Range"
+
+[node name="StatRangeValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_type_variation = &"stat_value"
+horizontal_alignment = 2
+text = "180"
+
+[node name="StatSpeedIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_type_variation = &"stat_label"
+text = "Attack Speed"
+
+[node name="StatSpeedValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_type_variation = &"stat_value"
+horizontal_alignment = 2
+text = "0.80/s"
+
+[node name="StatCostIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_type_variation = &"stat_label"
+text = "Cost"
+
+[node name="StatCostValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_type_variation = &"card_cost"
+horizontal_alignment = 2
+text = "$50"
+
+[node name="Separator2" type="HSeparator" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+
+[node name="Actions" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="UpgradeButton" type="Button" parent="UI/TowerInfoPanel/VBox/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 44)
+text = "UPGRADE $75"
+
+[node name="SellButton" type="Button" parent="UI/TowerInfoPanel/VBox/Actions"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 44)
+text = "SELL +$35"
 
 [node name="EndScreen" type="CanvasLayer" parent="."]
 process_mode = 3
@@ -158,29 +449,55 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.6)
+color = Color(0, 0, 0, 0.72)
 
-[node name="Center" type="CenterContainer" parent="EndScreen"]
+[node name="EndPanel" type="PanelContainer" parent="EndScreen"]
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_type_variation = &"EndPanel"
+
+[node name="Center" type="CenterContainer" parent="EndScreen/EndPanel"]
+layout_mode = 2
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="EndScreen/Center"]
+[node name="VBox" type="VBoxContainer" parent="EndScreen/EndPanel/Center"]
 layout_mode = 2
 theme_override_constants/separation = 24
+theme_override_margins/margin_left = 48
+theme_override_margins/margin_top = 48
+theme_override_margins/margin_right = 48
+theme_override_margins/margin_bottom = 48
 
-[node name="StatusLabel" type="Label" parent="EndScreen/Center/VBox"]
+[node name="EndTitle" type="Label" parent="EndScreen/EndPanel/Center/VBox"]
 layout_mode = 2
+theme_type_variation = &"title"
+theme_override_font_sizes/font_size = 56
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 72
 horizontal_alignment = 1
-text = "GAME OVER"
+text = "END"
 
-[node name="RestartButton" type="Button" parent="EndScreen/Center/VBox"]
-custom_minimum_size = Vector2(300, 72)
+[node name="EndSubtitle" type="Label" parent="EndScreen/EndPanel/Center/VBox"]
 layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 36
+theme_type_variation = &"subtitle"
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+text = ""
+
+[node name="EndStats" type="Label" parent="EndScreen/EndPanel/Center/VBox"]
+layout_mode = 2
+theme_type_variation = &"body"
+horizontal_alignment = 1
+text = ""
+
+[node name="RestartButton" type="Button" parent="EndScreen/EndPanel/Center/VBox"]
+custom_minimum_size = Vector2(280, 64)
+theme_override_font_sizes/font_size = 22
 text = "RESTART"

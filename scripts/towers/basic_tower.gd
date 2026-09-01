@@ -22,3 +22,5 @@ func _init() -> void:
 	]
 	UPGRADE_COSTS = [75, 125]  # 1->2: $75, 2->3: $125
 	max_level = 3
+	cost = COST
+	MAX_PROJECTILES = MAX_PROJECTILES_CONST
