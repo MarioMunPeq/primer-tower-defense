@@ -55,9 +55,22 @@ func _on_area_exited(area: Area2D) -> void:
 	var enemy: Node2D = area.get_parent()
 	_targets.erase(enemy)
 
-## Targets are kept tidy by the area_entered/area_exited signals (a freed enemy
-## automatically fires area_exited), so we only scan the list when about to fire.
+## Actively scans for enemies in range each physics frame to catch fast
+## movers that tunnel through the detection area without triggering signals.
+func _scan_range() -> void:
+	var area: Area2D = $DetectionArea
+	var bodies := area.get_overlapping_bodies()
+	for body in bodies:
+		var enemy: Node2D = body.get_parent()
+		if enemy != null and enemy.has_method("take_damage"):
+			if not _targets.has(enemy):
+				_targets.append(enemy)
+
+## Targets are kept tidy by the area_entered/area_exited signals and the
+## active scan. We clean stale entries when about to fire.
 func _physics_process(delta: float) -> void:
+	_scan_range()
+	
 	if _targets.is_empty():
 		_cooldown_left = 0.0
 		return
@@ -68,7 +81,6 @@ func _physics_process(delta: float) -> void:
 
 	var target := _get_nearest_target()
 	if target == null:
-		# List may hold stale entries whose area_exited hasn't landed yet.
 		_clean_dead_targets()
 		_cooldown_left = attack_cooldown
 		return
