@@ -49,6 +49,12 @@ const TooltipScene := preload("res://scenes/ui/tooltip.tscn")
 const PauseMenuScene := preload("res://scenes/ui/pause_menu.tscn")
 const SellConfirmScene := preload("res://scenes/ui/sell_confirm.tscn")
 
+## Stat icons shared by shop tooltips and the tower info panel.
+const ICON_DAMAGE := preload("res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/sword.png")
+const ICON_RANGE := preload("res://assets/ui/kenney_game-icons/PNG/White/1x/target.png")
+const ICON_SPEED := preload("res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/hourglass.png")
+const ICON_COST := preload("res://assets/ui/kenney_ui-pack/PNG/Yellow/Default/star.png")
+
 const BASE_HP_MAX := 100
 
 ## Which tower type is currently selected for placement.
@@ -681,18 +687,26 @@ func _update_shop_ui() -> void:
 		2: SNIPER_TOWER_SCRIPT,
 	}
 
-	# Give each card its lock state and cost label. Then highlight the active one.
-	# (Never use `disabled`: it greys the button out, which conflicts with the
-	# bright "selected" highlight and stops re-clicking to confirm.)
+	# Card state model:
+	#  - "locked" (future unlock mechanic) -> TowerCardLocked + dim + candado.
+	#    No tower is locked yet, so this branch is prepared but inert.
+	#  - affordable                       -> TowerCard (neutral-border Level 2).
+	#  - available but without money      -> TowerCardNoFunds (red border).
+	# The selected card always overrides with the gold TowerCardSelected border.
 	for idx in cards:
 		var card: Button = cards[idx]
 		var cost: int = scripts[idx].COST
-		var unlocked: bool = _money >= cost
-		card.get_node("CardLock").visible = not unlocked
-		card.theme_type_variation = "TowerCardLocked" if not unlocked else ""
-		if not unlocked:
+		var locked: bool = false
+		var affordable: bool = _money >= cost
+		card.get_node("CardLock").visible = locked
+		if locked:
+			card.theme_type_variation = "TowerCardLocked"
 			card.modulate = Color(0.45, 0.45, 0.5, 1.0)
+		elif not affordable:
+			card.theme_type_variation = "TowerCardNoFunds"
+			card.modulate = Color(1.0, 1.0, 1.0, 1.0)
 		else:
+			card.theme_type_variation = "TowerCard"
 			card.modulate = Color(1.0, 1.0, 1.0, 1.0)
 		card.get_node("CardCostBg/CardCost").text = "$%d" % cost
 		card.disabled = false
@@ -794,29 +808,32 @@ func _show_tower_card_tooltip(idx: int) -> void:
 	var scripts: Dictionary = {0: BASIC_TOWER_SCRIPT, 1: RAPID_TOWER_SCRIPT, 2: SNIPER_TOWER_SCRIPT}
 	var scr := scripts[idx] as GDScript
 	var name: String = ["Basic", "Rapid", "Sniper"][idx]
-	var descr: String = ["Ideal contra oleadas rápidas y numerosas.",
+	_tooltip.show_stats("%s Tower" % name, [
+		{"icon": ICON_DAMAGE, "label": "Damage", "value": "%d" % scr.DAMAGE},
+		{"icon": ICON_RANGE, "label": "Range", "value": "%d" % scr.RANGE},
+		{"icon": ICON_SPEED, "label": "Attack Speed", "value": "%.2f/s" % (1.0 / scr.ATTACK_COOLDOWN)},
+		{"icon": ICON_COST, "label": "Cost", "value": "$%d" % scr.COST},
+	], ["Ideal contra oleadas rápidas y numerosas.",
 		"Dispara rápido, alcance corto. Para enemigos débiles y rápidos.",
-		"Alto daño, gran alcance, cadencia lenta. Para tanques y jefes."][idx]
-	var text: String = "%s Tower\nDMG %d  RNG %d  %.2f/s\n$%d\n%s" % [
-		name, scr.DAMAGE, scr.RANGE, 1.0 / scr.ATTACK_COOLDOWN, scr.COST, descr]
-	_tooltip.show_for(text)
+		"Alto daño, gran alcance, cadencia lenta. Para tanques y jefes."][idx])
 
 ## Tooltip for a placed tower on the map
 func _show_tower_tooltip(tower: Node2D) -> void:
 	if _tooltip == null:
 		return
 	var name := tower.name.get_slice("Tower", 0).strip_edges().to_upper()
-	var text := "%s Tower (Lvl %d)\nDMG %d  RNG %d  %.2f/s" % [
-		name, tower.level, tower.damage, tower.range, tower.attack_speed]
-	_tooltip.show_for(text)
+	_tooltip.show_stats("%s Tower (Lvl %d)" % [name, tower.level], [
+		{"icon": ICON_DAMAGE, "label": "Damage", "value": "%d" % tower.damage},
+		{"icon": ICON_RANGE, "label": "Range", "value": "%d" % tower.range},
+		{"icon": ICON_SPEED, "label": "Attack Speed", "value": "%.2f/s" % tower.attack_speed},
+	])
 
 ## Tooltip for an enemy on the map
 func _show_enemy_tooltip(enemy: Node2D) -> void:
 	if _tooltip == null:
 		return
 	var etype := enemy.name.get_slice("Enemy", 0).strip_edges().to_upper()
-	var text := "%s\nHP %d/%d  SPD %.0f" % [etype, enemy.health, enemy.max_health, enemy.speed]
-	_tooltip.show_for(text)
+	_tooltip.show_for("%s\nHP %d/%d  SPD %.0f" % [etype, enemy.health, enemy.max_health, enemy.speed])
 
 func _hide_tooltip() -> void:
 	if _tooltip != null:

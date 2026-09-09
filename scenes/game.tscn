@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://d25s0dg06vagc"]
+[gd_scene load_steps=15 format=3 uid="uid://d25s0dg06vagc"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/waves/wave_spawner.gd" id="2_spawner"]
@@ -10,6 +10,9 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile206.png" id="8_snipericon"]
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_ui-pack/PNG/Yellow/Default/star.png" id="9_moneyicon"]
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_ui-pack/PNG/Red/Default/star.png" id="10_livesicon"]
+[ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/sword.png" id="11_swordicon"]
+[ext_resource type="Texture2D" path="res://assets/ui/kenney_game-icons/PNG/White/1x/target.png" id="12_targeticon"]
+[ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/hourglass.png" id="13_hourglassicon"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -179,6 +182,7 @@ offset_top = 76.0
 offset_right = -16.0
 offset_bottom = 700.0
 grow_horizontal = 0
+theme_type_variation = &"PanelLevel0"
 
 [node name="VBox" type="VBoxContainer" parent="UI/TowerShop"]
 layout_mode = 2
@@ -422,6 +426,7 @@ offset_top = -240.0
 offset_right = 330.0
 offset_bottom = -18.0
 grow_vertical = 0
+theme_type_variation = &"SelectedPanel"
 visible = false
 
 [node name="VBox" type="VBoxContainer" parent="UI/TowerInfoPanel"]
@@ -450,7 +455,18 @@ columns = 2
 theme_override_constants/h_separation = 16
 theme_override_constants/v_separation = 6
 
-[node name="StatDamageIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatDamageRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatDamageIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatDamageRow"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("11_swordicon")
+stretch_mode = 5
+
+[node name="StatDamageLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatDamageRow"]
 layout_mode = 2
 theme_type_variation = &"stat_label"
 text = "Damage"
@@ -461,7 +477,18 @@ theme_type_variation = &"stat_value"
 horizontal_alignment = 2
 text = "1"
 
-[node name="StatRangeIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatRangeRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatRangeIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatRangeRow"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("12_targeticon")
+stretch_mode = 5
+
+[node name="StatRangeLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatRangeRow"]
 layout_mode = 2
 theme_type_variation = &"stat_label"
 text = "Range"
@@ -472,7 +499,18 @@ theme_type_variation = &"stat_value"
 horizontal_alignment = 2
 text = "180"
 
-[node name="StatSpeedIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatSpeedRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatSpeedIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpeedRow"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("13_hourglassicon")
+stretch_mode = 5
+
+[node name="StatSpeedLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpeedRow"]
 layout_mode = 2
 theme_type_variation = &"stat_label"
 text = "Attack Speed"
@@ -483,7 +521,18 @@ theme_type_variation = &"stat_value"
 horizontal_alignment = 2
 text = "0.80/s"
 
-[node name="StatCostIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatCostRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatCostIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatCostRow"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("9_moneyicon")
+stretch_mode = 5
+
+[node name="StatCostLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatCostRow"]
 layout_mode = 2
 theme_type_variation = &"stat_label"
 text = "Cost"
@@ -505,12 +554,14 @@ theme_override_constants/separation = 8
 layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 44)
+theme_type_variation = &"PanelLevel2"
 text = "UPGRADE $75"
 
 [node name="SellButton" type="Button" parent="UI/TowerInfoPanel/VBox/Actions"]
 layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 44)
+theme_type_variation = &"PanelLevel2"
 text = "SELL +$35"
 
 [node name="EndScreen" type="CanvasLayer" parent="."]
