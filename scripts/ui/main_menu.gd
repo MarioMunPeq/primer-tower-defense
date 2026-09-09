@@ -1,9 +1,9 @@
 extends Control
 ## Main menu: first scene loaded. Buttons -> start game, options, quit.
 
-@onready var _play_btn: Button = $VBox/PlayButton
-@onready var _options_btn: Button = $VBox/OptionsButton
-@onready var _quit_btn: Button = $VBox/QuitButton
+@onready var _play_btn: Button = $CenterContainer/VBox/PlayButton
+@onready var _options_btn: Button = $CenterContainer/VBox/OptionsButton
+@onready var _quit_btn: Button = $CenterContainer/VBox/QuitButton
 
 func _ready() -> void:
 	_play_btn.pressed.connect(_on_play_pressed)

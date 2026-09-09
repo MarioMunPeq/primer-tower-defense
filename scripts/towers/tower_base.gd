@@ -79,7 +79,7 @@ func _physics_process(delta: float) -> void:
 	if _cooldown_left > 0.0:
 		return
 
-	var target := _get_nearest_target()
+	var target := _get_furthest_target()
 	if target == null:
 		_clean_dead_targets()
 		_cooldown_left = attack_cooldown
@@ -96,17 +96,17 @@ func _clean_dead_targets() -> void:
 		else:
 			i += 1
 
-## Returns the closest valid enemy. Runs only when the tower is about to fire,
-## not every frame, so cost stays proportional to firing rate.
-func _get_nearest_target() -> Node2D:
+## Returns the enemy furthest along the path (highest path_progress).
+## Runs only when the tower is about to fire; filtered to enemies within range.
+func _get_furthest_target() -> Node2D:
 	var best: Node2D = null
-	var best_dist := INF
+	var best_progress := -1.0
 	for enemy in _targets:
 		if not is_instance_valid(enemy):
 			continue
-		var d := global_position.distance_squared_to(enemy.global_position)
-		if d < best_dist:
-			best_dist = d
+		var prog: float = enemy.path_progress
+		if prog > best_progress:
+			best_progress = prog
 			best = enemy
 	return best
 

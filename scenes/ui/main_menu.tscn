@@ -6,52 +6,61 @@
 [node name="MainMenu" type="Control"]
 theme = ExtResource("2_theme")
 script = ExtResource("1_script")
-
-[node name="VBox" type="VBoxContainer" parent="."]
 layout_mode = 2
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer"]
+layout_mode = 1
 theme_override_constants/separation = 20
 theme_override_margins/margin_left = 60
 theme_override_margins/margin_top = 60
 theme_override_margins/margin_right = 60
 theme_override_margins/margin_bottom = 60
 
-[node name="Title" type="Label" parent="VBox"]
-layout_mode = 2
+[node name="Title" type="Label" parent="CenterContainer/VBox"]
+layout_mode = 1
 theme_type_variation = "title"
 horizontal_alignment = 1
 text = "TOWER DEFENSE"
 theme_override_font_sizes/font_size = 64
 
-[node name="Subtitle" type="Label" parent="VBox"]
-layout_mode = 2
+[node name="Subtitle" type="Label" parent="CenterContainer/VBox"]
+layout_mode = 1
 theme_type_variation = "subtitle"
 horizontal_alignment = 1
 text = "Defiende tu base"
 theme_override_font_sizes/font_size = 24
 
-[node name="Spacer" type="Control" parent="VBox"]
-layout_mode = 2
+[node name="Spacer" type="Control" parent="CenterContainer/VBox"]
+layout_mode = 1
 size_flags_vertical = 3
 
-[node name="PlayButton" type="Button" parent="VBox"]
-layout_mode = 2
+[node name="PlayButton" type="Button" parent="CenterContainer/VBox"]
+layout_mode = 1
 custom_minimum_size = Vector2(300, 70)
 theme_override_font_sizes/font_size = 28
 text = "JUGAR"
 
-[node name="OptionsButton" type="Button" parent="VBox"]
-layout_mode = 2
+[node name="OptionsButton" type="Button" parent="CenterContainer/VBox"]
+layout_mode = 1
 custom_minimum_size = Vector2(300, 70)
 theme_override_font_sizes/font_size = 28
 text = "OPCIONES"
 
-[node name="QuitButton" type="Button" parent="VBox"]
-layout_mode = 2
+[node name="QuitButton" type="Button" parent="CenterContainer/VBox"]
+layout_mode = 1
 custom_minimum_size = Vector2(300, 70)
 theme_override_font_sizes/font_size = 28
 text = "SALIR"

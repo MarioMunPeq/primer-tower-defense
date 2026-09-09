@@ -31,6 +31,10 @@ var max_health: int = 4
 ## both, so its reward/damage signals are emitted at most one time.
 var _resolved := false
 
+## Current progress along the path (0.0 to curve length). Updated each physics frame.
+## Read-only; set automatically from the parent PathFollow2D.
+@export var path_progress: float = 0.0
+
 var _sprite: Sprite2D = null
 var _bar_y := -40.0
 var _ring_pos := Vector2(0.0, 20.0)
@@ -60,6 +64,7 @@ func _physics_process(delta: float) -> void:
 		return
 
 	follow.progress += speed * delta
+	path_progress = follow.progress
 
 	if follow.progress_ratio >= 1.0:
 		_reach_end()

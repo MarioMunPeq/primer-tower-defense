@@ -127,9 +127,9 @@ func _ready():
 		1: RAPID_TOWER_SCRIPT,
 		2: SNIPER_TOWER_SCRIPT,
 	}
-	for idx in cards:
+	for idx in [0, 1, 2]:
 		var card: Button = cards[idx]
-		card.mouse_entered.connect(func(idx=idx): _show_tower_card_tooltip(idx))
+		card.mouse_entered.connect(Callable(self, "_show_tower_card_tooltip").bind(idx))
 		card.mouse_exited.connect(_hide_tooltip)
 
 	$WaveSpawner.wave_started.connect(_on_wave_started)
@@ -141,18 +141,18 @@ func _ready():
 	$EndScreen/EndPanel/Center/VBox/MainMenuButton.pressed.connect(_on_main_menu_pressed)
 	
 	# Connect tower selection buttons
-	$UI/TowerShop/VBox/ShopGrid/BasicCard.pressed.connect(func(): _set_tower_type(0))
-	$UI/TowerShop/VBox/ShopGrid/RapidCard.pressed.connect(func(): _set_tower_type(1))
-	$UI/TowerShop/VBox/ShopGrid/SniperCard.pressed.connect(func(): _set_tower_type(2))
+	$UI/TowerShop/VBox/ShopGrid/BasicCard.pressed.connect(Callable(self, "_set_tower_type").bind(0))
+	$UI/TowerShop/VBox/ShopGrid/RapidCard.pressed.connect(Callable(self, "_set_tower_type").bind(1))
+	$UI/TowerShop/VBox/ShopGrid/SniperCard.pressed.connect(Callable(self, "_set_tower_type").bind(2))
 	
 	# Connect upgrade + sell buttons
 	$UI/TowerInfoPanel/VBox/Actions/UpgradeButton.pressed.connect(_on_upgrade_pressed)
 	$UI/TowerInfoPanel/VBox/Actions/SellButton.pressed.connect(_on_sell_pressed)
 	
 	# Connect speed + pause buttons
-	$UI/HUDBar/HUDTop/SpeedPanel/Speed1Button.pressed.connect(func(): _set_speed(1))
-	$UI/HUDBar/HUDTop/SpeedPanel/Speed2Button.pressed.connect(func(): _set_speed(2))
-	$UI/HUDBar/HUDTop/SpeedPanel/Speed3Button.pressed.connect(func(): _set_speed(3))
+	$UI/HUDBar/HUDTop/SpeedPanel/Speed1Button.pressed.connect(Callable(self, "_set_speed").bind(1))
+	$UI/HUDBar/HUDTop/SpeedPanel/Speed2Button.pressed.connect(Callable(self, "_set_speed").bind(2))
+	$UI/HUDBar/HUDTop/SpeedPanel/Speed3Button.pressed.connect(Callable(self, "_set_speed").bind(3))
 	$UI/HUDBar/HUDTop/SpeedPanel/PauseButton.pressed.connect(_on_pause_pressed)
 	
 	_update_money_ui()
