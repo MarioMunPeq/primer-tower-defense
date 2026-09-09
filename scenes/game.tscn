@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://d25s0dg06vagc"]
+[gd_scene load_steps=12 format=3 uid="uid://d25s0dg06vagc"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/waves/wave_spawner.gd" id="2_spawner"]
@@ -8,6 +8,8 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile204.png" id="6_basicicon"]
 [ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile205.png" id="7_rapidicon"]
 [ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile206.png" id="8_snipericon"]
+[ext_resource type="Texture2D" path="res://assets/ui/kenney_ui-pack/PNG/Yellow/Default/star.png" id="9_moneyicon"]
+[ext_resource type="Texture2D" path="res://assets/ui/kenney_ui-pack/PNG/Red/Default/star.png" id="10_livesicon"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -67,10 +69,12 @@ theme_override_margins/margin_top = 6
 theme_override_margins/margin_right = 16
 theme_override_margins/margin_bottom = 6
 
-[node name="MoneyIcon" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+[node name="MoneyIcon" type="TextureRect" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-theme_type_variation = &"hud_money"
-text = "$"
+size_flags_vertical = 4
+texture = ExtResource("9_moneyicon")
+stretch_mode = 5
 
 [node name="MoneyLabel" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
 layout_mode = 2
@@ -81,10 +85,12 @@ text = "100"
 layout_mode = 2
 custom_minimum_size = Vector2(20, 0)
 
-[node name="LivesIcon" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+[node name="LivesIcon" type="TextureRect" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-theme_type_variation = &"hud_lives"
-text = "❤"
+size_flags_vertical = 4
+texture = ExtResource("10_livesicon")
+stretch_mode = 5
 
 [node name="BaseLabel" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
 layout_mode = 2
@@ -246,7 +252,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.05, 0.09, 0.14, 0.72)
+color = Color(0.09, 0.09, 0.1, 0.75)
 visible = false
 
 [node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/BasicCard/CardLock"]
@@ -313,7 +319,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.05, 0.09, 0.14, 0.72)
+color = Color(0.09, 0.09, 0.1, 0.75)
 visible = false
 
 [node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/RapidCard/CardLock"]
@@ -380,7 +386,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.05, 0.09, 0.14, 0.72)
+color = Color(0.09, 0.09, 0.1, 0.75)
 visible = false
 
 [node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/SniperCard/CardLock"]

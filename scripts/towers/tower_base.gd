@@ -38,8 +38,10 @@ signal upgraded(new_level: int)
 
 var _targets: Array = []
 var _cooldown_left: float = 0.0
+var _detection_area: Area2D = null
 
 func _ready() -> void:
+	_detection_area = $DetectionArea
 	$DetectionArea/CollisionShape2D.shape.radius = range
 	$DetectionArea.area_entered.connect(_on_area_entered)
 	$DetectionArea.area_exited.connect(_on_area_exited)
@@ -57,11 +59,11 @@ func _on_area_exited(area: Area2D) -> void:
 
 ## Actively scans for enemies in range each physics frame to catch fast
 ## movers that tunnel through the detection area without triggering signals.
+## Enemies expose an Area2D hitbox, so areas (not bodies) are queried.
 func _scan_range() -> void:
-	var area: Area2D = $DetectionArea
-	var bodies := area.get_overlapping_bodies()
-	for body in bodies:
-		var enemy: Node2D = body.get_parent()
+	var areas := _detection_area.get_overlapping_areas()
+	for area in areas:
+		var enemy: Node2D = area.get_parent()
 		if enemy != null and enemy.has_method("take_damage"):
 			if not _targets.has(enemy):
 				_targets.append(enemy)

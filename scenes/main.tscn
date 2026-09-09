@@ -1,170 +1,147 @@
-[gd_scene load_steps=10 format=3 uid="uid://d25s0dg06vagc"]
+[gd_scene format=3 uid="uid://34ab0er26g56"]
 
-[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
-[ext_resource type="Script" path="res://scripts/waves/wave_spawner.gd" id="2_spawner"]
-[ext_resource type="Script" path="res://scripts/ui/range_preview.gd" id="3_preview"]
-[ext_resource type="Theme" path="res://ui_theme.tres" id="4_theme"]
-[ext_resource type="TileSet" path="res://tileset_main.tres" id="5_tileset"]
-[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile204.png" id="6_basicicon"]
-[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile205.png" id="7_rapidicon"]
-[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile206.png" id="8_snipericon"]
+[ext_resource type="Script" uid="uid://b3v8q2wevcwhj" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://d3ane1fyal8w5" path="res://scripts/waves/wave_spawner.gd" id="2_spawner"]
+[ext_resource type="Script" uid="uid://bghv7fgfbrw6l" path="res://scripts/ui/range_preview.gd" id="3_preview"]
+[ext_resource type="TileSet" uid="uid://s2lc8lgts7rb" path="res://tileset_main.tres" id="5_tileset"]
+[ext_resource type="Texture2D" uid="uid://bvvr60nss1mb6" path="res://assets/sprites/towerDefense_tile204.png" id="6_basicicon"]
+[ext_resource type="Texture2D" uid="uid://dce7djhlvjlmy" path="res://assets/sprites/towerDefense_tile205.png" id="7_rapidicon"]
+[ext_resource type="Texture2D" uid="uid://by6v6pq0fot57" path="res://assets/sprites/towerDefense_tile206.png" id="8_snipericon"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=55684857]
 script = ExtResource("1_main")
 
-[node name="Map" type="TileMapLayer" parent="."]
+[node name="Map" type="TileMapLayer" parent="." unique_id=976594454]
 tile_set = ExtResource("5_tileset")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=222793943]
 
-[node name="EnemyPath" type="Path2D" parent="."]
+[node name="EnemyPath" type="Path2D" parent="." unique_id=1379730350]
 
-[node name="Entry" type="Marker2D" parent="."]
+[node name="Entry" type="Marker2D" parent="." unique_id=601379687]
 
-[node name="Exit" type="Marker2D" parent="."]
+[node name="Exit" type="Marker2D" parent="." unique_id=1671341775]
 
-[node name="WaveSpawner" type="Node2D" parent="."]
+[node name="WaveSpawner" type="Node2D" parent="." unique_id=1825655458]
 script = ExtResource("2_spawner")
 
-[node name="RangePreview" type="Node2D" parent="."]
+[node name="RangePreview" type="Node2D" parent="." unique_id=139116676]
 script = ExtResource("3_preview")
 
-[node name="PlacementPreview" type="Node2D" parent="."]
+[node name="PlacementPreview" type="Node2D" parent="." unique_id=1743960470]
 
-[node name="UI" type="CanvasLayer" parent="."]
+[node name="UI" type="CanvasLayer" parent="." unique_id=1549785154]
 process_mode = 3
-theme = ExtResource("4_theme")
 
-[node name="HUDBar" type="PanelContainer" parent="UI"]
-layout_mode = 3
+[node name="HUDBar" type="PanelContainer" parent="UI" unique_id=7985913]
 anchors_preset = 10
-theme_type_variation = &"HUDBar"
 anchor_right = 1.0
-offset_left = 0.0
-offset_top = 0.0
-offset_right = 0.0
 offset_bottom = 64.0
 grow_horizontal = 2
+theme_type_variation = &"HUDBar"
 
-[node name="HUDTop" type="HBoxContainer" parent="UI/HUDBar"]
+[node name="HUDTop" type="HBoxContainer" parent="UI/HUDBar" unique_id=1391673674]
 layout_mode = 2
 theme_override_constants/separation = 12
-theme_override_margins/margin_left = 18
-theme_override_margins/margin_top = 10
-theme_override_margins/margin_right = 18
-theme_override_margins/margin_bottom = 10
 
-[node name="ResourcesPanel" type="PanelContainer" parent="UI/HUDBar/HUDTop"]
+[node name="ResourcesPanel" type="PanelContainer" parent="UI/HUDBar/HUDTop" unique_id=1096629486]
 layout_mode = 2
 theme_type_variation = &"HUDChip"
-size_flags_horizontal = 1
 
-[node name="HBox" type="HBoxContainer" parent="UI/HUDBar/HUDTop/ResourcesPanel"]
+[node name="HBox" type="HBoxContainer" parent="UI/HUDBar/HUDTop/ResourcesPanel" unique_id=1683044123]
 layout_mode = 2
 theme_override_constants/separation = 10
-theme_override_margins/margin_left = 16
-theme_override_margins/margin_top = 6
-theme_override_margins/margin_right = 16
-theme_override_margins/margin_bottom = 6
 
-[node name="MoneyIcon" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+[node name="MoneyIcon" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox" unique_id=320488038]
 layout_mode = 2
 theme_type_variation = &"hud_money"
 text = "$"
 
-[node name="MoneyLabel" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+[node name="MoneyLabel" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox" unique_id=995981272]
 layout_mode = 2
 theme_type_variation = &"hud_money"
 text = "100"
 
-[node name="Separator1" type="VSeparator" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
-layout_mode = 2
+[node name="Separator1" type="VSeparator" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox" unique_id=1184596095]
 custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
 
-[node name="LivesIcon" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+[node name="LivesIcon" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox" unique_id=1213184905]
 layout_mode = 2
 theme_type_variation = &"hud_lives"
 text = "❤"
 
-[node name="BaseLabel" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+[node name="BaseLabel" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox" unique_id=1478852802]
 layout_mode = 2
 theme_type_variation = &"hud_lives"
 text = "100"
 
-[node name="Spacer" type="Control" parent="UI/HUDBar/HUDTop"]
+[node name="Spacer" type="Control" parent="UI/HUDBar/HUDTop" unique_id=1530542692]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="WavePanel" type="PanelContainer" parent="UI/HUDBar/HUDTop"]
+[node name="WavePanel" type="PanelContainer" parent="UI/HUDBar/HUDTop" unique_id=856339839]
 layout_mode = 2
 theme_type_variation = &"HUDChip"
-size_flags_horizontal = 1
 
-[node name="VBox" type="VBoxContainer" parent="UI/HUDBar/HUDTop/WavePanel"]
+[node name="VBox" type="VBoxContainer" parent="UI/HUDBar/HUDTop/WavePanel" unique_id=985846856]
 layout_mode = 2
 theme_override_constants/separation = 4
-theme_override_margins/margin_left = 18
-theme_override_margins/margin_top = 5
-theme_override_margins/margin_right = 18
-theme_override_margins/margin_bottom = 5
 
-[node name="WaveRow" type="HBoxContainer" parent="UI/HUDBar/HUDTop/WavePanel/VBox"]
+[node name="WaveRow" type="HBoxContainer" parent="UI/HUDBar/HUDTop/WavePanel/VBox" unique_id=356664036]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="WaveLabel" type="Label" parent="UI/HUDBar/HUDTop/WavePanel/VBox/WaveRow"]
+[node name="WaveLabel" type="Label" parent="UI/HUDBar/HUDTop/WavePanel/VBox/WaveRow" unique_id=1331982867]
 layout_mode = 2
 theme_type_variation = &"hud_wave"
-size_flags_horizontal = 1
-horizontal_alignment = 1
 text = "WAVE 1/5"
+horizontal_alignment = 1
 
-[node name="WaveStateLabel" type="Label" parent="UI/HUDBar/HUDTop/WavePanel/VBox/WaveRow"]
+[node name="WaveStateLabel" type="Label" parent="UI/HUDBar/HUDTop/WavePanel/VBox/WaveRow" unique_id=57209351]
 layout_mode = 2
 theme_type_variation = &"hud_label"
 text = "PREPARING"
 
-[node name="EnemyProgress" type="ProgressBar" parent="UI/HUDBar/HUDTop/WavePanel/VBox"]
-layout_mode = 2
+[node name="EnemyProgress" type="ProgressBar" parent="UI/HUDBar/HUDTop/WavePanel/VBox" unique_id=434328576]
 custom_minimum_size = Vector2(220, 16)
-show_percentage = false
+layout_mode = 2
 max_value = 1.0
-value = 0.0
+show_percentage = false
 
-[node name="Spacer2" type="Control" parent="UI/HUDBar/HUDTop"]
+[node name="Spacer2" type="Control" parent="UI/HUDBar/HUDTop" unique_id=746001140]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SpeedPanel" type="HBoxContainer" parent="UI/HUDBar/HUDTop"]
+[node name="SpeedPanel" type="HBoxContainer" parent="UI/HUDBar/HUDTop" unique_id=494939982]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Speed1Button" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel"]
-layout_mode = 2
+[node name="Speed1Button" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel" unique_id=796747374]
 custom_minimum_size = Vector2(52, 40)
+layout_mode = 2
 theme_type_variation = &"speed_active"
 text = "1x"
 
-[node name="Speed2Button" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel"]
-layout_mode = 2
+[node name="Speed2Button" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel" unique_id=1021743882]
 custom_minimum_size = Vector2(52, 40)
+layout_mode = 2
 theme_type_variation = &"speed"
 text = "2x"
 
-[node name="Speed3Button" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel"]
-layout_mode = 2
+[node name="Speed3Button" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel" unique_id=485143382]
 custom_minimum_size = Vector2(52, 40)
+layout_mode = 2
 theme_type_variation = &"speed"
 text = "3x"
 
-[node name="PauseButton" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel"]
-layout_mode = 2
+[node name="PauseButton" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel" unique_id=1369876300]
 custom_minimum_size = Vector2(52, 40)
+layout_mode = 2
 theme_type_variation = &"speed"
 text = "❚❚"
 
-[node name="TowerShop" type="PanelContainer" parent="UI"]
-layout_mode = 2
+[node name="TowerShop" type="PanelContainer" parent="UI" unique_id=1504871434]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -174,34 +151,29 @@ offset_right = -16.0
 offset_bottom = 700.0
 grow_horizontal = 0
 
-[node name="VBox" type="VBoxContainer" parent="UI/TowerShop"]
+[node name="VBox" type="VBoxContainer" parent="UI/TowerShop" unique_id=928437238]
 layout_mode = 2
 theme_override_constants/separation = 12
-theme_override_margins/margin_left = 12
-theme_override_margins/margin_top = 14
-theme_override_margins/margin_right = 12
-theme_override_margins/margin_bottom = 14
 
-[node name="ShopTitle" type="Label" parent="UI/TowerShop/VBox"]
+[node name="ShopTitle" type="Label" parent="UI/TowerShop/VBox" unique_id=677625358]
 layout_mode = 2
 theme_type_variation = &"title"
-horizontal_alignment = 1
 text = "TORRES"
+horizontal_alignment = 1
 
-[node name="ShopGrid" type="GridContainer" parent="UI/TowerShop/VBox"]
+[node name="ShopGrid" type="GridContainer" parent="UI/TowerShop/VBox" unique_id=799994628]
 layout_mode = 2
-columns = 2
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
-alignment = 1
+columns = 2
 
-[node name="BasicCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid"]
-layout_mode = 2
+[node name="BasicCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid" unique_id=214845398]
 custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_type_variation = &"TowerCard"
 
-[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/BasicCard"]
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/BasicCard" unique_id=1351622533]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -217,7 +189,7 @@ grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("6_basicicon")
 
-[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ShopGrid/BasicCard"]
+[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ShopGrid/BasicCard" unique_id=1066128286]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -232,13 +204,14 @@ grow_vertical = 0
 mouse_filter = 2
 theme_type_variation = &"CostOverlay"
 
-[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ShopGrid/BasicCard/CardCostBg"]
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ShopGrid/BasicCard/CardCostBg" unique_id=896769756]
 layout_mode = 2
 theme_type_variation = &"card_cost"
-horizontal_alignment = 1
 text = "$50"
+horizontal_alignment = 1
 
-[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ShopGrid/BasicCard"]
+[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ShopGrid/BasicCard" unique_id=49697251]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -247,28 +220,26 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0.05, 0.09, 0.14, 0.72)
-visible = false
 
-[node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/BasicCard/CardLock"]
+[node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/BasicCard/CardLock" unique_id=87408328]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 theme_type_variation = &"card_stat"
+text = "🔒"
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "🔒"
 
-[node name="RapidCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid"]
-layout_mode = 2
+[node name="RapidCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid" unique_id=978097601]
 custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_type_variation = &"TowerCard"
 
-[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/RapidCard"]
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/RapidCard" unique_id=1825798110]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -284,7 +255,7 @@ grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("7_rapidicon")
 
-[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ShopGrid/RapidCard"]
+[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ShopGrid/RapidCard" unique_id=1495045771]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -299,13 +270,14 @@ grow_vertical = 0
 mouse_filter = 2
 theme_type_variation = &"CostOverlay"
 
-[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ShopGrid/RapidCard/CardCostBg"]
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ShopGrid/RapidCard/CardCostBg" unique_id=690972318]
 layout_mode = 2
 theme_type_variation = &"card_cost"
-horizontal_alignment = 1
 text = "$75"
+horizontal_alignment = 1
 
-[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ShopGrid/RapidCard"]
+[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ShopGrid/RapidCard" unique_id=1608688452]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -314,28 +286,26 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0.05, 0.09, 0.14, 0.72)
-visible = false
 
-[node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/RapidCard/CardLock"]
+[node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/RapidCard/CardLock" unique_id=1249102660]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 theme_type_variation = &"card_stat"
+text = "🔒"
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "🔒"
 
-[node name="SniperCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid"]
-layout_mode = 2
+[node name="SniperCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid" unique_id=1968531593]
 custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_type_variation = &"TowerCard"
 
-[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/SniperCard"]
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/SniperCard" unique_id=664842965]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -351,7 +321,7 @@ grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("8_snipericon")
 
-[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ShopGrid/SniperCard"]
+[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ShopGrid/SniperCard" unique_id=355586148]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -366,13 +336,14 @@ grow_vertical = 0
 mouse_filter = 2
 theme_type_variation = &"CostOverlay"
 
-[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ShopGrid/SniperCard/CardCostBg"]
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ShopGrid/SniperCard/CardCostBg" unique_id=899987647]
 layout_mode = 2
 theme_type_variation = &"card_cost"
-horizontal_alignment = 1
 text = "$120"
+horizontal_alignment = 1
 
-[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ShopGrid/SniperCard"]
+[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ShopGrid/SniperCard" unique_id=227016298]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -381,33 +352,31 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 color = Color(0.05, 0.09, 0.14, 0.72)
-visible = false
 
-[node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/SniperCard/CardLock"]
+[node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/SniperCard/CardLock" unique_id=1679770920]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-mouse_filter = 2
 theme_type_variation = &"card_stat"
+text = "🔒"
 horizontal_alignment = 1
 vertical_alignment = 1
-text = "🔒"
 
-[node name="Separator" type="HSeparator" parent="UI/TowerShop/VBox"]
+[node name="Separator" type="HSeparator" parent="UI/TowerShop/VBox" unique_id=624607475]
 layout_mode = 2
 
-[node name="ShopDesc" type="Label" parent="UI/TowerShop/VBox"]
+[node name="ShopDesc" type="Label" parent="UI/TowerShop/VBox" unique_id=1574569713]
 layout_mode = 2
 theme_type_variation = &"body"
 text = "Basic Tower
 DMG 1 • RNG 180
 0.80/s — $50"
 
-[node name="TowerInfoPanel" type="PanelContainer" parent="UI"]
-layout_mode = 2
+[node name="TowerInfoPanel" type="PanelContainer" parent="UI" unique_id=801960288]
+visible = false
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -416,102 +385,97 @@ offset_top = -240.0
 offset_right = 330.0
 offset_bottom = -18.0
 grow_vertical = 0
-visible = false
 
-[node name="VBox" type="VBoxContainer" parent="UI/TowerInfoPanel"]
+[node name="VBox" type="VBoxContainer" parent="UI/TowerInfoPanel" unique_id=702779635]
 layout_mode = 2
 theme_override_constants/separation = 10
-theme_override_margins/margin_left = 16
-theme_override_margins/margin_top = 14
-theme_override_margins/margin_right = 16
-theme_override_margins/margin_bottom = 14
 
-[node name="TowerTypeLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+[node name="TowerTypeLabel" type="Label" parent="UI/TowerInfoPanel/VBox" unique_id=462572827]
 layout_mode = 2
 theme_type_variation = &"tower_name"
-horizontal_alignment = 1
 text = "BASIC TOWER"
+horizontal_alignment = 1
 
-[node name="LevelLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+[node name="LevelLabel" type="Label" parent="UI/TowerInfoPanel/VBox" unique_id=1841222810]
 layout_mode = 2
 theme_type_variation = &"subtitle"
-horizontal_alignment = 1
 text = "Level: 1"
+horizontal_alignment = 1
 
-[node name="StatsGrid" type="GridContainer" parent="UI/TowerInfoPanel/VBox"]
+[node name="StatsGrid" type="GridContainer" parent="UI/TowerInfoPanel/VBox" unique_id=1545634565]
 layout_mode = 2
-columns = 2
 theme_override_constants/h_separation = 16
 theme_override_constants/v_separation = 6
+columns = 2
 
-[node name="StatDamageIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatDamageIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid" unique_id=740653977]
 layout_mode = 2
 theme_type_variation = &"stat_label"
 text = "Damage"
 
-[node name="StatDamageValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatDamageValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid" unique_id=1204963335]
 layout_mode = 2
 theme_type_variation = &"stat_value"
-horizontal_alignment = 2
 text = "1"
+horizontal_alignment = 2
 
-[node name="StatRangeIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatRangeIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid" unique_id=27910714]
 layout_mode = 2
 theme_type_variation = &"stat_label"
 text = "Range"
 
-[node name="StatRangeValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatRangeValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid" unique_id=836286851]
 layout_mode = 2
 theme_type_variation = &"stat_value"
-horizontal_alignment = 2
 text = "180"
+horizontal_alignment = 2
 
-[node name="StatSpeedIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatSpeedIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid" unique_id=1770182967]
 layout_mode = 2
 theme_type_variation = &"stat_label"
 text = "Attack Speed"
 
-[node name="StatSpeedValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatSpeedValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid" unique_id=1524785061]
 layout_mode = 2
 theme_type_variation = &"stat_value"
-horizontal_alignment = 2
 text = "0.80/s"
+horizontal_alignment = 2
 
-[node name="StatCostIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatCostIcon" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid" unique_id=1007056949]
 layout_mode = 2
 theme_type_variation = &"stat_label"
 text = "Cost"
 
-[node name="StatCostValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatCostValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid" unique_id=1714049127]
 layout_mode = 2
 theme_type_variation = &"card_cost"
-horizontal_alignment = 2
 text = "$50"
+horizontal_alignment = 2
 
-[node name="Separator2" type="HSeparator" parent="UI/TowerInfoPanel/VBox"]
+[node name="Separator2" type="HSeparator" parent="UI/TowerInfoPanel/VBox" unique_id=1613844871]
 layout_mode = 2
 
-[node name="Actions" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
+[node name="Actions" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox" unique_id=1959293970]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="UpgradeButton" type="Button" parent="UI/TowerInfoPanel/VBox/Actions"]
+[node name="UpgradeButton" type="Button" parent="UI/TowerInfoPanel/VBox/Actions" unique_id=1206120573]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(0, 44)
 text = "UPGRADE $75"
 
-[node name="SellButton" type="Button" parent="UI/TowerInfoPanel/VBox/Actions"]
+[node name="SellButton" type="Button" parent="UI/TowerInfoPanel/VBox/Actions" unique_id=460319105]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 size_flags_horizontal = 3
-custom_minimum_size = Vector2(0, 44)
 text = "SELL +$35"
 
-[node name="EndScreen" type="CanvasLayer" parent="."]
+[node name="EndScreen" type="CanvasLayer" parent="." unique_id=571715064]
 process_mode = 3
 visible = false
 
-[node name="Dim" type="ColorRect" parent="EndScreen"]
+[node name="Dim" type="ColorRect" parent="EndScreen" unique_id=331120726]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -519,8 +483,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.72)
 
-[node name="EndPanel" type="PanelContainer" parent="EndScreen"]
-layout_mode = 2
+[node name="EndPanel" type="PanelContainer" parent="EndScreen" unique_id=1574022617]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -528,49 +491,40 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_type_variation = &"EndPanel"
 
-[node name="Center" type="CenterContainer" parent="EndScreen/EndPanel"]
+[node name="Center" type="CenterContainer" parent="EndScreen/EndPanel" unique_id=1222583832]
 layout_mode = 2
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 
-[node name="VBox" type="VBoxContainer" parent="EndScreen/EndPanel/Center"]
+[node name="VBox" type="VBoxContainer" parent="EndScreen/EndPanel/Center" unique_id=1317314498]
 layout_mode = 2
 theme_override_constants/separation = 24
-theme_override_margins/margin_left = 48
-theme_override_margins/margin_top = 48
-theme_override_margins/margin_right = 48
-theme_override_margins/margin_bottom = 48
 
-[node name="EndTitle" type="Label" parent="EndScreen/EndPanel/Center/VBox"]
+[node name="EndTitle" type="Label" parent="EndScreen/EndPanel/Center/VBox" unique_id=1458529732]
 layout_mode = 2
 theme_type_variation = &"title"
-theme_override_font_sizes/font_size = 56
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-horizontal_alignment = 1
+theme_override_font_sizes/font_size = 56
 text = "END"
+horizontal_alignment = 1
 
-[node name="EndSubtitle" type="Label" parent="EndScreen/EndPanel/Center/VBox"]
+[node name="EndSubtitle" type="Label" parent="EndScreen/EndPanel/Center/VBox" unique_id=1759553710]
 layout_mode = 2
 theme_type_variation = &"subtitle"
 theme_override_font_sizes/font_size = 22
 horizontal_alignment = 1
-text = ""
 
-[node name="EndStats" type="Label" parent="EndScreen/EndPanel/Center/VBox"]
+[node name="EndStats" type="Label" parent="EndScreen/EndPanel/Center/VBox" unique_id=980759921]
 layout_mode = 2
 theme_type_variation = &"body"
 horizontal_alignment = 1
-text = ""
 
-[node name="RestartButton" type="Button" parent="EndScreen/EndPanel/Center/VBox"]
+[node name="RestartButton" type="Button" parent="EndScreen/EndPanel/Center/VBox" unique_id=557417163]
 custom_minimum_size = Vector2(280, 64)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "REINTENTAR"
 
-[node name="MainMenuButton" type="Button" parent="EndScreen/EndPanel/Center/VBox"]
+[node name="MainMenuButton" type="Button" parent="EndScreen/EndPanel/Center/VBox" unique_id=1086578279]
 custom_minimum_size = Vector2(280, 64)
+layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "MENÚ PRINCIPAL"

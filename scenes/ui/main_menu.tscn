@@ -1,7 +1,20 @@
-[gd_scene load_steps=3 format=3 uid="uid://dhq2n7f4k9m1p"]
+[gd_scene load_steps=6 format=3 uid="uid://dhq2n7f4k9m1p"]
 
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_script"]
 [ext_resource type="Theme" path="res://ui_theme.tres" id="2_theme"]
+[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile204.png" id="4_icon"]
+
+[sub_resource type="Gradient" id="Gradient_rbg"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.16, 0.28, 0.22, 1, 0.06, 0.11, 0.08, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_rbg"]
+gradient = SubResource("Gradient_rbg")
+width = 1280
+height = 720
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+fill = 1
 
 [node name="MainMenu" type="Control"]
 theme = ExtResource("2_theme")
@@ -12,6 +25,16 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_rbg")
+expand_mode = 1
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 layout_mode = 2
@@ -29,19 +52,52 @@ theme_override_margins/margin_top = 60
 theme_override_margins/margin_right = 60
 theme_override_margins/margin_bottom = 60
 
-[node name="Title" type="Label" parent="CenterContainer/VBox"]
+[node name="TitleBox" type="HBoxContainer" parent="CenterContainer/VBox"]
 layout_mode = 1
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="TitleIcon" type="TextureRect" parent="CenterContainer/VBox/TitleBox"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+texture = ExtResource("4_icon")
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="CenterContainer/VBox/TitleBox"]
+layout_mode = 2
 theme_type_variation = "title"
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 4
+theme_override_font_sizes/font_size = 64
 horizontal_alignment = 1
 text = "TOWER DEFENSE"
-theme_override_font_sizes/font_size = 64
+
+[node name="AccentLine" type="HBoxContainer" parent="CenterContainer/VBox"]
+layout_mode = 1
+
+[node name="SpacerLeft" type="Control" parent="CenterContainer/VBox/AccentLine"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Line" type="ColorRect" parent="CenterContainer/VBox/AccentLine"]
+custom_minimum_size = Vector2(140, 3)
+layout_mode = 2
+color = Color(0.95, 0.76, 0.3, 1)
+
+[node name="SpacerRight" type="Control" parent="CenterContainer/VBox/AccentLine"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Subtitle" type="Label" parent="CenterContainer/VBox"]
 layout_mode = 1
 theme_type_variation = "subtitle"
+theme_override_colors/font_color = Color(0.88, 0.86, 0.8, 1)
+theme_override_font_sizes/font_size = 24
 horizontal_alignment = 1
 text = "Defiende tu base"
-theme_override_font_sizes/font_size = 24
 
 [node name="Spacer" type="Control" parent="CenterContainer/VBox"]
 layout_mode = 1
@@ -49,18 +105,21 @@ size_flags_vertical = 3
 
 [node name="PlayButton" type="Button" parent="CenterContainer/VBox"]
 layout_mode = 1
-custom_minimum_size = Vector2(300, 70)
-theme_override_font_sizes/font_size = 28
+custom_minimum_size = Vector2(320, 84)
+theme_type_variation = "MenuPrimaryButton"
+theme_override_font_sizes/font_size = 30
 text = "JUGAR"
 
 [node name="OptionsButton" type="Button" parent="CenterContainer/VBox"]
 layout_mode = 1
 custom_minimum_size = Vector2(300, 70)
-theme_override_font_sizes/font_size = 28
+theme_type_variation = "MenuButton"
+theme_override_font_sizes/font_size = 26
 text = "OPCIONES"
 
 [node name="QuitButton" type="Button" parent="CenterContainer/VBox"]
 layout_mode = 1
 custom_minimum_size = Vector2(300, 70)
-theme_override_font_sizes/font_size = 28
+theme_type_variation = "MenuButton"
+theme_override_font_sizes/font_size = 26
 text = "SALIR"

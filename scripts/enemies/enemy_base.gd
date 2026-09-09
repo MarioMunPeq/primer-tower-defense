@@ -40,9 +40,20 @@ var _bar_y := -40.0
 var _ring_pos := Vector2(0.0, 20.0)
 var _ring_radius := 24.0
 var _grow_tween: Tween = null
+## Cached movement refs (set in _ready) so per-frame movement avoids node
+## lookups and curve re-baking.
+var _follow: PathFollow2D = null
+var _curve: Curve2D = null
+var _baked_length := 0.0
 
 func _ready() -> void:
 	max_health = health
+	_follow = get_parent() as PathFollow2D
+	if _follow != null:
+		var path := _follow.get_parent() as Path2D
+		if path != null and path.curve != null:
+			_curve = path.curve
+			_baked_length = path.curve.get_baked_length()
 	_sprite = get_node_or_null("Sprite") as Sprite2D
 	if _sprite != null and _sprite.texture != null:
 		var w := _sprite.texture.get_width() * _sprite.scale.x
@@ -59,15 +70,30 @@ func _ready() -> void:
 	queue_redraw()
 
 func _physics_process(delta: float) -> void:
-	var follow := get_parent() as PathFollow2D
-	if follow == null:
+	if _follow == null:
 		return
 
-	follow.progress += speed * delta
-	path_progress = follow.progress
+	_follow.progress += speed * delta
+	path_progress = _follow.progress
+	_face_movement_direction()
 
-	if follow.progress_ratio >= 1.0:
+	if _follow.progress_ratio >= 1.0:
 		_reach_end()
+
+## Makes the sprite look along the path tangent so it always faces the travel
+## direction. The sprite base art points right (angle 0). Only the Sprite2D is
+## rotated: the HP bar and ground ring are drawn on this node, so they stay
+## horizontal, and the circular hitbox is unaffected.
+func _face_movement_direction() -> void:
+	if _sprite == null or _curve == null:
+		return
+	if _baked_length <= 0.0:
+		return
+	var p0 := _curve.sample_baked(clampf(_follow.progress - 2.0, 0.0, _baked_length))
+	var p1 := _curve.sample_baked(clampf(_follow.progress + 2.0, 0.0, _baked_length))
+	var dir: Vector2 = p1 - p0
+	if dir.length_squared() > 0.00001:
+		_sprite.rotation = dir.angle()
 
 ## Applies damage to the enemy. The enemy flashes white, shows a floating number,
 ## keeps its HP bar updated, and dies (with particles + fade-out) at zero health.
@@ -115,9 +141,8 @@ func _reach_end() -> void:
 	_free_follow()
 
 func _free_follow() -> void:
-	var parent := get_parent()
-	if is_instance_valid(parent) and parent is PathFollow2D:
-		parent.queue_free()
+	if _follow != null and is_instance_valid(_follow):
+		_follow.queue_free()
 	elif is_inside_tree():
 		queue_free()
 

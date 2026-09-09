@@ -1,0 +1,83 @@
+[gd_scene load_steps=3 format=3 uid="uid://bya7m0g2nt0vh"]
+
+[ext_resource type="Script" path="res://scripts/ui/sell_confirm.gd" id="1_script"]
+[ext_resource type="Theme" path="res://ui_theme.tres" id="2_theme"]
+
+[node name="SellConfirm" type="Control"]
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="."]
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.6)
+
+[node name="Center" type="CenterContainer" parent="."]
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Center"]
+custom_minimum_size = Vector2(480, 0)
+layout_mode = 2
+theme_type_variation = &"EndPanel"
+
+[node name="Margin" type="MarginContainer" parent="Center/Panel"]
+layout_mode = 2
+theme_override_margins/margin_left = 40
+theme_override_margins/margin_top = 36
+theme_override_margins/margin_right = 40
+theme_override_margins/margin_bottom = 36
+
+[node name="VBox" type="VBoxContainer" parent="Center/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="Center/Panel/Margin/VBox"]
+layout_mode = 2
+theme_type_variation = &"title"
+theme_override_font_sizes/font_size = 34
+horizontal_alignment = 1
+text = "¿VENDER TORRE?"
+
+[node name="RefundLabel" type="Label" parent="Center/Panel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"body"
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+text = "Recuperarás $0"
+
+[node name="Buttons" type="HBoxContainer" parent="Center/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="CancelButton" type="Button" parent="Center/Panel/Margin/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(150, 56)
+layout_mode = 2
+theme_type_variation = &"MenuButton"
+theme_override_font_sizes/font_size = 20
+text = "CANCELAR"
+
+[node name="SellButton" type="Button" parent="Center/Panel/Margin/VBox/Buttons"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 56)
+layout_mode = 2
+theme_type_variation = &"MenuPrimaryButton"
+theme_override_font_sizes/font_size = 20
+text = "VENDER"

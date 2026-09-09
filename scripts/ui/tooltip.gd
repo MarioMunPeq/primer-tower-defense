@@ -18,6 +18,7 @@ func _ready() -> void:
 	_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
 	_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_label.custom_minimum_size = Vector2(max_width, 0)
 	_label.add_theme_constant_override("line_separation", 4)
 	add_child(_label)
 	mouse_filter = MOUSE_FILTER_IGNORE
@@ -28,8 +29,6 @@ func _process(delta: float) -> void:
 		_timer += delta
 		if _timer >= delay:
 			_show_now()
-	elif _visible:
-		_follow_mouse()
 
 func show_for(text: String) -> void:
 	_pending_text = text
@@ -47,7 +46,9 @@ func _show_now() -> void:
 	_label.text = _pending_text
 	_visible = true
 	visible = true
-	_follow_mouse()
+	# Force layout update so label size is correct before positioning
+	# Using call_deferred to ensure layout is processed after text is set
+	call_deferred("_follow_mouse")
 
 func _follow_mouse() -> void:
 	var vp_size := get_viewport_rect().size

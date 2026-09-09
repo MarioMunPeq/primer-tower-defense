@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile239.png" id="1_sprite"]
+[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile247.png" id="1_sprite"]
 [ext_resource type="Script" path="res://scripts/enemies/fast_enemy.gd" id="2_script"]
 
 [sub_resource type="CircleShape2D" id="SubResource_1"]
@@ -21,3 +21,11 @@ script/death_end_color = Color(0.9, 1, 1, 1)
 [node name="Sprite" type="Sprite2D" parent="."]
 scale = Vector2(0.72, 0.72)
 texture = ExtResource("1_sprite")
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("SubResource_1")

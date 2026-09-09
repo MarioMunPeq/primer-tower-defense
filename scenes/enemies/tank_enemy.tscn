@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile291.png" id="1_sprite"]
+[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile246.png" id="1_sprite"]
 [ext_resource type="Script" path="res://scripts/enemies/tank_enemy.gd" id="2_script"]
 
 [sub_resource type="CircleShape2D" id="SubResource_1"]

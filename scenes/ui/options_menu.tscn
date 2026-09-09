@@ -1,0 +1,228 @@
+[gd_scene load_steps=5 format=3 uid="uid://drojnsbt0tlo6"]
+
+[ext_resource type="Script" path="res://scripts/ui/options_menu.gd" id="1_script"]
+[ext_resource type="Theme" path="res://ui_theme.tres" id="2_theme"]
+
+[sub_resource type="Gradient" id="Gradient_rbg"]
+offsets = PackedFloat32Array(0, 1)
+colors = PackedColorArray(0.16, 0.28, 0.22, 1, 0.06, 0.11, 0.08, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_rbg"]
+gradient = SubResource("Gradient_rbg")
+width = 1280
+height = 720
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+fill = 1
+
+[node name="OptionsMenu" type="Control"]
+theme = ExtResource("2_theme")
+script = ExtResource("1_script")
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_rbg")
+expand_mode = 1
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(620, 0)
+layout_mode = 2
+theme_type_variation = &"EndPanel"
+
+[node name="Margin" type="MarginContainer" parent="CenterContainer/Panel"]
+layout_mode = 2
+theme_override_margins/margin_left = 56
+theme_override_margins/margin_top = 44
+theme_override_margins/margin_right = 56
+theme_override_margins/margin_bottom = 44
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Title" type="Label" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+theme_type_variation = &"title"
+theme_override_font_sizes/font_size = 44
+horizontal_alignment = 1
+text = "OPCIONES"
+
+[node name="AccentLine" type="HBoxContainer" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+
+[node name="SpacerLeft" type="Control" parent="CenterContainer/Panel/Margin/VBox/AccentLine"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Line" type="ColorRect" parent="CenterContainer/Panel/Margin/VBox/AccentLine"]
+custom_minimum_size = Vector2(140, 3)
+layout_mode = 2
+color = Color(0.95, 0.76, 0.3, 1)
+
+[node name="SpacerRight" type="Control" parent="CenterContainer/Panel/Margin/VBox/AccentLine"]
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SectionDisplay" type="Label" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+theme_type_variation = &"subtitle"
+theme_override_colors/font_color = Color(0.95, 0.76, 0.3, 1)
+theme_override_font_sizes/font_size = 22
+text = "PANTALLA"
+
+[node name="RowFullscreen" type="HBoxContainer" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="FullscreenLabel" type="Label" parent="CenterContainer/Panel/Margin/VBox/RowFullscreen"]
+layout_mode = 2
+theme_type_variation = &"body"
+theme_override_font_sizes/font_size = 20
+size_flags_horizontal = 3
+vertical_alignment = 1
+text = "Pantalla completa"
+
+[node name="FullscreenToggle" type="Button" parent="CenterContainer/Panel/Margin/VBox/RowFullscreen"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 46)
+layout_mode = 2
+theme_type_variation = &"speed"
+theme_override_font_sizes/font_size = 18
+toggle_mode = true
+text = "OFF"
+
+[node name="RowQuality" type="HBoxContainer" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="QualityLabel" type="Label" parent="CenterContainer/Panel/Margin/VBox/RowQuality"]
+layout_mode = 2
+theme_type_variation = &"body"
+theme_override_font_sizes/font_size = 20
+size_flags_horizontal = 3
+vertical_alignment = 1
+text = "Calidad gráfica"
+
+[node name="QualityGroup" type="HBoxContainer" parent="CenterContainer/Panel/Margin/VBox/RowQuality"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Quality0" type="Button" parent="CenterContainer/Panel/Margin/VBox/RowQuality/QualityGroup"]
+custom_minimum_size = Vector2(150, 46)
+layout_mode = 2
+theme_type_variation = &"speed"
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+text = "NÍTIDO"
+
+[node name="Quality1" type="Button" parent="CenterContainer/Panel/Margin/VBox/RowQuality/QualityGroup"]
+custom_minimum_size = Vector2(150, 46)
+layout_mode = 2
+theme_type_variation = &"speed"
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+text = "RENDIMIENTO"
+
+[node name="SectionGameplay" type="Label" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+theme_type_variation = &"subtitle"
+theme_override_colors/font_color = Color(0.95, 0.76, 0.3, 1)
+theme_override_font_sizes/font_size = 22
+text = "GAMEPLAY"
+
+[node name="RowSpeed" type="HBoxContainer" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="SpeedLabel" type="Label" parent="CenterContainer/Panel/Margin/VBox/RowSpeed"]
+layout_mode = 2
+theme_type_variation = &"body"
+theme_override_font_sizes/font_size = 20
+size_flags_horizontal = 3
+vertical_alignment = 1
+text = "Velocidad por defecto"
+
+[node name="SpeedGroup" type="HBoxContainer" parent="CenterContainer/Panel/Margin/VBox/RowSpeed"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Speed1" type="Button" parent="CenterContainer/Panel/Margin/VBox/RowSpeed/SpeedGroup"]
+custom_minimum_size = Vector2(80, 46)
+layout_mode = 2
+theme_type_variation = &"speed"
+theme_override_font_sizes/font_size = 18
+toggle_mode = true
+text = "1X"
+
+[node name="Speed2" type="Button" parent="CenterContainer/Panel/Margin/VBox/RowSpeed/SpeedGroup"]
+custom_minimum_size = Vector2(80, 46)
+layout_mode = 2
+theme_type_variation = &"speed"
+theme_override_font_sizes/font_size = 18
+toggle_mode = true
+text = "2X"
+
+[node name="Speed3" type="Button" parent="CenterContainer/Panel/Margin/VBox/RowSpeed/SpeedGroup"]
+custom_minimum_size = Vector2(80, 46)
+layout_mode = 2
+theme_type_variation = &"speed"
+theme_override_font_sizes/font_size = 18
+toggle_mode = true
+text = "3X"
+
+[node name="RowSell" type="HBoxContainer" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="SellLabel" type="Label" parent="CenterContainer/Panel/Margin/VBox/RowSell"]
+layout_mode = 2
+theme_type_variation = &"body"
+theme_override_font_sizes/font_size = 20
+size_flags_horizontal = 3
+vertical_alignment = 1
+text = "Confirmar venta de torres"
+
+[node name="SellToggle" type="Button" parent="CenterContainer/Panel/Margin/VBox/RowSell"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 46)
+layout_mode = 2
+theme_type_variation = &"speed"
+theme_override_font_sizes/font_size = 18
+toggle_mode = true
+text = "ON"
+
+[node name="Spacer" type="Control" parent="CenterContainer/Panel/Margin/VBox"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 6)
+size_flags_vertical = 3
+
+[node name="BackButton" type="Button" parent="CenterContainer/Panel/Margin/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 64)
+layout_mode = 2
+theme_type_variation = &"MenuButton"
+theme_override_font_sizes/font_size = 24
+text = "VOLVER"

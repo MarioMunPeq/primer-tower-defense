@@ -47,6 +47,7 @@ const IMPACT_EFFECT := preload("res://scenes/effects/impact_effect.tscn")
 const GameFx := preload("res://scripts/effects/game_fx.gd")
 const TooltipScene := preload("res://scenes/ui/tooltip.tscn")
 const PauseMenuScene := preload("res://scenes/ui/pause_menu.tscn")
+const SellConfirmScene := preload("res://scenes/ui/sell_confirm.tscn")
 
 const BASE_HP_MAX := 100
 
@@ -64,6 +65,9 @@ var _game_ended := false
 var _tooltip: Tooltip = null
 var _hovered_tower: Node2D = null
 var _hovered_enemy: Node2D = null
+var _last_mouse_pos := Vector2(INF, INF)
+## Ghost-tower textures extracted once from each tower scene at startup.
+var _preview_textures: Array[Texture2D] = []
 
 ## The placement-preview range comes from the currently selected tower type.
 func _preview_range() -> float:
@@ -89,11 +93,27 @@ func _preview_scene() -> PackedScene:
 		return RAPID_TOWER
 	return SNIPER_TOWER
 
+## Texture of the currently selected tower type (cached by _ready).
+func _preview_texture() -> Texture2D:
+	return _preview_textures[_tower_type_to_place]
+
+func _cache_preview_textures() -> void:
+	_preview_textures.clear()
+	for scene in [BASIC_TOWER, RAPID_TOWER, SNIPER_TOWER]:
+		var node: Node = scene.instantiate()
+		var tex: Texture2D = null
+		var sprite := node.get_node_or_null("Sprite") as Sprite2D
+		if sprite != null and sprite.texture != null:
+			tex = sprite.texture
+		node.free()
+		_preview_textures.append(tex)
+
 func _ready():
 	_setup_tilemap()
 	_paint_map()
 	_setup_path()
 	_setup_camera()
+	_cache_preview_textures()
 
 	var towers := Node2D.new()
 	towers.name = "Towers"
@@ -160,6 +180,7 @@ func _ready():
 	_update_tower_info_panel()
 	_update_shop_ui()
 	_update_wave_state_ui()
+	_set_speed(Settings.default_speed)
 
 func _setup_tilemap():
 	# Create the TileSet in code (same as original working approach)
@@ -290,14 +311,6 @@ func _paint_map():
 	$Map.set_cell(Vector2i(13, 0), 0, _atlas(AtlasTile.GRASS_DARK))
 	$Map.set_cell(Vector2i(0, 3), 0, _atlas(AtlasTile.GRASS_DARK))
 
-func _set_dirt_patch(x: int, y: int, w: int, h: int) -> void:
-	# Dirt tiles not available in conservative atlas - no-op for now
-	pass
-
-func _set_decor(x: int, y: int, tile: AtlasTile) -> void:
-	# Decorative tiles not available in conservative atlas - no-op for now
-	pass
-
 func _tile_center_x(tx: int) -> float:
 	return tx * TILE_SIZE + TILE_SIZE / 2.0
 
@@ -425,14 +438,18 @@ func _on_main_menu_pressed() -> void:
 ## Minimal per-frame work: track the hovered tile for placement feedback.
 ## The range preview is NOT redrawn every frame — only when the hover tile
 ## changes (below) or when selection/placement/money changes (event handlers).
+## Tooltip hover-scanning also only runs when the mouse moves, or while an
+## enemy tooltip is visible (enemies move under a stationary cursor).
 func _process(_delta: float) -> void:
-	var tile := _mouse_to_tile(get_global_mouse_position())
+	var mpos := get_global_mouse_position()
+	var tile := _mouse_to_tile(mpos)
 	if tile != _hover_tile:
 		_hover_tile = tile
 		queue_redraw()
 		_update_range_preview()
-		_update_placement_preview()
-	_check_hover_tooltips()
+	if _hovered_enemy != null or mpos != _last_mouse_pos:
+		_last_mouse_pos = mpos
+		_check_hover_tooltips()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -510,19 +527,16 @@ func _draw() -> void:
 	draw_rect(Rect2(tile_pos, Vector2(TILE_SIZE, TILE_SIZE)), rect_color, true)
 
 	# Draw ghost tower preview (always while placing, tinted by validity)
-	var ghost_scene := _preview_scene()
-	var ghost := ghost_scene.instantiate()
-	ghost.position = _tile_center(_hover_tile)
-	if not placeable:
-		ghost.modulate = Color(1.0, 0.3, 0.3, 0.6)
-	elif not affordable:
-		ghost.modulate = Color(1.0, 0.8, 0.2, 0.6)
-	else:
-		ghost.modulate = Color(1.0, 1.0, 1.0, 0.6)
-	if ghost.has_node("Sprite"):
-		var sprite: Sprite2D = ghost.get_node("Sprite")
-		if sprite.texture:
-			draw_texture(sprite.texture, _tile_center(_hover_tile) - sprite.texture.get_size() / 2, ghost.modulate)
+	var tex := _preview_texture()
+	if tex != null:
+		var tint: Color
+		if not placeable:
+			tint = Color(1.0, 0.3, 0.3, 0.6)
+		elif not affordable:
+			tint = Color(1.0, 0.8, 0.2, 0.6)
+		else:
+			tint = Color(1.0, 1.0, 1.0, 0.6)
+		draw_texture(tex, _tile_center(_hover_tile) - tex.get_size() / 2.0, tint)
 
 ## Selects a placed tower. The preview then shows that tower's real range.
 func _select_tower(tower: Node2D) -> void:
@@ -565,10 +579,6 @@ func _update_range_preview() -> void:
 	else:
 		color = Color(0.3, 1.0, 0.3, 0.9)
 	$RangePreview.show_range(_tile_center(tile), _preview_range(), color)
-
-func _update_placement_preview() -> void:
-	# Placement preview is handled in _draw() for ghost tower
-	pass
 
 func _update_tower_info_panel() -> void:
 	var panel: PanelContainer = $UI/TowerInfoPanel
@@ -628,8 +638,24 @@ func _on_sell_pressed() -> void:
 	if not is_instance_valid(_selected_tower):
 		return
 	var tower: Node2D = _selected_tower
+	if Settings.sell_confirm:
+		_open_sell_confirm(tower)
+		return
+	_do_sell(tower)
+
+func _open_sell_confirm(tower: Node2D) -> void:
+	var confirm := SellConfirmScene.instantiate()
+	confirm.setup(_sell_value(tower))
+	confirm.confirmed.connect(_do_sell.bind(tower))
+	$UI.add_child(confirm)
+
+func _do_sell(tower: Node2D) -> void:
+	if not is_instance_valid(tower):
+		return
 	var refund := _sell_value(tower)
 	var tile: Vector2i = _tiles_by_tower.get(tower, Vector2i(-1, -1))
+	if tile.x < 0:
+		return
 	_towers.erase(tile)
 	tower.queue_free()
 	_money += refund
@@ -663,13 +689,13 @@ func _update_shop_ui() -> void:
 		var cost: int = scripts[idx].COST
 		var unlocked: bool = _money >= cost
 		card.get_node("CardLock").visible = not unlocked
+		card.theme_type_variation = "TowerCardLocked" if not unlocked else ""
 		if not unlocked:
 			card.modulate = Color(0.45, 0.45, 0.5, 1.0)
 		else:
 			card.modulate = Color(1.0, 1.0, 1.0, 1.0)
 		card.get_node("CardCostBg/CardCost").text = "$%d" % cost
 		card.disabled = false
-		card.theme_type_variation = ""
 		card.pivot_offset = card.size / 2.0
 		card.scale = Vector2.ONE
 
@@ -727,7 +753,7 @@ func _on_pause_resume() -> void:
 func _on_pause_restart() -> void:
 	get_tree().paused = false
 	Engine.time_scale = 1.0
-	_set_speed(1)
+	_set_speed(Settings.default_speed)
 	$WaveSpawner.begin_teardown()
 	get_tree().reload_current_scene()
 
@@ -738,7 +764,7 @@ func _on_pause_main_menu() -> void:
 func _on_restart_pressed() -> void:
 	get_tree().paused = false
 	Engine.time_scale = 1.0
-	_set_speed(1)
+	_set_speed(Settings.default_speed)
 	$WaveSpawner.begin_teardown()
 	get_tree().reload_current_scene()
 
