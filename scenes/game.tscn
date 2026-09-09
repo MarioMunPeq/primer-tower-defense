@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://d25s0dg06vagc"]
+[gd_scene load_steps=17 format=3 uid="uid://d25s0dg06vagc"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/waves/wave_spawner.gd" id="2_spawner"]
@@ -13,6 +13,8 @@
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/sword.png" id="11_swordicon"]
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_game-icons/PNG/White/1x/target.png" id="12_targeticon"]
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/hourglass.png" id="13_hourglassicon"]
+[ext_resource type="Texture2D" path="res://assets/ui/kenney_game-icons/PNG/White/2x/shoppingCart.png" id="14_moneycarticon"]
+[ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/lock_closed.png" id="15_lockicon"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -76,7 +78,7 @@ theme_override_margins/margin_bottom = 6
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_vertical = 4
-texture = ExtResource("9_moneyicon")
+texture = ExtResource("14_moneycarticon")
 stretch_mode = 5
 
 [node name="MoneyLabel" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
@@ -259,18 +261,22 @@ mouse_filter = 2
 color = Color(0.09, 0.09, 0.1, 0.75)
 visible = false
 
-[node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/BasicCard/CardLock"]
+[node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/BasicCard/CardLock"]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -14.0
+offset_top = -14.0
+offset_right = 14.0
+offset_bottom = 14.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_type_variation = &"card_stat"
-horizontal_alignment = 1
-vertical_alignment = 1
-text = "🔒"
+texture = ExtResource("15_lockicon")
+stretch_mode = 5
 
 [node name="RapidCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid"]
 layout_mode = 2
@@ -326,18 +332,22 @@ mouse_filter = 2
 color = Color(0.09, 0.09, 0.1, 0.75)
 visible = false
 
-[node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/RapidCard/CardLock"]
+[node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/RapidCard/CardLock"]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -14.0
+offset_top = -14.0
+offset_right = 14.0
+offset_bottom = 14.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_type_variation = &"card_stat"
-horizontal_alignment = 1
-vertical_alignment = 1
-text = "🔒"
+texture = ExtResource("15_lockicon")
+stretch_mode = 5
 
 [node name="SniperCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid"]
 layout_mode = 2
@@ -393,18 +403,22 @@ mouse_filter = 2
 color = Color(0.09, 0.09, 0.1, 0.75)
 visible = false
 
-[node name="LockLabel" type="Label" parent="UI/TowerShop/VBox/ShopGrid/SniperCard/CardLock"]
+[node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/SniperCard/CardLock"]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -14.0
+offset_top = -14.0
+offset_right = 14.0
+offset_bottom = 14.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_type_variation = &"card_stat"
-horizontal_alignment = 1
-vertical_alignment = 1
-text = "🔒"
+texture = ExtResource("15_lockicon")
+stretch_mode = 5
 
 [node name="Separator" type="HSeparator" parent="UI/TowerShop/VBox"]
 layout_mode = 2

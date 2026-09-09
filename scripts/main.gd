@@ -688,23 +688,20 @@ func _update_shop_ui() -> void:
 	}
 
 	# Card state model:
-	#  - "locked" (future unlock mechanic) -> TowerCardLocked + dim + candado.
-	#    No tower is locked yet, so this branch is prepared but inert.
+	#  - "locked" (future unlock mechanic) or no money -> candado visible +
+	#    TowerCardLocked (dim border). No tower is locked yet, so the locked
+	#    branch stays inert, but no-funds cards show the candado right away.
 	#  - affordable                       -> TowerCard (neutral-border Level 2).
-	#  - available but without money      -> TowerCardNoFunds (red border).
 	# The selected card always overrides with the gold TowerCardSelected border.
 	for idx in cards:
 		var card: Button = cards[idx]
 		var cost: int = scripts[idx].COST
 		var locked: bool = false
 		var affordable: bool = _money >= cost
-		card.get_node("CardLock").visible = locked
-		if locked:
+		card.get_node("CardLock").visible = locked or not affordable
+		if locked or not affordable:
 			card.theme_type_variation = "TowerCardLocked"
 			card.modulate = Color(0.45, 0.45, 0.5, 1.0)
-		elif not affordable:
-			card.theme_type_variation = "TowerCardNoFunds"
-			card.modulate = Color(1.0, 1.0, 1.0, 1.0)
 		else:
 			card.theme_type_variation = "TowerCard"
 			card.modulate = Color(1.0, 1.0, 1.0, 1.0)

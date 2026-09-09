@@ -1,3 +1,9 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Export output (built by CI, not committed)
+/build/
+
+# CI tooling cache
+.godot-ci/

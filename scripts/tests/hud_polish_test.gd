@@ -51,14 +51,24 @@ func _run_checks(game: Node) -> void:
 	var cards := {
 		"BasicCard": "TowerCardSelected",  # default active tower
 		"RapidCard": "TowerCard",
-		"SniperCard": "TowerCardNoFunds",
+		"SniperCard": "TowerCardLocked",  # 120 > 100 -> candado + dim border
 	}
 	for card_name: String in cards:
 		var card: Button = game.get_node("UI/TowerShop/VBox/ShopGrid/%s" % card_name)
 		_check(card.theme_type_variation == cards[card_name],
 			"%s variation -> %s (got %s)" % [card_name, cards[card_name], card.theme_type_variation])
-	_check(not game.get_node("UI/TowerShop/VBox/ShopGrid/SniperCard/CardLock").visible,
-		"SniperCard lock overlay hidden (no funds != locked)")
+	var sniper_lock: Control = game.get_node("UI/TowerShop/VBox/ShopGrid/SniperCard/CardLock")
+	_check(sniper_lock.visible, "SniperCard lock overlay visible (no funds)")
+	var lock_icon: TextureRect = sniper_lock.get_node("LockIcon")
+	_check(lock_icon != null and lock_icon.texture != null,
+		"SniperCard lock overlay has a lock icon texture")
+	_check(lock_icon.texture != null and lock_icon.texture.resource_path.contains("lock"),
+		"SniperCard lock icon uses a lock asset")
+
+	print("== HUD money icon ==")
+	var money_icon: TextureRect = game.get_node("UI/HUDBar/HUDTop/ResourcesPanel/HBox/MoneyIcon")
+	_check(money_icon.texture != null and money_icon.texture.resource_path.contains("shoppingCart"),
+		"Money icon is the shopping cart")
 
 	print("== Tooltip structure ==")
 	var tooltip: Control = game.get_node("UI/Tooltip")

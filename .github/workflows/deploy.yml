@@ -1,0 +1,73 @@
+name: Build and Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache Godot editor and export templates
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            .godot-ci/editor
+            ~/.local/share/godot/export_templates/4.7.2.stable
+          key: godot-4.7.2-stable
+
+      - name: Download Godot editor
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p .godot-ci/editor
+          curl -fL --retry 3 -o editor.zip \
+            "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_linux.x86_64.zip"
+          unzip -o -q editor.zip -d .godot-ci/editor
+          rm editor.zip
+
+      - name: Install export templates
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -fL --retry 3 -o templates.tpz \
+            "https://github.com/godotengine/godot/releases/download/4.7.2-stable/Godot_v4.7.2-stable_export_templates.tpz"
+          mkdir -p "$HOME/.local/share/godot/export_templates/4.7.2.stable"
+          unzip -o -q templates.tpz
+          cp -a templates/. "$HOME/.local/share/godot/export_templates/4.7.2.stable/"
+          rm -rf templates templates.tpz
+
+      - name: Export Web build
+        run: |
+          GODOT_BIN=".godot-ci/editor/Godot_v4.7.2-stable_linux.x86_64"
+          chmod +x "$GODOT_BIN"
+          "$GODOT_BIN" --version
+          "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" --import
+          mkdir -p "build/web"
+          "$GODOT_BIN" --headless --path "$GITHUB_WORKSPACE" \
+            --export-release "Web" "build/web/index.html"
+          ls -la build/web
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
