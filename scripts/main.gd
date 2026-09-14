@@ -69,8 +69,6 @@ const ICON_SPECIAL_FROST := preload("res://assets/ui/kenney_board-game-icons/PNG
 
 const BASE_HP_MAX := 100
 
-const IMPACT_PARTICLES := preload("res://scenes/effects/impact_particles.tscn")
-
 ## Which tower type is currently armed for placement.
 ## 0 = Basic Tower, 1 = Rapid Tower, 2 = Sniper Tower, -1 = nothing armed.
 var _tower_type_to_place := -1
@@ -147,7 +145,11 @@ func _ready():
 	var damage_pool := preload("res://scripts/ui/damage_number_pool.gd").new()
 	damage_pool.name = "DamageNumbers"
 	add_child(damage_pool)
-	GameFx.register(fx, damage_pool)
+	# Reusable spark bursts: keeps node count flat during combat (see #1).
+	var sparks := preload("res://scripts/effects/vfx_spark_pool.gd").new()
+	sparks.name = "SparkPool"
+	add_child(sparks)
+	GameFx.register(fx, damage_pool, sparks)
 
 	# Tooltip for UI hover info (tower cards, placed towers, enemies)
 	var tooltip := TooltipScene.instantiate()
@@ -201,7 +203,21 @@ func _ready():
 	_update_wave_state_ui()
 	_set_speed(Settings.default_speed)
 
+## If the cursor leaves the window while a tower is armed, the hovered tile
+## would otherwise freeze (mouse position clamps to the window edge) and keep
+## the huge placement range-circle parked mid-map as a translucent blob. Reset
+## both the hover state and the preview instead.
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_MOUSE_EXIT or what == NOTIFICATION_WM_WINDOW_FOCUS_OUT:
+		if _hover_tile != Vector2i(-1, -1):
+			_hover_tile = Vector2i(-1, -1)
+			queue_redraw()
+			_update_range_preview()
+
 func _setup_tilemap():
+	# Pixel-art tiles: nearest filtering avoids bilinear bleed/seam artifacts
+	# when the dynamic camera fits the map at a non-integer zoom.
+	$Map.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	# Create the TileSet in code (same as original working approach)
 	# The TileSet assigned in the scene is just for the editor; we replace it here.
 	var ts := TileSet.new()
@@ -621,9 +637,7 @@ func _on_tower_impact(position: Vector2) -> void:
 	var effect := IMPACT_EFFECT.instantiate()
 	effect.position = position
 	add_child(effect)
-	var sparks := IMPACT_PARTICLES.instantiate()
-	sparks.position = position
-	add_child(sparks)
+	GameFx.sparks_at(position)
 	shake_camera(2.5, 0.12)
 	GameAudio.impact_sfx()
 
@@ -893,14 +907,21 @@ func _update_shop_ui() -> void:
 	_update_shop_desc()
 
 ## Small info line below the tower grid describing the selected tower.
+## The special-effect line embeds its icon (RichTextLabel [img]) to match the
+## icon+value pattern used in tooltips and the info panel.
 func _update_shop_desc() -> void:
 	var idx := maxi(_tower_type_to_place, 0)
 	var scr = TOWER_SCRIPTS[idx]
+	var names := ["Basic", "Rapid", "Sniper", "Cryo"]
+	var special_line: String = scr.SPECIAL_SUMMARY
+	var icon: Texture2D = _special_icon(scr.SPECIAL_ID)
+	if icon != null:
+		special_line = "[img width=16]%s[/img]  %s" % [icon.resource_path, scr.SPECIAL_SUMMARY]
 	var desc := "%s Tower\nDMG %d • RNG %d\n%.2f/s — $%d\n%s" % [
-		["Basic", "Rapid", "Sniper", "Cryo"][idx],
+		names[idx],
 		scr.DAMAGE, scr.RANGE,
 		1.0 / scr.ATTACK_COOLDOWN, scr.COST,
-		scr.SPECIAL_SUMMARY]
+		special_line]
 	$UI/TowerShop/VBox/ShopDesc.text = desc
 
 func _on_speed_pressed(multiplier: int) -> void:
