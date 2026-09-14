@@ -11,7 +11,7 @@ const MAX_PROJECTILES_CONST := 1
 const SPECIAL_ID := "armor_pierce"
 const SPECIAL_NAME := "Armor Pierce"
 ## Level-1 overview line used by the shop description/tooltip.
-const SPECIAL_SUMMARY := "Armor Pierce"
+const SPECIAL_SUMMARY := "Ignores armor"
 
 # Level 1: Damage 4, Range 480, cooldown 2.0, armor piercing, cost $120.
 # Branch A (damage): heavy single-target burst.

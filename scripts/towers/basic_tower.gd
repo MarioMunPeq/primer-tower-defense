@@ -10,7 +10,7 @@ const MAX_PROJECTILES_CONST := 8
 const SPECIAL_ID := "splash"
 const SPECIAL_NAME := "Splash"
 ## Level-1 overview line used by the shop description/tooltip.
-const SPECIAL_SUMMARY := "Splash 46px"
+const SPECIAL_SUMMARY := "46px"
 
 # Level 1: Damage 1, Range 260, cooldown 1.25, splash 46px, cost $50.
 # Branch A (damage): each level raises damage and widens the splash.

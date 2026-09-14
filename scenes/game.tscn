@@ -522,15 +522,15 @@ visible = false
 
 [node name="VBox" type="VBoxContainer" parent="UI/TowerInfoPanel"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 11
 theme_override_margins/margin_left = 16
-theme_override_margins/margin_top = 14
+theme_override_margins/margin_top = 16
 theme_override_margins/margin_right = 16
-theme_override_margins/margin_bottom = 14
+theme_override_margins/margin_bottom = 16
 
 [node name="TowerTypeLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
 layout_mode = 2
-theme_type_variation = &"tower_name"
+theme_type_variation = &"tooltip_title"
 horizontal_alignment = 1
 text = "BASIC TOWER"
 
@@ -540,120 +540,205 @@ theme_type_variation = &"subtitle"
 horizontal_alignment = 1
 text = "Level: 1"
 
-[node name="StatsGrid" type="GridContainer" parent="UI/TowerInfoPanel/VBox"]
+[node name="StatDamageRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
 layout_mode = 2
-columns = 2
-theme_override_constants/h_separation = 16
-theme_override_constants/v_separation = 6
+theme_override_constants/separation = 10
 
-[node name="StatDamageRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatDamageChip" type="PanelContainer" parent="UI/TowerInfoPanel/VBox/StatDamageRow"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_type_variation = &"tooltip_chip_damage"
+custom_minimum_size = Vector2(32, 32)
+size_flags_vertical = 4
+size_flags_horizontal = 4
 
-[node name="StatDamageIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatDamageRow"]
+[node name="StatDamageIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatDamageRow/StatDamageChip"]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = -7.0
+offset_bottom = -7.0
 size_flags_vertical = 4
+size_flags_horizontal = 4
 texture = ExtResource("11_swordicon")
 stretch_mode = 5
 
-[node name="StatDamageLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatDamageRow"]
+[node name="StatDamageText" type="VBoxContainer" parent="UI/TowerInfoPanel/VBox/StatDamageRow"]
 layout_mode = 2
-theme_type_variation = &"stat_label"
+theme_override_constants/separation = 2
+size_flags_horizontal = 3
+
+[node name="StatDamageLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatDamageRow/StatDamageText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_label"
+horizontal_alignment = 0
 text = "Damage"
 
-[node name="StatDamageValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatDamageValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatDamageRow/StatDamageText"]
 layout_mode = 2
-theme_type_variation = &"stat_value"
-horizontal_alignment = 2
+theme_type_variation = &"tooltip_stat_value"
+horizontal_alignment = 0
 text = "1"
 
-[node name="StatRangeRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatRangeRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 10
 
-[node name="StatRangeIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatRangeRow"]
+[node name="StatRangeChip" type="PanelContainer" parent="UI/TowerInfoPanel/VBox/StatRangeRow"]
+layout_mode = 2
+theme_type_variation = &"tooltip_chip_range"
+custom_minimum_size = Vector2(32, 32)
+size_flags_vertical = 4
+size_flags_horizontal = 4
+
+[node name="StatRangeIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatRangeRow/StatRangeChip"]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = -7.0
+offset_bottom = -7.0
 size_flags_vertical = 4
+size_flags_horizontal = 4
 texture = ExtResource("12_targeticon")
 stretch_mode = 5
 
-[node name="StatRangeLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatRangeRow"]
+[node name="StatRangeText" type="VBoxContainer" parent="UI/TowerInfoPanel/VBox/StatRangeRow"]
 layout_mode = 2
-theme_type_variation = &"stat_label"
+theme_override_constants/separation = 2
+size_flags_horizontal = 3
+
+[node name="StatRangeLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatRangeRow/StatRangeText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_label"
+horizontal_alignment = 0
 text = "Range"
 
-[node name="StatRangeValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatRangeValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatRangeRow/StatRangeText"]
 layout_mode = 2
-theme_type_variation = &"stat_value"
-horizontal_alignment = 2
+theme_type_variation = &"tooltip_stat_value"
+horizontal_alignment = 0
 text = "180"
 
-[node name="StatSpeedRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatSpeedRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 10
 
-[node name="StatSpeedIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpeedRow"]
+[node name="StatSpeedChip" type="PanelContainer" parent="UI/TowerInfoPanel/VBox/StatSpeedRow"]
+layout_mode = 2
+theme_type_variation = &"tooltip_chip_speed"
+custom_minimum_size = Vector2(32, 32)
+size_flags_vertical = 4
+size_flags_horizontal = 4
+
+[node name="StatSpeedIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatSpeedRow/StatSpeedChip"]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = -7.0
+offset_bottom = -7.0
 size_flags_vertical = 4
+size_flags_horizontal = 4
 texture = ExtResource("13_hourglassicon")
 stretch_mode = 5
 
-[node name="StatSpeedLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpeedRow"]
+[node name="StatSpeedText" type="VBoxContainer" parent="UI/TowerInfoPanel/VBox/StatSpeedRow"]
 layout_mode = 2
-theme_type_variation = &"stat_label"
+theme_override_constants/separation = 2
+size_flags_horizontal = 3
+
+[node name="StatSpeedLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatSpeedRow/StatSpeedText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_label"
+horizontal_alignment = 0
 text = "Attack Speed"
 
-[node name="StatSpeedValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatSpeedValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatSpeedRow/StatSpeedText"]
 layout_mode = 2
-theme_type_variation = &"stat_value"
-horizontal_alignment = 2
+theme_type_variation = &"tooltip_stat_value"
+horizontal_alignment = 0
 text = "0.80/s"
 
-[node name="StatCostRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatCostRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 10
 
-[node name="StatCostIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatCostRow"]
-custom_minimum_size = Vector2(18, 18)
+[node name="StatCostIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatCostRow"]
+custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
 size_flags_vertical = 4
+size_flags_horizontal = 4
 texture = ExtResource("9_moneyicon")
 stretch_mode = 5
 
-[node name="StatCostLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatCostRow"]
+[node name="StatCostText" type="VBoxContainer" parent="UI/TowerInfoPanel/VBox/StatCostRow"]
 layout_mode = 2
-theme_type_variation = &"stat_label"
+theme_override_constants/separation = 2
+size_flags_horizontal = 3
+
+[node name="StatCostLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatCostRow/StatCostText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_label"
+horizontal_alignment = 0
 text = "Cost"
 
-[node name="StatCostValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatCostValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatCostRow/StatCostText"]
 layout_mode = 2
-theme_type_variation = &"card_cost"
-horizontal_alignment = 2
+theme_type_variation = &"tooltip_stat_value"
+horizontal_alignment = 0
 text = "$50"
 
-[node name="StatSpecialRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatSpecialRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 10
 
-[node name="StatSpecialIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpecialRow"]
+[node name="StatSpecialChip" type="PanelContainer" parent="UI/TowerInfoPanel/VBox/StatSpecialRow"]
+layout_mode = 2
+theme_type_variation = &"tooltip_chip_damage"
+custom_minimum_size = Vector2(32, 32)
+size_flags_vertical = 4
+size_flags_horizontal = 4
+
+[node name="StatSpecialIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatSpecialRow/StatSpecialChip"]
 custom_minimum_size = Vector2(18, 18)
 layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = -7.0
+offset_bottom = -7.0
 size_flags_vertical = 4
+size_flags_horizontal = 4
 texture = ExtResource("17_fireicon")
 stretch_mode = 5
 
-[node name="StatSpecialLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpecialRow"]
+[node name="StatSpecialText" type="VBoxContainer" parent="UI/TowerInfoPanel/VBox/StatSpecialRow"]
 layout_mode = 2
-theme_type_variation = &"stat_label"
+theme_override_constants/separation = 2
+size_flags_horizontal = 3
+
+[node name="StatSpecialLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatSpecialRow/StatSpecialText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_label"
+horizontal_alignment = 0
 text = "Special"
 
-[node name="StatSpecialValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+[node name="StatSpecialValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatSpecialRow/StatSpecialText"]
 layout_mode = 2
-theme_type_variation = &"stat_value"
-horizontal_alignment = 2
+theme_type_variation = &"tooltip_stat_value"
+horizontal_alignment = 0
 text = "—"
 
 [node name="Separator2" type="HSeparator" parent="UI/TowerInfoPanel/VBox"]

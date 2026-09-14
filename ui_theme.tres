@@ -494,6 +494,77 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tooltip_panel"]
+bg_color = Color(0.12, 0.12, 0.135, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.2, 0.22, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 12
+shadow_offset = Vector2(0, 4)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chip_damage"]
+bg_color = Color(0.882, 0.294, 0.294, 0.2)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chip_range"]
+bg_color = Color(0.29, 0.565, 0.851, 0.2)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chip_speed"]
+bg_color = Color(0.949, 0.757, 0.306, 0.2)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chip_freeze"]
+bg_color = Color(0.42, 0.773, 0.91, 0.2)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chip_slow"]
+bg_color = Color(0.949, 0.569, 0.306, 0.2)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chip_splash"]
+bg_color = Color(0.949, 0.569, 0.306, 0.2)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chip_pierce"]
+bg_color = Color(0.7, 0.4, 0.85, 0.2)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_divider"]
+bg_color = Color(0.239, 0.239, 0.267, 1)
+corner_radius_top_left = 0
+corner_radius_top_right = 0
+corner_radius_bottom_right = 0
+corner_radius_bottom_left = 0
+
 [resource]
 default_font = ExtResource("1_7c5kl")
 default_font_size = 16
@@ -674,3 +745,36 @@ title/font_sizes/font_size = 22
 tower_name/base_type = &"Label"
 tower_name/colors/font_color = Color(0.97, 0.96, 0.93, 1)
 tower_name/font_sizes/font_size = 16
+tooltip_title/base_type = &"Label"
+tooltip_title/colors/font_color = Color(1, 1, 1, 1)
+tooltip_title/font_sizes/font_size = 24
+tooltip_stat_label/base_type = &"Label"
+tooltip_stat_label/colors/font_color = Color(0.72, 0.72, 0.75, 1)
+tooltip_stat_label/font_sizes/font_size = 14
+tooltip_stat_value/base_type = &"Label"
+tooltip_stat_value/colors/font_color = Color(1, 1, 1, 1)
+tooltip_stat_value/font_sizes/font_size = 17
+tooltip_desc/base_type = &"Label"
+tooltip_desc/colors/font_color = Color(0.54, 0.54, 0.57, 1)
+tooltip_desc/font_sizes/font_size = 13
+tooltip_stat_row/base_type = &"HBoxContainer"
+tooltip_stat_row/constants/separation = 10
+tooltip_icon_chip/base_type = &"PanelContainer"
+tooltip_icon_chip/constants/margin_right = 8
+tooltip_icon_chip/styles/panel = SubResource("StyleBoxFlat_chip_damage")
+tooltip_chip_damage/base_type = &"PanelContainer"
+tooltip_chip_damage/styles/panel = SubResource("StyleBoxFlat_chip_damage")
+tooltip_chip_range/base_type = &"PanelContainer"
+tooltip_chip_range/styles/panel = SubResource("StyleBoxFlat_chip_range")
+tooltip_chip_speed/base_type = &"PanelContainer"
+tooltip_chip_speed/styles/panel = SubResource("StyleBoxFlat_chip_speed")
+tooltip_chip_freeze/base_type = &"PanelContainer"
+tooltip_chip_freeze/styles/panel = SubResource("StyleBoxFlat_chip_freeze")
+tooltip_chip_slow/base_type = &"PanelContainer"
+tooltip_chip_slow/styles/panel = SubResource("StyleBoxFlat_chip_slow")
+tooltip_chip_splash/base_type = &"PanelContainer"
+tooltip_chip_splash/styles/panel = SubResource("StyleBoxFlat_chip_splash")
+tooltip_chip_pierce/base_type = &"PanelContainer"
+tooltip_chip_pierce/styles/panel = SubResource("StyleBoxFlat_chip_pierce")
+tooltip_divider/base_type = &"PanelContainer"
+tooltip_divider/styles/panel = SubResource("StyleBoxFlat_divider")

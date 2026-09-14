@@ -23,7 +23,7 @@ func _check(cond: bool, label: String) -> void:
 func _run_checks(game: Node) -> void:
 	var shop: PanelContainer = game.get_node("UI/TowerShop")
 	var info: PanelContainer = game.get_node("UI/TowerInfoPanel")
-	var grid: GridContainer = game.get_node("UI/TowerInfoPanel/VBox/StatsGrid")
+	var vbox: VBoxContainer = game.get_node("UI/TowerInfoPanel/VBox")
 	var upgrade: Button = game.get_node("UI/TowerInfoPanel/VBox/Actions/UpgradeButton")
 	var sell: Button = game.get_node("UI/TowerInfoPanel/VBox/Actions/SellButton")
 
@@ -34,10 +34,10 @@ func _run_checks(game: Node) -> void:
 	_check(sell.theme_type_variation == &"PanelLevel2", "SellButton uses PanelLevel2")
 
 	print("== Stats row icons ==")
-	var dmg_icon: TextureRect = grid.get_node("StatDamageRow/StatDamageIcon")
-	var rng_icon: TextureRect = grid.get_node("StatRangeRow/StatRangeIcon")
-	var spd_icon: TextureRect = grid.get_node("StatSpeedRow/StatSpeedIcon")
-	var cost_icon: TextureRect = grid.get_node("StatCostRow/StatCostIcon")
+	var dmg_icon: TextureRect = vbox.get_node("StatDamageRow/StatDamageChip/StatDamageIcon")
+	var rng_icon: TextureRect = vbox.get_node("StatRangeRow/StatRangeChip/StatRangeIcon")
+	var spd_icon: TextureRect = vbox.get_node("StatSpeedRow/StatSpeedChip/StatSpeedIcon")
+	var cost_icon: TextureRect = vbox.get_node("StatCostRow/StatCostIcon")
 	_check(dmg_icon is TextureRect and dmg_icon.texture != null, "Damage row has an icon")
 	_check(rng_icon is TextureRect and rng_icon.texture != null, "Range row has an icon")
 	_check(spd_icon is TextureRect and spd_icon.texture != null, "Attack Speed row has an icon")
@@ -48,9 +48,11 @@ func _run_checks(game: Node) -> void:
 	_check(cost_icon.texture.resource_path.contains("kenney_ui-pack"), "Cost icon is the gold star")
 
 	print("== Special effect row + branch choice row ==")
-	var sp_icon: TextureRect = grid.get_node("StatSpecialRow/StatSpecialIcon")
-	var sp_label: Label = grid.get_node("StatSpecialRow/StatSpecialLabel")
-	var sp_value: Label = grid.get_node("StatSpecialValue")
+	var sp_chip: PanelContainer = vbox.get_node("StatSpecialRow/StatSpecialChip")
+	var sp_icon: TextureRect = vbox.get_node("StatSpecialRow/StatSpecialChip/StatSpecialIcon")
+	var sp_label: Label = vbox.get_node("StatSpecialRow/StatSpecialText/StatSpecialLabel")
+	var sp_value: Label = vbox.get_node("StatSpecialRow/StatSpecialText/StatSpecialValue")
+	_check(sp_chip is PanelContainer, "Special row has a chip")
 	_check(sp_icon is TextureRect and sp_icon.texture != null, "Special row has an icon")
 	_check(sp_label is Label and sp_label.text != "", "Special row has a label")
 	_check(sp_value is Label and sp_value.text != "", "Special row has a value label")
@@ -105,8 +107,8 @@ func _run_checks(game: Node) -> void:
 		if child is PanelContainer:
 			panel = child
 			break
-	_check(panel != null and panel.theme_type_variation == &"PanelLevel1",
-		"Tooltip has PanelLevel1 panel")
+	_check(panel != null and panel.theme_type_variation == &"tooltip_panel",
+		"Tooltip has tooltip_panel panel")
 	tooltip.delay = 0.0
 	tooltip.show_stats("Basic Tower", [
 		{"icon": preload("res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/sword.png"),

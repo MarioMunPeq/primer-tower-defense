@@ -11,7 +11,7 @@ const MAX_PROJECTILES_CONST := 12
 const SPECIAL_ID := "slow"
 const SPECIAL_NAME := "Slow"
 ## Level-1 overview line used by the shop description/tooltip.
-const SPECIAL_SUMMARY := "Slow 16% · 1s"
+const SPECIAL_SUMMARY := "16% · 1s"
 
 # Level 1: Damage 1, Range 150, cooldown 0.33, slow 16% for 1s, cost $75 (also
 # slows only the direct target).

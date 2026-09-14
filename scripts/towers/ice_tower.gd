@@ -14,7 +14,7 @@ const FROST_SLOW := 0.30
 const SPECIAL_ID := "frost"
 const SPECIAL_NAME := "Freeze"
 ## Level-1 overview line used by the shop description/tooltip.
-const SPECIAL_SUMMARY := "Freeze 70px · 30%"
+const SPECIAL_SUMMARY := "70px · 30%"
 
 # Level 1: Damage 1, Range 200, cooldown 1.4, frost 70px / 30% / 1.2s, cost $100.
 # Branch A (damage): raises the direct damage without touching the frost.

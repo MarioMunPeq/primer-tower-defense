@@ -735,16 +735,18 @@ func _update_tower_info_panel() -> void:
 		else:
 			vbox.get_node("LevelLabel").text = "Level: 1 · CHOOSE"
 		
-		vbox.get_node("StatsGrid/StatDamageValue").text = "%d" % tower.damage
-		vbox.get_node("StatsGrid/StatRangeValue").text = "%d" % tower.range
-		vbox.get_node("StatsGrid/StatSpeedValue").text = "%.2f/s" % tower.attack_speed
-		vbox.get_node("StatsGrid/StatCostValue").text = "$%d" % tower.cost
+		vbox.get_node("StatDamageRow/StatDamageText/StatDamageValue").text = "%d" % tower.damage
+		vbox.get_node("StatRangeRow/StatRangeText/StatRangeValue").text = "%d" % tower.range
+		vbox.get_node("StatSpeedRow/StatSpeedText/StatSpeedValue").text = "%.2f/s" % tower.attack_speed
+		vbox.get_node("StatCostRow/StatCostText/StatCostValue").text = "$%d" % tower.cost
 		
-		# Special-effect row (icon switched per tower type).
-		var special_icon: TextureRect = vbox.get_node("StatsGrid/StatSpecialRow/StatSpecialIcon")
+		# Special-effect row (icon and chip color switched per tower type).
+		var special_chip: PanelContainer = vbox.get_node("StatSpecialRow/StatSpecialChip")
+		var special_icon: TextureRect = vbox.get_node("StatSpecialRow/StatSpecialChip/StatSpecialIcon")
+		special_chip.theme_type_variation = _special_chip_theme(tower.special_id)
 		special_icon.texture = _special_icon(tower.special_id)
-		vbox.get_node("StatsGrid/StatSpecialRow/StatSpecialLabel").text = tower.special_name
-		vbox.get_node("StatsGrid/StatSpecialValue").text = tower.special_value_text()
+		vbox.get_node("StatSpecialRow/StatSpecialText/StatSpecialLabel").text = tower.special_name
+		vbox.get_node("StatSpecialRow/StatSpecialText/StatSpecialValue").text = tower.special_value_text()
 		
 		var branch_row: HBoxContainer = vbox.get_node("BranchRow")
 		var upgrade_btn: Button = vbox.get_node("Actions/UpgradeButton")
@@ -1002,12 +1004,13 @@ func _show_tower_card_tooltip(idx: int) -> void:
 		return
 	var scr := TOWER_SCRIPTS[idx] as GDScript
 	var name: String = TOWER_NAMES[idx]
+	var special_chip := _special_chip_type(scr.SPECIAL_ID)
 	_tooltip.show_stats("%s Tower" % name, [
-		{"icon": ICON_DAMAGE, "label": "Damage", "value": "%d" % scr.DAMAGE},
-		{"icon": ICON_RANGE, "label": "Range", "value": "%d" % scr.RANGE},
-		{"icon": ICON_SPEED, "label": "Attack Speed", "value": "%.2f/s" % (1.0 / scr.ATTACK_COOLDOWN)},
-		{"icon": ICON_COST, "label": "Cost", "value": "$%d" % scr.COST},
-		{"icon": _special_icon(scr.SPECIAL_ID), "label": scr.SPECIAL_NAME, "value": scr.SPECIAL_SUMMARY},
+		{"icon": ICON_DAMAGE, "label": "Damage", "value": "%d" % scr.DAMAGE, "chip_type": "damage"},
+		{"icon": ICON_RANGE, "label": "Range", "value": "%d" % scr.RANGE, "chip_type": "range"},
+		{"icon": ICON_SPEED, "label": "Attack Speed", "value": "%.2f/s" % (1.0 / scr.ATTACK_COOLDOWN), "chip_type": "speed"},
+		{"icon": ICON_COST, "label": "Cost", "value": "$%d" % scr.COST, "chip_type": "cost"},
+		{"icon": _special_icon(scr.SPECIAL_ID), "label": scr.SPECIAL_NAME, "value": scr.SPECIAL_SUMMARY, "chip_type": special_chip},
 	], ["Ideal contra oleadas numerosas: splash area y daño fiable.",
 		"Dispara rápido, alcance corto. Ralentiza a su objetivo.",
 		"Alto daño, gran alcance, perfora armaduras. Para tanques y jefes.",
@@ -1021,11 +1024,12 @@ func _show_tower_tooltip(tower: Node2D) -> void:
 	var branch_label: String = "CHOOSE"
 	if tower.level >= 2:
 		branch_label = tower.branch_name_a if tower.branch == "A" else tower.branch_name_b
+	var special_chip := _special_chip_type(tower.special_id)
 	_tooltip.show_stats("%s Tower (Lvl %d · %s)" % [name, tower.level, branch_label], [
-		{"icon": ICON_DAMAGE, "label": "Damage", "value": "%d" % tower.damage},
-		{"icon": ICON_RANGE, "label": "Range", "value": "%d" % tower.range},
-		{"icon": ICON_SPEED, "label": "Attack Speed", "value": "%.2f/s" % tower.attack_speed},
-		{"icon": _special_icon(tower.special_id), "label": tower.special_name, "value": tower.special_value_text()},
+		{"icon": ICON_DAMAGE, "label": "Damage", "value": "%d" % tower.damage, "chip_type": "damage"},
+		{"icon": ICON_RANGE, "label": "Range", "value": "%d" % tower.range, "chip_type": "range"},
+		{"icon": ICON_SPEED, "label": "Attack Speed", "value": "%.2f/s" % tower.attack_speed, "chip_type": "speed"},
+		{"icon": _special_icon(tower.special_id), "label": tower.special_name, "value": tower.special_value_text(), "chip_type": special_chip},
 	])
 
 ## Icon for a special effect id (shared by panels and tooltips).
@@ -1036,6 +1040,24 @@ func _special_icon(special_id: String) -> Texture2D:
 		"armor_pierce": return ICON_SPECIAL_PIERCE
 		"frost": return ICON_SPECIAL_FROST
 	return null
+
+## Chip type for special effect (used by tooltip icon chips).
+func _special_chip_type(special_id: String) -> String:
+	match special_id:
+		"splash": return "splash"
+		"slow": return "slow"
+		"armor_pierce": return "pierce"
+		"frost": return "freeze"
+	return ""
+
+## Theme variation for special effect chip (used by TowerInfoPanel).
+func _special_chip_theme(special_id: String) -> String:
+	match special_id:
+		"splash": return "tooltip_chip_splash"
+		"slow": return "tooltip_chip_slow"
+		"armor_pierce": return "tooltip_chip_pierce"
+		"frost": return "tooltip_chip_freeze"
+	return "tooltip_chip_damage"
 
 ## Tooltip for an enemy on the map
 func _show_enemy_tooltip(enemy: Node2D) -> void:
