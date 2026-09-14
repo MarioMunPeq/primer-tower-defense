@@ -191,10 +191,10 @@ func _ready():
 	$UI/TowerInfoPanel/VBox/BranchRow/BranchBButton.pressed.connect(Callable(self, "_on_branch_pressed").bind("B"))
 	
 	# Connect speed + pause buttons
-	$UI/HUDBar/HUDTop/SpeedPanel/Speed1Button.pressed.connect(Callable(self, "_on_speed_pressed").bind(1))
-	$UI/HUDBar/HUDTop/SpeedPanel/Speed2Button.pressed.connect(Callable(self, "_on_speed_pressed").bind(2))
-	$UI/HUDBar/HUDTop/SpeedPanel/Speed3Button.pressed.connect(Callable(self, "_on_speed_pressed").bind(3))
-	$UI/HUDBar/HUDTop/SpeedPanel/PauseButton.pressed.connect(_on_pause_pressed)
+	$UI/HUDBar/HUDContent/SpeedGroup/Speed1Button.pressed.connect(Callable(self, "_on_speed_pressed").bind(1))
+	$UI/HUDBar/HUDContent/SpeedGroup/Speed2Button.pressed.connect(Callable(self, "_on_speed_pressed").bind(2))
+	$UI/HUDBar/HUDContent/SpeedGroup/Speed3Button.pressed.connect(Callable(self, "_on_speed_pressed").bind(3))
+	$UI/HUDBar/HUDContent/SpeedGroup/PauseButton.pressed.connect(_on_pause_pressed)
 	
 	_update_money_ui()
 	_update_base_ui()
@@ -389,8 +389,8 @@ func _setup_path():
 ## the rest of the HUD (and the camera) stays consistent on every layout pass.
 func _layout_metrics() -> Dictionary:
 	var vp := get_viewport().get_visible_rect().size
-	var hud_h := clampf(vp.y * 0.09, 56.0, 72.0)
-	var shop_w := clampf(vp.x * 0.15, 140.0, 196.0)
+	var hud_h := clampf(vp.y * 0.085, 64.0, 80.0)
+	var shop_w := clampf(vp.x * 0.15, 160.0, 200.0)
 	return {"vp": vp, "hud_h": hud_h, "shop_w": shop_w}
 
 ## Applies the responsive HUD geometry and re-fits the camera to the play area.
@@ -405,37 +405,28 @@ func _apply_responsive_layout() -> void:
 	$UI/HUDBar.offset_bottom = hud_h
 
 	# TowerShop: pinned under the HUDBar, full height to the bottom edge. Width
-	# is proportional to the viewport (clamped), never a fixed 700px bottom.
+	# is proportional to the viewport (clamped).
 	var shop: Control = $UI/TowerShop
 	shop.offset_left = -16.0 - shop_w
 	shop.offset_right = -16.0
 	shop.offset_top = hud_h + 12.0
 	shop.offset_bottom = vp.y - 16.0
 
-	# Tower cards: derive their size from the real panel width (2 columns) with
-	# a 56px floor (still above the 44px minimum touch target at 1.0 scale).
+	# Tower cards: single column layout, width based on shop panel width
 	var grid: GridContainer = $UI/TowerShop/VBox/ScrollContainer/ShopGrid
-	var card_w := maxf(56.0, (shop_w - 24.0 - 8.0) / 2.0)
+	var card_w := maxf(160.0, shop_w - 28.0)
 	for card in grid.get_children():
-		card.custom_minimum_size = Vector2(card_w, card_w)
-		var icon := card.get_node_or_null("CardIcon") as Control
-		if icon != null:
-			var icon_s := maxf(32.0, card_w - 14.0)
-			icon.offset_left = -icon_s / 2.0
-			icon.offset_right = icon_s / 2.0
-			icon.offset_top = -icon_s / 2.0
-			icon.offset_bottom = icon_s / 2.0
+		card.custom_minimum_size = Vector2(card_w, 110.0)
 
 	# TowerInfoPanel: desktop size by default, but never covering more than a
-	# fixed fraction of the viewport on small screens. Taller than before to fit
-	# the special-stats row and the branch-choice buttons.
+	# fixed fraction of the viewport on small screens.
 	var tip: Control = $UI/TowerInfoPanel
-	var tip_w := minf(312.0, vp.x * 0.9)
+	var tip_w := minf(290.0, vp.x * 0.85)
 	var tip_h := minf(300.0, vp.y * 0.5)
-	tip.offset_left = 18.0
-	tip.offset_right = 18.0 + tip_w
-	tip.offset_top = -18.0 - tip_h
-	tip.offset_bottom = -18.0
+	tip.offset_left = 16.0
+	tip.offset_right = 16.0 + tip_w
+	tip.offset_top = -16.0 - tip_h
+	tip.offset_bottom = -16.0
 
 	_setup_camera()
 
@@ -462,12 +453,12 @@ func _setup_camera() -> void:
 
 func _on_wave_started(current_wave: int) -> void:
 	var total_waves: int = $WaveSpawner.TOTAL_WAVES
-	$UI/HUDBar/HUDTop/WavePanel/VBox/WaveRow/WaveLabel.text = "WAVE %d/%d" % [current_wave, total_waves]
+	$UI/HUDBar/HUDContent/WavePlate/WaveContent/WaveRow/WaveLabel.text = "WAVE %d / %d" % [current_wave, total_waves]
 	_reset_wave_progress()
 	_update_wave_state_ui()
 
 func _reset_wave_progress() -> void:
-	var bar: ProgressBar = $UI/HUDBar/HUDTop/WavePanel/VBox/EnemyProgress
+	var bar: ProgressBar = $UI/HUDBar/HUDContent/WavePlate/WaveContent/EnemyProgress
 	bar.value = 0.0
 	bar.max_value = float(max($WaveSpawner._wave_queue.size(), 1))
 
@@ -493,17 +484,17 @@ func _on_enemy_reached_base(damage: int) -> void:
 func _update_wave_progress() -> void:
 	var spawner = $WaveSpawner
 	var defeated: int = max(spawner._spawned - spawner._alive, 0)
-	var bar: ProgressBar = $UI/HUDBar/HUDTop/WavePanel/VBox/EnemyProgress
+	var bar: ProgressBar = $UI/HUDBar/HUDContent/WavePlate/WaveContent/EnemyProgress
 	bar.value = float(defeated)
 	if spawner._state == "finished":
 		bar.value = bar.max_value
 
 func _update_money_ui() -> void:
-	$UI/HUDBar/HUDTop/ResourcesPanel/HBox/MoneyLabel.text = "%d" % _money
+	$UI/HUDBar/HUDContent/ResourcesGroup/MoneyPlate/MoneyContent/MoneyLabel.text = "%d" % _money
 	_update_shop_ui()
 
 func _update_base_ui() -> void:
-	$UI/HUDBar/HUDTop/ResourcesPanel/HBox/BaseLabel.text = "%d" % _base_hp
+	$UI/HUDBar/HUDContent/ResourcesGroup/LivesPlate/LivesContent/BaseLabel.text = "%d" % _base_hp
 
 ## Called by the wave spawner when the last wave's enemies are all gone.
 func _on_victory() -> void:
@@ -728,25 +719,27 @@ func _update_tower_info_panel() -> void:
 		panel.visible = true
 		
 		var vbox = panel.get_node("VBox")
-		vbox.get_node("TowerTypeLabel").text = tower.name.get_slice("Tower", 0).strip_edges().to_upper() + " TOWER"
+		var tower_sprite: TextureRect = vbox.get_node("TowerHeader/TowerSprite")
+		tower_sprite.texture = tower.get_node_or_null("Sprite").texture if tower.get_node_or_null("Sprite") else null
+		tower_sprite.modulate = tower.modulate
+		
+		vbox.get_node("TowerHeader/TowerHeaderInfo/TowerTypeLabel").text = tower.name.get_slice("Tower", 0).strip_edges().to_upper() + " TOWER"
 		if tower.level >= 2:
 			var branch_label: String = tower.branch_name_a if tower.branch == "A" else tower.branch_name_b
-			vbox.get_node("LevelLabel").text = "Level: %d · %s" % [tower.level, branch_label]
+			vbox.get_node("TowerHeader/TowerHeaderInfo/LevelLabel").text = "Level: %d · %s" % [tower.level, branch_label]
 		else:
-			vbox.get_node("LevelLabel").text = "Level: 1 · CHOOSE"
+			vbox.get_node("TowerHeader/TowerHeaderInfo/LevelLabel").text = "Level: 1 · CHOOSE"
 		
-		vbox.get_node("StatDamageRow/StatDamageText/StatDamageValue").text = "%d" % tower.damage
-		vbox.get_node("StatRangeRow/StatRangeText/StatRangeValue").text = "%d" % tower.range
-		vbox.get_node("StatSpeedRow/StatSpeedText/StatSpeedValue").text = "%.2f/s" % tower.attack_speed
-		vbox.get_node("StatCostRow/StatCostText/StatCostValue").text = "$%d" % tower.cost
+		vbox.get_node("StatsGrid/StatDamageRow/StatDamageValue").text = "%d" % tower.damage
+		vbox.get_node("StatsGrid/StatRangeRow/StatRangeValue").text = "%d" % tower.range
+		vbox.get_node("StatsGrid/StatSpeedRow/StatSpeedValue").text = "%.2f/s" % tower.attack_speed
+		vbox.get_node("StatsGrid/StatCostRow/StatCostValue").text = "$%d" % tower.cost
 		
-		# Special-effect row (icon and chip color switched per tower type).
-		var special_chip: PanelContainer = vbox.get_node("StatSpecialRow/StatSpecialChip")
-		var special_icon: TextureRect = vbox.get_node("StatSpecialRow/StatSpecialChip/StatSpecialIcon")
-		special_chip.theme_type_variation = _special_chip_theme(tower.special_id)
+		# Special-effect row (icon switched per tower type).
+		var special_icon: TextureRect = vbox.get_node("StatsGrid/StatSpecialRow/StatSpecialIcon")
 		special_icon.texture = _special_icon(tower.special_id)
-		vbox.get_node("StatSpecialRow/StatSpecialText/StatSpecialLabel").text = tower.special_name
-		vbox.get_node("StatSpecialRow/StatSpecialText/StatSpecialValue").text = tower.special_value_text()
+		vbox.get_node("StatsGrid/StatSpecialRow/StatSpecialLabel").text = tower.special_name
+		vbox.get_node("StatsGrid/StatSpecialRow/StatSpecialValue").text = tower.special_value_text()
 		
 		var branch_row: HBoxContainer = vbox.get_node("BranchRow")
 		var upgrade_btn: Button = vbox.get_node("Actions/UpgradeButton")
@@ -896,7 +889,7 @@ func _update_shop_ui() -> void:
 		else:
 			card.theme_type_variation = "TowerCard"
 			card.modulate = Color(1.0, 1.0, 1.0, 1.0)
-		card.get_node("CardCostBg/CardCost").text = "$%d" % cost
+		card.get_node("CardContent/CardInfo/CardCostPlate/CardCostContent/CardCost").text = "$%d" % cost
 		card.disabled = false
 		card.pivot_offset = card.size / 2.0
 		card.scale = Vector2.ONE
@@ -911,7 +904,8 @@ func _update_shop_ui() -> void:
 ## Shop description panel (bottom of TowerShop) — mirrors tooltip design.
 func _update_shop_desc() -> void:
 	var shop_desc: PanelContainer = $UI/TowerShop/VBox/ShopDesc
-	var box: VBoxContainer = shop_desc.get_node("ShopDescBox")
+	var content: VBoxContainer = shop_desc.get_node("ShopDescContent")
+	var stats: VBoxContainer = content.get_node("ShopDescStats")
 	
 	if _tower_type_to_place < 0:
 		shop_desc.visible = false
@@ -920,48 +914,55 @@ func _update_shop_desc() -> void:
 	shop_desc.visible = true
 	var scr = TOWER_SCRIPTS[_tower_type_to_place]
 	var names := ["Basic", "Rapid", "Sniper", "Cryo"]
-	var special_chip := _special_chip_type(scr.SPECIAL_ID)
 	var special_icon: Texture2D = _special_icon(scr.SPECIAL_ID)
 	
-	box.get_node("ShopDescTitle").text = "%s Tower" % names[_tower_type_to_place]
-	box.get_node("ShopDescDivider").visible = true
+	content.get_node("ShopDescTitle").text = "%s Tower" % names[_tower_type_to_place]
+	content.get_node("ShopDescDesc").text = _get_tower_description(_tower_type_to_place)
+	content.get_node("ShopDescDivider").visible = true
 	
 	# Damage row
-	var dmg_row = box.get_node("ShopDescStatDamage")
+	var dmg_row = stats.get_node("ShopDescStatDamage")
 	dmg_row.visible = true
-	dmg_row.get_node("ShopDescStatDamageChip/ShopDescStatDamageIcon").texture = ICON_DAMAGE
-	dmg_row.get_node("ShopDescStatDamageText/ShopDescStatDamageLabel").text = "Damage"
-	dmg_row.get_node("ShopDescStatDamageText/ShopDescStatDamageValue").text = "%d" % scr.DAMAGE
+	dmg_row.get_node("ShopDescStatDamageIcon").texture = ICON_DAMAGE
+	dmg_row.get_node("ShopDescStatDamageLabel").text = "Damage"
+	dmg_row.get_node("ShopDescStatDamageValue").text = "%d" % scr.DAMAGE
 	
 	# Range row
-	var rng_row = box.get_node("ShopDescStatRange")
+	var rng_row = stats.get_node("ShopDescStatRange")
 	rng_row.visible = true
-	rng_row.get_node("ShopDescStatRangeChip/ShopDescStatRangeIcon").texture = ICON_RANGE
-	rng_row.get_node("ShopDescStatRangeText/ShopDescStatRangeLabel").text = "Range"
-	rng_row.get_node("ShopDescStatRangeText/ShopDescStatRangeValue").text = "%d" % scr.RANGE
+	rng_row.get_node("ShopDescStatRangeIcon").texture = ICON_RANGE
+	rng_row.get_node("ShopDescStatRangeLabel").text = "Range"
+	rng_row.get_node("ShopDescStatRangeValue").text = "%d" % scr.RANGE
 	
 	# Attack Speed row
-	var spd_row = box.get_node("ShopDescStatSpeed")
+	var spd_row = stats.get_node("ShopDescStatSpeed")
 	spd_row.visible = true
-	spd_row.get_node("ShopDescStatSpeedChip/ShopDescStatSpeedIcon").texture = ICON_SPEED
-	spd_row.get_node("ShopDescStatSpeedText/ShopDescStatSpeedLabel").text = "Attack Speed"
-	spd_row.get_node("ShopDescStatSpeedText/ShopDescStatSpeedValue").text = "%.2f/s" % (1.0 / scr.ATTACK_COOLDOWN)
+	spd_row.get_node("ShopDescStatSpeedIcon").texture = ICON_SPEED
+	spd_row.get_node("ShopDescStatSpeedLabel").text = "Attack Speed"
+	spd_row.get_node("ShopDescStatSpeedValue").text = "%.2f/s" % (1.0 / scr.ATTACK_COOLDOWN)
 	
 	# Cost row
-	var cost_row = box.get_node("ShopDescStatCost")
+	var cost_row = stats.get_node("ShopDescStatCost")
 	cost_row.visible = true
 	cost_row.get_node("ShopDescStatCostIcon").texture = ICON_COST
-	cost_row.get_node("ShopDescStatCostText/ShopDescStatCostLabel").text = "Cost"
-	cost_row.get_node("ShopDescStatCostText/ShopDescStatCostValue").text = "$%d" % scr.COST
+	cost_row.get_node("ShopDescStatCostLabel").text = "Cost"
+	cost_row.get_node("ShopDescStatCostValue").text = "$%d" % scr.COST
 	
 	# Special row
-	var spec_row = box.get_node("ShopDescStatSpecial")
+	var spec_row = stats.get_node("ShopDescStatSpecial")
 	spec_row.visible = true
-	var spec_chip = spec_row.get_node("ShopDescStatSpecialChip")
-	spec_chip.theme_type_variation = _special_chip_theme(scr.SPECIAL_ID)
-	spec_row.get_node("ShopDescStatSpecialChip/ShopDescStatSpecialIcon").texture = special_icon
-	spec_row.get_node("ShopDescStatSpecialText/ShopDescStatSpecialLabel").text = scr.SPECIAL_NAME
-	spec_row.get_node("ShopDescStatSpecialText/ShopDescStatSpecialValue").text = scr.SPECIAL_SUMMARY
+	spec_row.get_node("ShopDescStatSpecialIcon").texture = special_icon
+	spec_row.get_node("ShopDescStatSpecialLabel").text = scr.SPECIAL_NAME
+	spec_row.get_node("ShopDescStatSpecialValue").text = scr.SPECIAL_SUMMARY
+
+func _get_tower_description(idx: int) -> String:
+	var descs := [
+		"Torreta equilibrada con daño en área.\nIdeal contra oleadas numerosas.",
+		"Disparo rápido que ralentiza al objetivo.\nAlcance corto, gran cadencia.",
+		"Alto daño por disparo, gran alcance.\nPerfora armaduras. Para tanques y jefes.",
+		"Congela en área: ralentiza grupos enteros\nsin acumularse. Apoyo táctico."
+	]
+	return descs[idx]
 
 func _on_speed_pressed(multiplier: int) -> void:
 	GameAudio.ui_click()
@@ -969,12 +970,13 @@ func _on_speed_pressed(multiplier: int) -> void:
 
 func _set_speed(multiplier: int) -> void:
 	Engine.time_scale = float(multiplier)
-	for i in [1, 2, 3]:
-		var btn: Button = $UI/HUDBar/HUDTop/SpeedPanel.get_node("Speed%dButton" % i)
+	for i in range(1, 4):
+		var btn_name := "Speed" + str(i) + "Button"
+		var btn: Button = $UI/HUDBar/HUDContent/SpeedGroup.get_node(btn_name)
 		if i == multiplier:
-			btn.theme_type_variation = "speed_active"
+			btn.theme_type_variation = "TowerCardSelected"
 		else:
-			btn.theme_type_variation = "speed"
+			btn.theme_type_variation = "TowerCard"
 
 func _on_pause_pressed() -> void:
 	GameAudio.ui_click()
@@ -986,15 +988,15 @@ func _on_pause_pressed() -> void:
 	menu.main_menu_requested.connect(_on_pause_main_menu)
 	$UI.add_child(menu)
 	get_tree().paused = true
-	var btn: Button = $UI/HUDBar/HUDTop/SpeedPanel/PauseButton
+	var btn: Button = $UI/HUDBar/HUDContent/SpeedGroup/PauseButton
 	btn.text = "▶"
-	btn.theme_type_variation = "speed_active"
+	btn.theme_type_variation = "TowerCardSelected"
 
 func _on_pause_resume() -> void:
 	get_tree().paused = false
-	var btn: Button = $UI/HUDBar/HUDTop/SpeedPanel/PauseButton
+	var btn: Button = $UI/HUDBar/HUDContent/SpeedGroup/PauseButton
 	btn.text = "❚❚"
-	btn.theme_type_variation = "speed"
+	btn.theme_type_variation = "TowerCard"
 
 func _on_pause_restart() -> void:
 	get_tree().paused = false
@@ -1017,7 +1019,7 @@ func _on_restart_pressed() -> void:
 	get_tree().reload_current_scene()
 
 func _update_wave_state_ui() -> void:
-	var wave_label = $UI/HUDBar/HUDTop/WavePanel/VBox/WaveRow/WaveStateLabel
+	var wave_label = $UI/HUDBar/HUDContent/WavePlate/WaveContent/WaveRow/WaveStateLabel
 	var spawner = $WaveSpawner
 	if spawner._state == "spawning":
 		wave_label.text = "SPAWNING"

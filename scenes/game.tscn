@@ -53,128 +53,142 @@ anchor_right = 1.0
 offset_left = 0.0
 offset_top = 0.0
 offset_right = 0.0
-offset_bottom = 64.0
+offset_bottom = 72.0
 grow_horizontal = 2
 
-[node name="HUDTop" type="HBoxContainer" parent="UI/HUDBar"]
+[node name="HUDContent" type="HBoxContainer" parent="UI/HUDBar"]
+layout_mode = 2
+theme_override_constants/separation = 16
+theme_override_margins/margin_left = 20
+theme_override_margins/margin_top = 12
+theme_override_margins/margin_right = 20
+theme_override_margins/margin_bottom = 12
+
+[node name="ResourcesGroup" type="HBoxContainer" parent="UI/HUDBar/HUDContent"]
 layout_mode = 2
 theme_override_constants/separation = 12
-theme_override_margins/margin_left = 18
-theme_override_margins/margin_top = 10
-theme_override_margins/margin_right = 18
-theme_override_margins/margin_bottom = 10
 
-[node name="ResourcesPanel" type="PanelContainer" parent="UI/HUDBar/HUDTop"]
+[node name="MoneyPlate" type="PanelContainer" parent="UI/HUDBar/HUDContent/ResourcesGroup"]
 layout_mode = 2
-theme_type_variation = &"HUDChip"
-size_flags_horizontal = 1
+theme_type_variation = &"HUDPlateMoney"
+custom_minimum_size = Vector2(120, 48)
 
-[node name="HBox" type="HBoxContainer" parent="UI/HUDBar/HUDTop/ResourcesPanel"]
+[node name="MoneyContent" type="HBoxContainer" parent="UI/HUDBar/HUDContent/ResourcesGroup/MoneyPlate"]
 layout_mode = 2
 theme_override_constants/separation = 10
-theme_override_margins/margin_left = 16
+theme_override_margins/margin_left = 14
 theme_override_margins/margin_top = 6
-theme_override_margins/margin_right = 16
+theme_override_margins/margin_right = 14
 theme_override_margins/margin_bottom = 6
 
-[node name="MoneyIcon" type="TextureRect" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
-custom_minimum_size = Vector2(24, 24)
+[node name="MoneyIcon" type="TextureRect" parent="UI/HUDBar/HUDContent/ResourcesGroup/MoneyPlate/MoneyContent"]
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("14_moneycarticon")
 stretch_mode = 5
 
-[node name="MoneyLabel" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+[node name="MoneyLabel" type="Label" parent="UI/HUDBar/HUDContent/ResourcesGroup/MoneyPlate/MoneyContent"]
 layout_mode = 2
 theme_type_variation = &"hud_money"
 text = "100"
 
-[node name="Separator1" type="VSeparator" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+[node name="LivesPlate" type="PanelContainer" parent="UI/HUDBar/HUDContent/ResourcesGroup"]
 layout_mode = 2
-custom_minimum_size = Vector2(20, 0)
+theme_type_variation = &"HUDPlateLives"
+custom_minimum_size = Vector2(120, 48)
 
-[node name="LivesIcon" type="TextureRect" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
-custom_minimum_size = Vector2(24, 24)
+[node name="LivesContent" type="HBoxContainer" parent="UI/HUDBar/HUDContent/ResourcesGroup/LivesPlate"]
+layout_mode = 2
+theme_override_constants/separation = 10
+theme_override_margins/margin_left = 14
+theme_override_margins/margin_top = 6
+theme_override_margins/margin_right = 14
+theme_override_margins/margin_bottom = 6
+
+[node name="LivesIcon" type="TextureRect" parent="UI/HUDBar/HUDContent/ResourcesGroup/LivesPlate/LivesContent"]
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("10_livesicon")
 stretch_mode = 5
 
-[node name="BaseLabel" type="Label" parent="UI/HUDBar/HUDTop/ResourcesPanel/HBox"]
+[node name="BaseLabel" type="Label" parent="UI/HUDBar/HUDContent/ResourcesGroup/LivesPlate/LivesContent"]
 layout_mode = 2
 theme_type_variation = &"hud_lives"
 text = "100"
 
-[node name="Spacer" type="Control" parent="UI/HUDBar/HUDTop"]
+[node name="SpacerLeft" type="Control" parent="UI/HUDBar/HUDContent"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="WavePanel" type="PanelContainer" parent="UI/HUDBar/HUDTop"]
+[node name="WavePlate" type="PanelContainer" parent="UI/HUDBar/HUDContent"]
 layout_mode = 2
-theme_type_variation = &"HUDChip"
+theme_type_variation = &"HUDPlateWave"
+custom_minimum_size = Vector2(200, 48)
 size_flags_horizontal = 1
 
-[node name="VBox" type="VBoxContainer" parent="UI/HUDBar/HUDTop/WavePanel"]
+[node name="WaveContent" type="VBoxContainer" parent="UI/HUDBar/HUDContent/WavePlate"]
 layout_mode = 2
 theme_override_constants/separation = 4
 theme_override_margins/margin_left = 18
-theme_override_margins/margin_top = 5
+theme_override_margins/margin_top = 6
 theme_override_margins/margin_right = 18
-theme_override_margins/margin_bottom = 5
+theme_override_margins/margin_bottom = 6
 
-[node name="WaveRow" type="HBoxContainer" parent="UI/HUDBar/HUDTop/WavePanel/VBox"]
+[node name="WaveRow" type="HBoxContainer" parent="UI/HUDBar/HUDContent/WavePlate/WaveContent"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="WaveLabel" type="Label" parent="UI/HUDBar/HUDTop/WavePanel/VBox/WaveRow"]
+[node name="WaveLabel" type="Label" parent="UI/HUDBar/HUDContent/WavePlate/WaveContent/WaveRow"]
 layout_mode = 2
 theme_type_variation = &"hud_wave"
 size_flags_horizontal = 1
 horizontal_alignment = 1
-text = "WAVE 1/5"
+text = "WAVE 1 / 10"
 
-[node name="WaveStateLabel" type="Label" parent="UI/HUDBar/HUDTop/WavePanel/VBox/WaveRow"]
+[node name="WaveStateLabel" type="Label" parent="UI/HUDBar/HUDContent/WavePlate/WaveContent/WaveRow"]
 layout_mode = 2
-theme_type_variation = &"hud_label"
+theme_type_variation = &"hud_wave_state"
 text = "PREPARING"
 
-[node name="EnemyProgress" type="ProgressBar" parent="UI/HUDBar/HUDTop/WavePanel/VBox"]
+[node name="EnemyProgress" type="ProgressBar" parent="UI/HUDBar/HUDContent/WavePlate/WaveContent"]
 layout_mode = 2
-custom_minimum_size = Vector2(220, 16)
+custom_minimum_size = Vector2(180, 10)
 show_percentage = false
 max_value = 1.0
 value = 0.0
 
-[node name="Spacer2" type="Control" parent="UI/HUDBar/HUDTop"]
+[node name="SpacerRight" type="Control" parent="UI/HUDBar/HUDContent"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="SpeedPanel" type="HBoxContainer" parent="UI/HUDBar/HUDTop"]
+[node name="SpeedGroup" type="HBoxContainer" parent="UI/HUDBar/HUDContent"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Speed1Button" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel"]
+[node name="Speed1Button" type="Button" parent="UI/HUDBar/HUDContent/SpeedGroup"]
 layout_mode = 2
-custom_minimum_size = Vector2(52, 40)
-theme_type_variation = &"speed_active"
+custom_minimum_size = Vector2(48, 40)
+theme_type_variation = &"TowerCardSelected"
 text = "1x"
 
-[node name="Speed2Button" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel"]
+[node name="Speed2Button" type="Button" parent="UI/HUDBar/HUDContent/SpeedGroup"]
 layout_mode = 2
-custom_minimum_size = Vector2(52, 40)
-theme_type_variation = &"speed"
+custom_minimum_size = Vector2(48, 40)
+theme_type_variation = &"TowerCard"
 text = "2x"
 
-[node name="Speed3Button" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel"]
+[node name="Speed3Button" type="Button" parent="UI/HUDBar/HUDContent/SpeedGroup"]
 layout_mode = 2
-custom_minimum_size = Vector2(52, 40)
-theme_type_variation = &"speed"
+custom_minimum_size = Vector2(48, 40)
+theme_type_variation = &"TowerCard"
 text = "3x"
 
-[node name="PauseButton" type="Button" parent="UI/HUDBar/HUDTop/SpeedPanel"]
+[node name="PauseButton" type="Button" parent="UI/HUDBar/HUDContent/SpeedGroup"]
 layout_mode = 2
-custom_minimum_size = Vector2(52, 40)
-theme_type_variation = &"speed"
+custom_minimum_size = Vector2(48, 40)
+theme_type_variation = &"TowerCard"
 text = "❚❚"
 
 [node name="TowerShop" type="PanelContainer" parent="UI"]
@@ -182,25 +196,25 @@ layout_mode = 2
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -196.0
-offset_top = 76.0
+offset_left = -200.0
+offset_top = 84.0
 offset_right = -16.0
-offset_bottom = 700.0
+offset_bottom = 16.0
 grow_horizontal = 0
-theme_type_variation = &"PanelLevel0"
+theme_type_variation = &"ShopPanel"
 
 [node name="VBox" type="VBoxContainer" parent="UI/TowerShop"]
 layout_mode = 2
-theme_override_constants/separation = 12
-theme_override_margins/margin_left = 12
-theme_override_margins/margin_top = 14
-theme_override_margins/margin_right = 12
-theme_override_margins/margin_bottom = 14
+theme_override_constants/separation = 14
+theme_override_margins/margin_left = 14
+theme_override_margins/margin_top = 16
+theme_override_margins/margin_right = 14
+theme_override_margins/margin_bottom = 16
 
 [node name="ShopTitle" type="Label" parent="UI/TowerShop/VBox"]
 layout_mode = 2
-theme_type_variation = &"title"
-horizontal_alignment = 1
+theme_type_variation = &"shop_title"
+horizontal_alignment = 0
 text = "TORRES"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="UI/TowerShop/VBox"]
@@ -210,52 +224,75 @@ horizontal_scroll_mode = 0
 
 [node name="ShopGrid" type="GridContainer" parent="UI/TowerShop/VBox/ScrollContainer"]
 layout_mode = 2
-columns = 2
-theme_override_constants/h_separation = 8
-theme_override_constants/v_separation = 8
+columns = 1
+theme_override_constants/h_separation = 0
+theme_override_constants/v_separation = 10
 alignment = 1
 
 [node name="BasicCard" type="Button" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid"]
 layout_mode = 2
-custom_minimum_size = Vector2(80, 80)
+custom_minimum_size = Vector2(172, 110)
 mouse_default_cursor_shape = 2
 theme_type_variation = &"TowerCard"
 
-[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -32.0
-offset_top = -32.0
-offset_right = 32.0
-offset_bottom = 32.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+[node name="CardContent" type="HBoxContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard"]
+layout_mode = 2
+theme_override_constants/separation = 14
+theme_override_margins/margin_left = 12
+theme_override_margins/margin_top = 8
+theme_override_margins/margin_right = 12
+theme_override_margins/margin_bottom = 8
+
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard/CardContent"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 80)
+size_flags_vertical = 2
+size_flags_horizontal = 1
+stretch_mode = 5
 texture = ExtResource("6_basicicon")
 
-[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard"]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = -26.0
-offset_right = -4.0
-offset_bottom = -4.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-theme_type_variation = &"CostOverlay"
+[node name="CardInfo" type="VBoxContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard/CardContent"]
+layout_mode = 2
+theme_override_constants/separation = 8
+size_flags_horizontal = 3
 
-[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard/CardCostBg"]
+[node name="CardName" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard/CardContent/CardInfo"]
+layout_mode = 2
+theme_type_variation = &"tooltip_title"
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 0
+text = "BASIC"
+
+[node name="CardDesc" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard/CardContent/CardInfo"]
+layout_mode = 2
+theme_type_variation = &"tooltip_desc"
+horizontal_alignment = 0
+text = "Área de daño: splash\nconfiable contra grupos"
+
+[node name="CardCostPlate" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard/CardContent/CardInfo"]
+layout_mode = 2
+theme_type_variation = &"CostBadge"
+custom_minimum_size = Vector2(0, 32)
+size_flags_horizontal = 1
+
+[node name="CardCostContent" type="HBoxContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard/CardContent/CardInfo/CardCostPlate"]
+layout_mode = 2
+theme_override_constants/separation = 6
+theme_override_margins/margin_left = 12
+theme_override_margins/margin_top = 4
+theme_override_margins/margin_right = 12
+theme_override_margins/margin_bottom = 4
+
+[node name="CardCostIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard/CardContent/CardInfo/CardCostPlate/CardCostContent"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("14_moneycarticon")
+stretch_mode = 5
+
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard/CardContent/CardInfo/CardCostPlate/CardCostContent"]
 layout_mode = 2
 theme_type_variation = &"card_cost"
-horizontal_alignment = 1
 text = "$50"
 
 [node name="CardLock" type="Panel" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard"]
@@ -275,10 +312,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -14.0
-offset_top = -14.0
-offset_right = 14.0
-offset_bottom = 14.0
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -287,45 +324,68 @@ stretch_mode = 5
 
 [node name="RapidCard" type="Button" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid"]
 layout_mode = 2
-custom_minimum_size = Vector2(80, 80)
+custom_minimum_size = Vector2(172, 110)
 mouse_default_cursor_shape = 2
 theme_type_variation = &"TowerCard"
 
-[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -32.0
-offset_top = -32.0
-offset_right = 32.0
-offset_bottom = 32.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+[node name="CardContent" type="HBoxContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard"]
+layout_mode = 2
+theme_override_constants/separation = 14
+theme_override_margins/margin_left = 12
+theme_override_margins/margin_top = 8
+theme_override_margins/margin_right = 12
+theme_override_margins/margin_bottom = 8
+
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard/CardContent"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 80)
+size_flags_vertical = 2
+size_flags_horizontal = 1
+stretch_mode = 5
 texture = ExtResource("7_rapidicon")
 
-[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard"]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = -26.0
-offset_right = -4.0
-offset_bottom = -4.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-theme_type_variation = &"CostOverlay"
+[node name="CardInfo" type="VBoxContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard/CardContent"]
+layout_mode = 2
+theme_override_constants/separation = 8
+size_flags_horizontal = 3
 
-[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard/CardCostBg"]
+[node name="CardName" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard/CardContent/CardInfo"]
+layout_mode = 2
+theme_type_variation = &"tooltip_title"
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 0
+text = "RAPID"
+
+[node name="CardDesc" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard/CardContent/CardInfo"]
+layout_mode = 2
+theme_type_variation = &"tooltip_desc"
+horizontal_alignment = 0
+text = "Disparo rápido\nralentiza objetivo"
+
+[node name="CardCostPlate" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard/CardContent/CardInfo"]
+layout_mode = 2
+theme_type_variation = &"CostBadge"
+custom_minimum_size = Vector2(0, 32)
+size_flags_horizontal = 1
+
+[node name="CardCostContent" type="HBoxContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard/CardContent/CardInfo/CardCostPlate"]
+layout_mode = 2
+theme_override_constants/separation = 6
+theme_override_margins/margin_left = 12
+theme_override_margins/margin_top = 4
+theme_override_margins/margin_right = 12
+theme_override_margins/margin_bottom = 4
+
+[node name="CardCostIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard/CardContent/CardInfo/CardCostPlate/CardCostContent"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("14_moneycarticon")
+stretch_mode = 5
+
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard/CardContent/CardInfo/CardCostPlate/CardCostContent"]
 layout_mode = 2
 theme_type_variation = &"card_cost"
-horizontal_alignment = 1
 text = "$75"
 
 [node name="CardLock" type="Panel" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard"]
@@ -345,10 +405,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -14.0
-offset_top = -14.0
-offset_right = 14.0
-offset_bottom = 14.0
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -357,45 +417,68 @@ stretch_mode = 5
 
 [node name="SniperCard" type="Button" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid"]
 layout_mode = 2
-custom_minimum_size = Vector2(80, 80)
+custom_minimum_size = Vector2(172, 110)
 mouse_default_cursor_shape = 2
 theme_type_variation = &"TowerCard"
 
-[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -32.0
-offset_top = -32.0
-offset_right = 32.0
-offset_bottom = 32.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+[node name="CardContent" type="HBoxContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard"]
+layout_mode = 2
+theme_override_constants/separation = 14
+theme_override_margins/margin_left = 12
+theme_override_margins/margin_top = 8
+theme_override_margins/margin_right = 12
+theme_override_margins/margin_bottom = 8
+
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardContent"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 80)
+size_flags_vertical = 2
+size_flags_horizontal = 1
+stretch_mode = 5
 texture = ExtResource("8_snipericon")
 
-[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard"]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = -26.0
-offset_right = -4.0
-offset_bottom = -4.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-theme_type_variation = &"CostOverlay"
+[node name="CardInfo" type="VBoxContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardContent"]
+layout_mode = 2
+theme_override_constants/separation = 8
+size_flags_horizontal = 3
 
-[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardCostBg"]
+[node name="CardName" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardContent/CardInfo"]
+layout_mode = 2
+theme_type_variation = &"tooltip_title"
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 0
+text = "SNIPER"
+
+[node name="CardDesc" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardContent/CardInfo"]
+layout_mode = 2
+theme_type_variation = &"tooltip_desc"
+horizontal_alignment = 0
+text = "Alto daño, gran alcance\nperfora armaduras"
+
+[node name="CardCostPlate" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardContent/CardInfo"]
+layout_mode = 2
+theme_type_variation = &"CostBadge"
+custom_minimum_size = Vector2(0, 32)
+size_flags_horizontal = 1
+
+[node name="CardCostContent" type="HBoxContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardContent/CardInfo/CardCostPlate"]
+layout_mode = 2
+theme_override_constants/separation = 6
+theme_override_margins/margin_left = 12
+theme_override_margins/margin_top = 4
+theme_override_margins/margin_right = 12
+theme_override_margins/margin_bottom = 4
+
+[node name="CardCostIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardContent/CardInfo/CardCostPlate/CardCostContent"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("14_moneycarticon")
+stretch_mode = 5
+
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardContent/CardInfo/CardCostPlate/CardCostContent"]
 layout_mode = 2
 theme_type_variation = &"card_cost"
-horizontal_alignment = 1
 text = "$120"
 
 [node name="CardLock" type="Panel" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard"]
@@ -415,10 +498,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -14.0
-offset_top = -14.0
-offset_right = 14.0
-offset_bottom = 14.0
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -427,46 +510,69 @@ stretch_mode = 5
 
 [node name="CryoCard" type="Button" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid"]
 layout_mode = 2
-custom_minimum_size = Vector2(80, 80)
+custom_minimum_size = Vector2(172, 110)
 mouse_default_cursor_shape = 2
 theme_type_variation = &"TowerCard"
 
-[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -32.0
-offset_top = -32.0
-offset_right = 32.0
-offset_bottom = 32.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 2
+[node name="CardContent" type="HBoxContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard"]
+layout_mode = 2
+theme_override_constants/separation = 14
+theme_override_margins/margin_left = 12
+theme_override_margins/margin_top = 8
+theme_override_margins/margin_right = 12
+theme_override_margins/margin_bottom = 8
+
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard/CardContent"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 80)
+size_flags_vertical = 2
+size_flags_horizontal = 1
+stretch_mode = 5
 modulate = Color(0.55, 0.75, 1, 1)
 texture = ExtResource("6_basicicon")
 
-[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard"]
-layout_mode = 1
-anchors_preset = 12
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 4.0
-offset_top = -26.0
-offset_right = -4.0
-offset_bottom = -4.0
-grow_horizontal = 2
-grow_vertical = 0
-mouse_filter = 2
-theme_type_variation = &"CostOverlay"
+[node name="CardInfo" type="VBoxContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard/CardContent"]
+layout_mode = 2
+theme_override_constants/separation = 8
+size_flags_horizontal = 3
 
-[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard/CardCostBg"]
+[node name="CardName" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard/CardContent/CardInfo"]
+layout_mode = 2
+theme_type_variation = &"tooltip_title"
+theme_override_font_sizes/font_size = 16
+horizontal_alignment = 0
+text = "CRYO"
+
+[node name="CardDesc" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard/CardContent/CardInfo"]
+layout_mode = 2
+theme_type_variation = &"tooltip_desc"
+horizontal_alignment = 0
+text = "Congela en área\nralentiza grupos"
+
+[node name="CardCostPlate" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard/CardContent/CardInfo"]
+layout_mode = 2
+theme_type_variation = &"CostBadge"
+custom_minimum_size = Vector2(0, 32)
+size_flags_horizontal = 1
+
+[node name="CardCostContent" type="HBoxContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard/CardContent/CardInfo/CardCostPlate"]
+layout_mode = 2
+theme_override_constants/separation = 6
+theme_override_margins/margin_left = 12
+theme_override_margins/margin_top = 4
+theme_override_margins/margin_right = 12
+theme_override_margins/margin_bottom = 4
+
+[node name="CardCostIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard/CardContent/CardInfo/CardCostPlate/CardCostContent"]
+custom_minimum_size = Vector2(20, 20)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("14_moneycarticon")
+stretch_mode = 5
+
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard/CardContent/CardInfo/CardCostPlate/CardCostContent"]
 layout_mode = 2
 theme_type_variation = &"card_cost"
-horizontal_alignment = 1
 text = "$100"
 
 [node name="CardLock" type="Panel" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard"]
@@ -486,10 +592,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -14.0
-offset_top = -14.0
-offset_right = 14.0
-offset_bottom = 14.0
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
@@ -501,241 +607,161 @@ layout_mode = 2
 
 [node name="ShopDesc" type="PanelContainer" parent="UI/TowerShop/VBox"]
 layout_mode = 2
-theme_type_variation = &"tooltip_panel"
-custom_minimum_size = Vector2(280, 0)
+theme_type_variation = &"TooltipPanel"
+custom_minimum_size = Vector2(172, 0)
 size_flags_horizontal = 3
+visible = false
 
-[node name="ShopDescBox" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc"]
+[node name="ShopDescContent" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc"]
 layout_mode = 2
-theme_override_constants/separation = 11
-theme_override_margins/margin_left = 16
-theme_override_margins/margin_top = 16
-theme_override_margins/margin_right = 16
-theme_override_margins/margin_bottom = 16
+theme_override_constants/separation = 10
+theme_override_margins/margin_left = 14
+theme_override_margins/margin_top = 14
+theme_override_margins/margin_right = 14
+theme_override_margins/margin_bottom = 14
 
-[node name="ShopDescTitle" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+[node name="ShopDescTitle" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent"]
 layout_mode = 2
 theme_type_variation = &"tooltip_title"
+theme_override_font_sizes/font_size = 20
 horizontal_alignment = 0
-theme_override_font_sizes/font_size = 24
 text = ""
 
-[node name="ShopDescDivider" type="PanelContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+[node name="ShopDescDesc" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent"]
 layout_mode = 2
-theme_type_variation = &"tooltip_divider"
+theme_type_variation = &"tooltip_desc"
+horizontal_alignment = 0
+text = ""
+
+[node name="ShopDescDivider" type="PanelContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent"]
+layout_mode = 2
+theme_type_variation = &"sb_divider"
 custom_minimum_size = Vector2(0, 1)
 size_flags_horizontal = 3
 visible = false
 
-[node name="ShopDescStatDamage" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+[node name="ShopDescStats" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ShopDescStatDamage" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats"]
 layout_mode = 2
 theme_override_constants/separation = 10
 visible = false
 
-[node name="ShopDescStatDamageChip" type="PanelContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatDamage"]
+[node name="ShopDescStatDamageIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatDamage"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
-theme_type_variation = &"tooltip_chip_damage"
-custom_minimum_size = Vector2(32, 32)
 size_flags_vertical = 4
-size_flags_horizontal = 4
-
-[node name="ShopDescStatDamageIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatDamage/ShopDescStatDamageChip"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 7.0
-offset_top = 7.0
-offset_right = -7.0
-offset_bottom = -7.0
-size_flags_vertical = 4
-size_flags_horizontal = 4
 stretch_mode = 5
 
-[node name="ShopDescStatDamageText" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatDamage"]
-layout_mode = 2
-theme_override_constants/separation = 2
-size_flags_horizontal = 3
-
-[node name="ShopDescStatDamageLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatDamage/ShopDescStatDamageText"]
+[node name="ShopDescStatDamageLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatDamage"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_label"
 horizontal_alignment = 0
-theme_override_font_sizes/font_size = 14
 text = "Damage"
 
-[node name="ShopDescStatDamageValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatDamage/ShopDescStatDamageText"]
+[node name="ShopDescStatDamageValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatDamage"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_value"
-horizontal_alignment = 0
-theme_override_font_sizes/font_size = 17
+horizontal_alignment = 2
+size_flags_horizontal = 1
 text = "1"
 
-[node name="ShopDescStatRange" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+[node name="ShopDescStatRange" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats"]
 layout_mode = 2
 theme_override_constants/separation = 10
 visible = false
 
-[node name="ShopDescStatRangeChip" type="PanelContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatRange"]
+[node name="ShopDescStatRangeIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatRange"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
-theme_type_variation = &"tooltip_chip_range"
-custom_minimum_size = Vector2(32, 32)
 size_flags_vertical = 4
-size_flags_horizontal = 4
-
-[node name="ShopDescStatRangeIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatRange/ShopDescStatRangeChip"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 7.0
-offset_top = 7.0
-offset_right = -7.0
-offset_bottom = -7.0
-size_flags_vertical = 4
-size_flags_horizontal = 4
 stretch_mode = 5
 
-[node name="ShopDescStatRangeText" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatRange"]
-layout_mode = 2
-theme_override_constants/separation = 2
-size_flags_horizontal = 3
-
-[node name="ShopDescStatRangeLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatRange/ShopDescStatRangeText"]
+[node name="ShopDescStatRangeLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatRange"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_label"
 horizontal_alignment = 0
-theme_override_font_sizes/font_size = 14
 text = "Range"
 
-[node name="ShopDescStatRangeValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatRange/ShopDescStatRangeText"]
+[node name="ShopDescStatRangeValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatRange"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_value"
-horizontal_alignment = 0
-theme_override_font_sizes/font_size = 17
+horizontal_alignment = 2
+size_flags_horizontal = 1
 text = "260"
 
-[node name="ShopDescStatSpeed" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+[node name="ShopDescStatSpeed" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats"]
 layout_mode = 2
 theme_override_constants/separation = 10
 visible = false
 
-[node name="ShopDescStatSpeedChip" type="PanelContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpeed"]
+[node name="ShopDescStatSpeedIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatSpeed"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
-theme_type_variation = &"tooltip_chip_speed"
-custom_minimum_size = Vector2(32, 32)
 size_flags_vertical = 4
-size_flags_horizontal = 4
-
-[node name="ShopDescStatSpeedIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpeed/ShopDescStatSpeedChip"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 7.0
-offset_top = 7.0
-offset_right = -7.0
-offset_bottom = -7.0
-size_flags_vertical = 4
-size_flags_horizontal = 4
 stretch_mode = 5
 
-[node name="ShopDescStatSpeedText" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpeed"]
-layout_mode = 2
-theme_override_constants/separation = 2
-size_flags_horizontal = 3
-
-[node name="ShopDescStatSpeedLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpeed/ShopDescStatSpeedText"]
+[node name="ShopDescStatSpeedLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatSpeed"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_label"
 horizontal_alignment = 0
-theme_override_font_sizes/font_size = 14
 text = "Attack Speed"
 
-[node name="ShopDescStatSpeedValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpeed/ShopDescStatSpeedText"]
+[node name="ShopDescStatSpeedValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatSpeed"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_value"
-horizontal_alignment = 0
-theme_override_font_sizes/font_size = 17
+horizontal_alignment = 2
+size_flags_horizontal = 1
 text = "1.25/s"
 
-[node name="ShopDescStatCost" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+[node name="ShopDescStatCost" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats"]
 layout_mode = 2
 theme_override_constants/separation = 10
 visible = false
 
-[node name="ShopDescStatCostIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatCost"]
-custom_minimum_size = Vector2(32, 32)
+[node name="ShopDescStatCostIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatCost"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 size_flags_vertical = 4
-size_flags_horizontal = 4
 stretch_mode = 5
 
-[node name="ShopDescStatCostText" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatCost"]
-layout_mode = 2
-theme_override_constants/separation = 2
-size_flags_horizontal = 3
-
-[node name="ShopDescStatCostLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatCost/ShopDescStatCostText"]
+[node name="ShopDescStatCostLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatCost"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_label"
 horizontal_alignment = 0
-theme_override_font_sizes/font_size = 14
 text = "Cost"
 
-[node name="ShopDescStatCostValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatCost/ShopDescStatCostText"]
+[node name="ShopDescStatCostValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatCost"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_value"
-horizontal_alignment = 0
-theme_override_font_sizes/font_size = 17
+horizontal_alignment = 2
+size_flags_horizontal = 1
 text = "$50"
 
-[node name="ShopDescStatSpecial" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+[node name="ShopDescStatSpecial" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats"]
 layout_mode = 2
 theme_override_constants/separation = 10
 visible = false
 
-[node name="ShopDescStatSpecialChip" type="PanelContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpecial"]
+[node name="ShopDescStatSpecialIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatSpecial"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
-theme_type_variation = &"tooltip_chip_damage"
-custom_minimum_size = Vector2(32, 32)
 size_flags_vertical = 4
-size_flags_horizontal = 4
-
-[node name="ShopDescStatSpecialIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpecial/ShopDescStatSpecialChip"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 7.0
-offset_top = 7.0
-offset_right = -7.0
-offset_bottom = -7.0
-size_flags_vertical = 4
-size_flags_horizontal = 4
 stretch_mode = 5
 
-[node name="ShopDescStatSpecialText" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpecial"]
-layout_mode = 2
-theme_override_constants/separation = 2
-size_flags_horizontal = 3
-
-[node name="ShopDescStatSpecialLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpecial/ShopDescStatSpecialText"]
+[node name="ShopDescStatSpecialLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatSpecial"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_label"
 horizontal_alignment = 0
-theme_override_font_sizes/font_size = 14
 text = "Special"
 
-[node name="ShopDescStatSpecialValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpecial/ShopDescStatSpecialText"]
+[node name="ShopDescStatSpecialValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescContent/ShopDescStats/ShopDescStatSpecial"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_value"
-horizontal_alignment = 0
-theme_override_font_sizes/font_size = 17
+horizontal_alignment = 2
+size_flags_horizontal = 1
 text = "—"
 
 [node name="TowerInfoPanel" type="PanelContainer" parent="UI"]
@@ -743,273 +769,222 @@ layout_mode = 2
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 18.0
-offset_top = -240.0
-offset_right = 330.0
-offset_bottom = -18.0
+offset_left = 16.0
+offset_top = -300.0
+offset_right = 320.0
+offset_bottom = -16.0
 grow_vertical = 0
-theme_type_variation = &"SelectedPanel"
+theme_type_variation = &"InfoPanel"
 visible = false
 
 [node name="VBox" type="VBoxContainer" parent="UI/TowerInfoPanel"]
 layout_mode = 2
-theme_override_constants/separation = 11
-theme_override_margins/margin_left = 16
-theme_override_margins/margin_top = 16
-theme_override_margins/margin_right = 16
-theme_override_margins/margin_bottom = 16
+theme_override_constants/separation = 10
+theme_override_margins/margin_left = 14
+theme_override_margins/margin_top = 14
+theme_override_margins/margin_right = 14
+theme_override_margins/margin_bottom = 14
 
-[node name="TowerTypeLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+[node name="TowerHeader" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TowerSprite" type="TextureRect" parent="UI/TowerInfoPanel/VBox/TowerHeader"]
+layout_mode = 2
+custom_minimum_size = Vector2(56, 56)
+size_flags_vertical = 2
+size_flags_horizontal = 1
+stretch_mode = 5
+
+[node name="TowerHeaderInfo" type="VBoxContainer" parent="UI/TowerInfoPanel/VBox/TowerHeader"]
+layout_mode = 2
+theme_override_constants/separation = 4
+size_flags_horizontal = 3
+
+[node name="TowerTypeLabel" type="Label" parent="UI/TowerInfoPanel/VBox/TowerHeader/TowerHeaderInfo"]
 layout_mode = 2
 theme_type_variation = &"tooltip_title"
-horizontal_alignment = 1
+theme_override_font_sizes/font_size = 18
+horizontal_alignment = 0
 text = "BASIC TOWER"
 
-[node name="LevelLabel" type="Label" parent="UI/TowerInfoPanel/VBox"]
+[node name="LevelLabel" type="Label" parent="UI/TowerInfoPanel/VBox/TowerHeader/TowerHeaderInfo"]
 layout_mode = 2
-theme_type_variation = &"subtitle"
-horizontal_alignment = 1
-text = "Level: 1"
+theme_type_variation = &"tooltip_desc"
+horizontal_alignment = 0
+text = "Level: 1 · CHOOSE"
 
-[node name="StatDamageRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
+[node name="StatDivider" type="PanelContainer" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_type_variation = &"sb_divider"
+custom_minimum_size = Vector2(0, 1)
+size_flags_horizontal = 3
+
+[node name="StatsGrid" type="VBoxContainer" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StatDamageRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="StatDamageChip" type="PanelContainer" parent="UI/TowerInfoPanel/VBox/StatDamageRow"]
+[node name="StatDamageIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatDamageRow"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
-theme_type_variation = &"tooltip_chip_damage"
-custom_minimum_size = Vector2(32, 32)
 size_flags_vertical = 4
-size_flags_horizontal = 4
-
-[node name="StatDamageIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatDamageRow/StatDamageChip"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 7.0
-offset_top = 7.0
-offset_right = -7.0
-offset_bottom = -7.0
-size_flags_vertical = 4
-size_flags_horizontal = 4
-texture = ExtResource("11_swordicon")
 stretch_mode = 5
+texture = ExtResource("11_swordicon")
 
-[node name="StatDamageText" type="VBoxContainer" parent="UI/TowerInfoPanel/VBox/StatDamageRow"]
-layout_mode = 2
-theme_override_constants/separation = 2
-size_flags_horizontal = 3
-
-[node name="StatDamageLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatDamageRow/StatDamageText"]
+[node name="StatDamageLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatDamageRow"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_label"
 horizontal_alignment = 0
 text = "Damage"
 
-[node name="StatDamageValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatDamageRow/StatDamageText"]
+[node name="StatDamageValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatDamageRow"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_value"
-horizontal_alignment = 0
+horizontal_alignment = 2
+size_flags_horizontal = 1
 text = "1"
 
-[node name="StatRangeRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
+[node name="StatRangeRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="StatRangeChip" type="PanelContainer" parent="UI/TowerInfoPanel/VBox/StatRangeRow"]
+[node name="StatRangeIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatRangeRow"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
-theme_type_variation = &"tooltip_chip_range"
-custom_minimum_size = Vector2(32, 32)
 size_flags_vertical = 4
-size_flags_horizontal = 4
-
-[node name="StatRangeIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatRangeRow/StatRangeChip"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 7.0
-offset_top = 7.0
-offset_right = -7.0
-offset_bottom = -7.0
-size_flags_vertical = 4
-size_flags_horizontal = 4
-texture = ExtResource("12_targeticon")
 stretch_mode = 5
+texture = ExtResource("12_targeticon")
 
-[node name="StatRangeText" type="VBoxContainer" parent="UI/TowerInfoPanel/VBox/StatRangeRow"]
-layout_mode = 2
-theme_override_constants/separation = 2
-size_flags_horizontal = 3
-
-[node name="StatRangeLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatRangeRow/StatRangeText"]
+[node name="StatRangeLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatRangeRow"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_label"
 horizontal_alignment = 0
 text = "Range"
 
-[node name="StatRangeValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatRangeRow/StatRangeText"]
+[node name="StatRangeValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatRangeRow"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_value"
-horizontal_alignment = 0
+horizontal_alignment = 2
+size_flags_horizontal = 1
 text = "180"
 
-[node name="StatSpeedRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
+[node name="StatSpeedRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="StatSpeedChip" type="PanelContainer" parent="UI/TowerInfoPanel/VBox/StatSpeedRow"]
+[node name="StatSpeedIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpeedRow"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
-theme_type_variation = &"tooltip_chip_speed"
-custom_minimum_size = Vector2(32, 32)
 size_flags_vertical = 4
-size_flags_horizontal = 4
-
-[node name="StatSpeedIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatSpeedRow/StatSpeedChip"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 7.0
-offset_top = 7.0
-offset_right = -7.0
-offset_bottom = -7.0
-size_flags_vertical = 4
-size_flags_horizontal = 4
-texture = ExtResource("13_hourglassicon")
 stretch_mode = 5
+texture = ExtResource("13_hourglassicon")
 
-[node name="StatSpeedText" type="VBoxContainer" parent="UI/TowerInfoPanel/VBox/StatSpeedRow"]
-layout_mode = 2
-theme_override_constants/separation = 2
-size_flags_horizontal = 3
-
-[node name="StatSpeedLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatSpeedRow/StatSpeedText"]
+[node name="StatSpeedLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpeedRow"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_label"
 horizontal_alignment = 0
 text = "Attack Speed"
 
-[node name="StatSpeedValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatSpeedRow/StatSpeedText"]
+[node name="StatSpeedValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpeedRow"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_value"
-horizontal_alignment = 0
+horizontal_alignment = 2
+size_flags_horizontal = 1
 text = "0.80/s"
 
-[node name="StatCostRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
+[node name="StatCostRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="StatCostIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatCostRow"]
-custom_minimum_size = Vector2(32, 32)
+[node name="StatCostIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatCostRow"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 size_flags_vertical = 4
-size_flags_horizontal = 4
-texture = ExtResource("9_moneyicon")
 stretch_mode = 5
+texture = ExtResource("14_moneycarticon")
 
-[node name="StatCostText" type="VBoxContainer" parent="UI/TowerInfoPanel/VBox/StatCostRow"]
-layout_mode = 2
-theme_override_constants/separation = 2
-size_flags_horizontal = 3
-
-[node name="StatCostLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatCostRow/StatCostText"]
+[node name="StatCostLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatCostRow"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_label"
 horizontal_alignment = 0
 text = "Cost"
 
-[node name="StatCostValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatCostRow/StatCostText"]
+[node name="StatCostValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatCostRow"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_value"
-horizontal_alignment = 0
+horizontal_alignment = 2
+size_flags_horizontal = 1
 text = "$50"
 
-[node name="StatSpecialRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
+[node name="StatSpecialRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="StatSpecialChip" type="PanelContainer" parent="UI/TowerInfoPanel/VBox/StatSpecialRow"]
+[node name="StatSpecialIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpecialRow"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
-theme_type_variation = &"tooltip_chip_damage"
-custom_minimum_size = Vector2(32, 32)
 size_flags_vertical = 4
-size_flags_horizontal = 4
-
-[node name="StatSpecialIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatSpecialRow/StatSpecialChip"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 7.0
-offset_top = 7.0
-offset_right = -7.0
-offset_bottom = -7.0
-size_flags_vertical = 4
-size_flags_horizontal = 4
-texture = ExtResource("17_fireicon")
 stretch_mode = 5
+texture = ExtResource("17_fireicon")
 
-[node name="StatSpecialText" type="VBoxContainer" parent="UI/TowerInfoPanel/VBox/StatSpecialRow"]
-layout_mode = 2
-theme_override_constants/separation = 2
-size_flags_horizontal = 3
-
-[node name="StatSpecialLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatSpecialRow/StatSpecialText"]
+[node name="StatSpecialLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpecialRow"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_label"
 horizontal_alignment = 0
 text = "Special"
 
-[node name="StatSpecialValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatSpecialRow/StatSpecialText"]
+[node name="StatSpecialValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpecialRow"]
 layout_mode = 2
 theme_type_variation = &"tooltip_stat_value"
-horizontal_alignment = 0
+horizontal_alignment = 2
+size_flags_horizontal = 1
 text = "—"
 
-[node name="Separator2" type="HSeparator" parent="UI/TowerInfoPanel/VBox"]
+[node name="StatDivider2" type="PanelContainer" parent="UI/TowerInfoPanel/VBox"]
 layout_mode = 2
+theme_type_variation = &"sb_divider"
+custom_minimum_size = Vector2(0, 1)
+size_flags_horizontal = 3
 
 [node name="Actions" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
 [node name="UpgradeButton" type="Button" parent="UI/TowerInfoPanel/VBox/Actions"]
 layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 44)
-theme_type_variation = &"PanelLevel2"
+theme_type_variation = &"btn_action"
 text = "UPGRADE $75"
 
 [node name="SellButton" type="Button" parent="UI/TowerInfoPanel/VBox/Actions"]
 layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 44)
-theme_type_variation = &"PanelLevel2"
+theme_type_variation = &"btn_sell"
 text = "SELL +$35"
 
 [node name="BranchRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 visible = false
 
 [node name="BranchAButton" type="Button" parent="UI/TowerInfoPanel/VBox/BranchRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 44)
-theme_type_variation = &"PanelLevel2"
+theme_type_variation = &"btn_action"
 text = "DAMAGE +$75"
 
 [node name="BranchBButton" type="Button" parent="UI/TowerInfoPanel/VBox/BranchRow"]
 layout_mode = 2
 size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 44)
-theme_type_variation = &"PanelLevel2"
+theme_type_variation = &"btn_action"
 text = "SPEED +$75"
 
 [node name="EndScreen" type="CanvasLayer" parent="."]
