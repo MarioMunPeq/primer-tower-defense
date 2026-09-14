@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://d25s0dg06vagc"]
+[gd_scene load_steps=19 format=3 uid="uid://d25s0dg06vagc"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/waves/wave_spawner.gd" id="2_spawner"]
@@ -15,7 +15,6 @@
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/hourglass.png" id="13_hourglassicon"]
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_game-icons/PNG/White/2x/shoppingCart.png" id="14_moneycarticon"]
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/lock_closed.png" id="15_lockicon"]
-[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile207.png" id="16_cryoicon"]
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/fire.png" id="17_fireicon"]
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/arrow_clockwise.png" id="18_slowicon"]
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/shield.png" id="19_shieldicon"]
@@ -449,7 +448,8 @@ offset_bottom = 32.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("16_cryoicon")
+modulate = Color(0.55, 0.75, 1, 1)
+texture = ExtResource("6_basicicon")
 
 [node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard"]
 layout_mode = 1

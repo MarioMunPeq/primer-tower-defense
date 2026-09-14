@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile207.png" id="1_sprite"]
+[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile204.png" id="1_sprite"]
 [ext_resource type="Script" path="res://scripts/towers/ice_tower.gd" id="2_script"]
 
 [sub_resource type="CircleShape2D" id="SubResource_1"]
@@ -15,6 +15,7 @@ script/cost = 100
 script/MAX_PROJECTILES = 6
 
 [node name="Sprite" type="Sprite2D" parent="."]
+modulate = Color(0.55, 0.75, 1, 1)
 texture = ExtResource("1_sprite")
 
 [node name="DetectionArea" type="Area2D" parent="."]
