@@ -30,12 +30,15 @@ func _tween_btn_scale(btn: Button, target: float) -> void:
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 func _on_play_pressed() -> void:
+	GameAudio.ui_click()
 	get_tree().change_scene_to_file("res://scenes/game.tscn")
 
 func _on_options_pressed() -> void:
+	GameAudio.ui_click()
 	get_tree().change_scene_to_file("res://scenes/ui/options_menu.tscn")
 
 func _on_quit_pressed() -> void:
+	GameAudio.ui_click()
 	if OS.has_feature("web"):
 		return
 	get_tree().quit()

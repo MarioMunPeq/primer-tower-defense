@@ -6,11 +6,13 @@ const DEFAULT_FULLSCREEN := false
 const DEFAULT_QUALITY := 0
 const DEFAULT_DEFAULT_SPEED := 1
 const DEFAULT_SELL_CONFIRM := true
+const DEFAULT_MUSIC_VOLUME := 0.6
 
 var fullscreen: bool = DEFAULT_FULLSCREEN
 var quality: int = DEFAULT_QUALITY
 var default_speed: int = DEFAULT_DEFAULT_SPEED
 var sell_confirm: bool = DEFAULT_SELL_CONFIRM
+var music_volume: float = DEFAULT_MUSIC_VOLUME
 
 func _ready() -> void:
 	load_settings()
@@ -31,6 +33,8 @@ func load_settings() -> void:
 		default_speed = int(cfg.get_value("gameplay", "default_speed", default_speed))
 	if cfg.has_section_key("gameplay", "sell_confirm"):
 		sell_confirm = bool(cfg.get_value("gameplay", "sell_confirm", sell_confirm))
+	if cfg.has_section_key("audio", "music_volume"):
+		music_volume = clampf(float(cfg.get_value("audio", "music_volume", music_volume)), 0.0, 1.0)
 
 func save_settings() -> void:
 	var cfg := ConfigFile.new()
@@ -38,6 +42,7 @@ func save_settings() -> void:
 	cfg.set_value("display", "quality", quality)
 	cfg.set_value("gameplay", "default_speed", default_speed)
 	cfg.set_value("gameplay", "sell_confirm", sell_confirm)
+	cfg.set_value("audio", "music_volume", music_volume)
 	cfg.save(SETTINGS_PATH)
 	if OS.has_feature("web"):
 		JavaScriptBridge.eval("FS.syncfs(false, function(err){});")
@@ -59,6 +64,10 @@ func set_default_speed(value: int) -> void:
 
 func set_sell_confirm(value: bool) -> void:
 	sell_confirm = value
+	save_settings()
+
+func set_music_volume(value: float) -> void:
+	music_volume = clampf(value, 0.0, 1.0)
 	save_settings()
 
 func apply_display_settings() -> void:

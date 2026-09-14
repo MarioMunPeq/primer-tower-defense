@@ -57,6 +57,8 @@ const ICON_COST := preload("res://assets/ui/kenney_ui-pack/PNG/Yellow/Default/st
 
 const BASE_HP_MAX := 100
 
+const IMPACT_PARTICLES := preload("res://scenes/effects/impact_particles.tscn")
+
 ## Which tower type is currently armed for placement.
 ## 0 = Basic Tower, 1 = Rapid Tower, 2 = Sniper Tower, -1 = nothing armed.
 var _tower_type_to_place := -1
@@ -74,6 +76,12 @@ var _hovered_enemy: Node2D = null
 var _last_mouse_pos := Vector2(INF, INF)
 ## Ghost-tower textures extracted once from each tower scene at startup.
 var _preview_textures: Array[Texture2D] = []
+
+## Camera shake (juice). Applied as an offset on $Camera2D so it never fights
+## the responsive centering done in _setup_camera().
+var _shake_strength := 0.0
+var _shake_duration := 0.0
+var _shake_time := 0.0
 
 ## The placement-preview range comes from the currently selected tower type.
 func _preview_range() -> float:
@@ -178,9 +186,9 @@ func _ready():
 	$UI/TowerInfoPanel/VBox/Actions/SellButton.pressed.connect(_on_sell_pressed)
 	
 	# Connect speed + pause buttons
-	$UI/HUDBar/HUDTop/SpeedPanel/Speed1Button.pressed.connect(Callable(self, "_set_speed").bind(1))
-	$UI/HUDBar/HUDTop/SpeedPanel/Speed2Button.pressed.connect(Callable(self, "_set_speed").bind(2))
-	$UI/HUDBar/HUDTop/SpeedPanel/Speed3Button.pressed.connect(Callable(self, "_set_speed").bind(3))
+	$UI/HUDBar/HUDTop/SpeedPanel/Speed1Button.pressed.connect(Callable(self, "_on_speed_pressed").bind(1))
+	$UI/HUDBar/HUDTop/SpeedPanel/Speed2Button.pressed.connect(Callable(self, "_on_speed_pressed").bind(2))
+	$UI/HUDBar/HUDTop/SpeedPanel/Speed3Button.pressed.connect(Callable(self, "_on_speed_pressed").bind(3))
 	$UI/HUDBar/HUDTop/SpeedPanel/PauseButton.pressed.connect(_on_pause_pressed)
 	
 	_update_money_ui()
@@ -455,6 +463,8 @@ func _on_enemy_reached_base(damage: int) -> void:
 	_base_hp -= damage
 	_update_base_ui()
 	_update_wave_progress()
+	shake_camera(9.0, 0.3)
+	GameAudio.base_hit_sfx()
 	if _base_hp <= 0:
 		_base_hp = 0
 		_end_game("GAME OVER")
@@ -503,6 +513,7 @@ func _end_game(text: String) -> void:
 	get_tree().paused = true
 
 func _on_main_menu_pressed() -> void:
+	GameAudio.ui_click()
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/ui/main_menu.tscn")
 
@@ -511,7 +522,7 @@ func _on_main_menu_pressed() -> void:
 ## changes (below) or when selection/placement/money changes (event handlers).
 ## Tooltip hover-scanning also only runs when the mouse moves, or while an
 ## enemy tooltip is visible (enemies move under a stationary cursor).
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	var mpos := get_global_mouse_position()
 	var tile := _mouse_to_tile(mpos)
 	if tile != _hover_tile:
@@ -521,6 +532,23 @@ func _process(_delta: float) -> void:
 	if _hovered_enemy != null or mpos != _last_mouse_pos:
 		_last_mouse_pos = mpos
 		_check_hover_tooltips()
+	_update_shake(delta)
+
+## Generic camera shake: random offset that decays linearly over the duration.
+## intensity is the peak offset in pixels, duration in seconds.
+func shake_camera(intensity: float, duration: float) -> void:
+	_shake_strength = intensity
+	_shake_duration = duration
+	_shake_time = 0.0
+
+func _update_shake(delta: float) -> void:
+	if _shake_time < _shake_duration:
+		_shake_time += delta
+		var decay := 1.0 - _shake_time / _shake_duration
+		var offset := Vector2(randf_range(-1.0, 1.0), randf_range(-1.0, 1.0))
+		$Camera2D.offset = offset * _shake_strength * decay
+	elif $Camera2D.offset != Vector2.ZERO:
+		$Camera2D.offset = Vector2.ZERO
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -564,9 +592,11 @@ func _can_place(tile: Vector2i) -> bool:
 func _try_place_tower(world_pos: Vector2) -> bool:
 	var tile := _mouse_to_tile(world_pos)
 	if not _can_place(tile):
+		GameAudio.ui_error()
 		return false
 	var cost := _preview_cost()
 	if _money < cost:
+		GameAudio.ui_error()
 		return false
 
 	var tower := _preview_scene().instantiate()
@@ -580,12 +610,18 @@ func _try_place_tower(world_pos: Vector2) -> bool:
 	_update_money_ui()
 	queue_redraw()
 	_update_range_preview()
+	GameAudio.buy_sfx()
 	return true
 
 func _on_tower_impact(position: Vector2) -> void:
 	var effect := IMPACT_EFFECT.instantiate()
 	effect.position = position
 	add_child(effect)
+	var sparks := IMPACT_PARTICLES.instantiate()
+	sparks.position = position
+	add_child(sparks)
+	shake_camera(2.5, 0.12)
+	GameAudio.impact_sfx()
 
 func _tile_center(tile: Vector2i) -> Vector2:
 	return Vector2(tile.x * TILE_SIZE + TILE_SIZE / 2.0, tile.y * TILE_SIZE + TILE_SIZE / 2.0)
@@ -697,6 +733,7 @@ func _update_tower_info_panel() -> void:
 		panel.visible = false
 
 func _on_upgrade_pressed() -> void:
+	GameAudio.ui_click()
 	if not is_instance_valid(_selected_tower):
 		return
 	var tower: Node2D = _selected_tower
@@ -722,6 +759,7 @@ func _sell_value(tower: Node2D) -> int:
 	return int(round(invested * 0.7))
 
 func _on_sell_pressed() -> void:
+	GameAudio.ui_click()
 	if not is_instance_valid(_selected_tower):
 		return
 	var tower: Node2D = _selected_tower
@@ -751,6 +789,7 @@ func _do_sell(tower: Node2D) -> void:
 	queue_redraw()
 
 func _set_tower_type(type_idx: int) -> void:
+	GameAudio.ui_click()
 	# Toggle: pressing the already-armed card disarms without spending anything.
 	if _tower_type_to_place == type_idx:
 		_disarm_tower_type()
@@ -827,6 +866,10 @@ func _update_shop_desc() -> void:
 			1.0 / SNIPER_TOWER_SCRIPT.ATTACK_COOLDOWN, SNIPER_TOWER_SCRIPT.COST]
 	$UI/TowerShop/VBox/ShopDesc.text = desc
 
+func _on_speed_pressed(multiplier: int) -> void:
+	GameAudio.ui_click()
+	_set_speed(multiplier)
+
 func _set_speed(multiplier: int) -> void:
 	Engine.time_scale = float(multiplier)
 	for i in [1, 2, 3]:
@@ -837,6 +880,7 @@ func _set_speed(multiplier: int) -> void:
 			btn.theme_type_variation = "speed"
 
 func _on_pause_pressed() -> void:
+	GameAudio.ui_click()
 	if _game_ended:
 		return
 	var menu := PauseMenuScene.instantiate()
@@ -863,10 +907,12 @@ func _on_pause_restart() -> void:
 	get_tree().reload_current_scene()
 
 func _on_pause_main_menu() -> void:
+	GameAudio.ui_click()
 	get_tree().paused = false
 	get_tree().change_scene_to_file("res://scenes/ui/main_menu.tscn")
 
 func _on_restart_pressed() -> void:
+	GameAudio.ui_click()
 	get_tree().paused = false
 	Engine.time_scale = 1.0
 	_set_speed(Settings.default_speed)

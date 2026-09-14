@@ -22,14 +22,17 @@ func _ready() -> void:
 	_update_volume_label()
 
 func _on_resume() -> void:
+	GameAudio.ui_click()
 	resume_requested.emit()
 	queue_free()
 
 func _on_restart() -> void:
+	GameAudio.ui_click()
 	restart_requested.emit()
 	queue_free()
 
 func _on_main_menu() -> void:
+	GameAudio.ui_click()
 	main_menu_requested.emit()
 	queue_free()
 

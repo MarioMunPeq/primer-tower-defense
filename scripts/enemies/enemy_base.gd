@@ -123,6 +123,7 @@ func _die() -> void:
 	_resolved = true
 	died.emit(reward)
 	GameFx.death_effect(global_position, [death_start_color, death_end_color])
+	GameAudio.explosion_sfx()
 	# Stop moving, fade the sprite out, then free its PathFollow2D.
 	set_physics_process(false)
 	if _grow_tween != null and _grow_tween.is_valid():
