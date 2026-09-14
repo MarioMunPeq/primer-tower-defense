@@ -1,121 +1,112 @@
 # Primer Tower Defense
 
-Un tower defense 2D construido con [Godot Engine](https://godotengine.org/) (v4.7, motor de renderizado *GL Compatibility*).
+A polished tower defense game built with **Godot 4.7** (GDScript).  
+Designed for web (GitHub Pages) and desktop.
 
-Defiende tu base de las oleadas de enemigos que recorren el camino del mapa. Coloca torres en los islotes de arena disponibles, mejóralas para aumentar su daño, alcance y cadencia, y quédate sin vidas y pierde (o sobrevive a las 5 oleadas y gana).
+---
 
-## Características
+## Play
 
-- **3 tipos de torre**, cada una con su rol:
-  - **Básica** – equilibrada, todo terreno.
-  - **Rápida** – dispara a gran cadencia, con daño por disparo más bajo.
-  - **Francotirador (Sniper)** – mucho daño y alcance, pero cadencia lenta.
+**Web:** https://mariomunpeq.github.io/primer-tower-defense/  
+**Desktop:** Download from [Releases](https://github.com/MarioMunPeq/primer-tower-defense/releases)
 
-- **3 tipos de enemigo**:
-  - **Básico** – el estándar.
-  - **Rápido** – más velocidad, menos vida.
-  - **Tanque** – mucha vida y reducción de daño.
+---
 
-- **5 oleadas** progresivas; victoria al superarlas todas y derrota cuando se agotan las 100 vidas de la base.
+## Overview
 
-- **Sistema de construcción táctico**: pre-visualización de rango y fantasma de la torre mientras mueves el cursor, torres solo colocables en terreno válido.
+| | |
+|---|---|
+| **Genre** | Tower Defense |
+| **Engine** | Godot 4.7.2 (GDScript) |
+| **Platform** | Web (HTML5), Windows, Linux |
+| **Resolution** | Responsive (desktop + mobile-ready layout) |
+| **Waves** | 10 |
 
-- **Selección de torre** con panel de información y estadísticas actuales.
+![Gameplay screenshot](docs/screenshot-gameplay.png)
 
-- **Mejoras por nivel** (daño / alcance / cadencia) y **venta** de torres (con diálogo de confirmación opcional configurable).
+---
 
-- **HUD completo**: dinero, vidas, contador de oleadas, control de velocidad (pausa, normal, rápido), menú de opciones y menú de pausa (volver al menú principal o salir).
+## How to Play
 
-- **Efectos visuales**: partículas de impacto y de muerte, números de daño (pool con objeto reutilizable), tooltips con iconos en tarjetas de la tienda y torres del mapa.
+### Objective
+Defend your base through 10 waves. Enemies follow the road from left to right. If they reach the exit, you lose base HP. Game over at 0 HP.
 
-- **Sistema de settings persistente** (`user://settings.cfg`): pantalla completa, calidad de escalado, velocidad por defecto y confirmación de venta.
+### Controls
+| Action | Mouse | Keyboard |
+|--------|-------|----------|
+| Select tower | Click card | 1–4 (quick select) |
+| Place tower | Click valid tile (sand) | — |
+| Upgrade / Specialize | Click tower → choose | — |
+| Sell tower | Click tower → Sell | — |
+| Speed | 1x / 2x / 3x buttons | Space (cycle) |
+| Pause | ❚❚ button | P / Escape |
 
-## Requisitos
+### Economy
+- **Money** — Earned by killing enemies. Spend on towers/upgrades.
+- **Base HP** — Starts at 100. Each leak reduces it.
+- **Refund** — Selling returns 70% of invested cost.
 
-- **Godot 4.7** (o compatible con `features = "4.7"`, `GL Compatibility`).
-- Windows / Linux / macOS. También exportable a web (HTML5).
-- Una tarjeta gráfica compatible con OpenGL 3.3 (renderer de compatibilidad).
+---
 
-## Cómo ejecutar
+## Towers
 
-1. Clona o descarga este repositorio.
-2. Abre el proyecto con Godot: *Import* → selecciona `project.godot` (o ejecuta el editor y abre la carpeta).
-3. Presiona **F5** o *Run Project*.
+| Tower | Cost | Damage | Range | Attack | Special |
+|-------|------|--------|-------|--------|---------|
+| **Basic** | $50 | 1 | 260 | 1.25/s | Splash 46px |
+| **Rapid** | $75 | 1 | 150 | 3.0/s | Slow 16% / 1s |
+| **Sniper** | $120 | 4 | 480 | 0.5/s | Armor Pierce |
+| **Cryo** | $100 | 1 | 200 | 0.71/s | Freeze 70px / 30% |
 
-La primera vez, Godot importará los assets automáticamente. Por línea de comandos:
+> **Branching:** At Level 1, choose **Damage** or **Speed** branch. Each branch has 2 upgrades with different stat progression.
 
-```
+---
+
+## Quick Start (Development)
+
+### Requirements
+- Godot 4.7.2 (standard or .NET)
+
+### Run Locally
+```bash
+git clone https://github.com/MarioMunPeq/primer-tower-defense.git
+cd primer-tower-defense
+# Open in Godot → Run (F5)
+# Or CLI:
 godot --path .
 ```
 
-> Nota: si vienes de una versión anterior, renombra/borra la caché en `.godot/` si el editor no detecta bien los assets.
-
-## Cómo jugar
-
-| Acción | Control |
-| --- | --- |
-| Seleccionar torre para colocar | Clic en las tarjetas de la tienda (Básica, Rápida, Francotirador) |
-| Colocar torre | Clic izquierdo sobre un islote de arena |
-| Seleccionar torre colocada | Clic izquierdo sobre la torre |
-| Mejorar torre | Clic en **Mejorar** (botón del panel de la torre) |
-| Vender torre | Clic en **Vender** (con confirmación opcional) |
-| Pausar / reanudar | Botón de pausa del HUD (o menú de pausa) |
-| Control de velocidad | Botones pausa / normal / rápido del HUD |
-| Actualizar stats | El panel y los tooltips muestran daño, alcance, cadencia y coste en vivo |
-
-## Estructura del proyecto
-
-```
-├── assets/
-│   ├── fonts/          # Kenney Future
-│   ├── game-icons/     # Iconos de stats (rayo, etc.)
-│   ├── particles/      # Materiales de partículas
-│   ├── sprites/        # Tiles de torres y terreno (kenney_towerDefense, 256 tiles)
-│   ├── tilesets/       # Atlas del mapa
-│   └── ui/             # Packs de UI e iconos Kenney (ui-pack, game-icons, board-game-icons)
-├── scenes/
-│   ├── effects/        # Números de daño, impacto, muerte
-│   ├── enemies/        # basic_enemy, fast_enemy, tank_enemy
-│   ├── projectiles/    # Proyectil básico
-│   ├── tests/          # Harnesses de test en modo headless
-│   ├── towers/         # basic_tower, rapid_tower, sniper_tower
-│   └── ui/             # Menús, tooltip, confirmación de venta
-├── scripts/
-│   ├── effects/
-│   ├── enemies/        # enemy_base.gd + variantes
-│   ├── projectiles/
-│   ├── tests/          # stress_test.gd, hud_polish_test.gd
-│   ├── towers/         # tower_base.gd + variantes
-│   ├── ui/
-│   ├── waves/          # wave_spawner.gd
-│   ├── main.gd         # Lógica principal de la partida
-│   └── settings.gd     # Autoload Settings (persistencia user://settings.cfg)
-├── tileset_main.tres   # TileSet del mapa
-├── ui_theme.tres       # Tema con variaciones de color para paneles y tarjetas
-├── icon.svg
-└── project.godot
-```
-
-## Tests
-
-El proyecto incluye harnesses de verificación ejecutables en **modo headless**, útiles como prueba de humo para CI o desarrollo local:
-
+### Export Web
 ```bash
-godot --headless --path . res://scenes/tests/stress_test.tscn
-godot --headless --path . res://scenes/tests/hud_polish_test.tscn
+# Requires Godot 4.7.2 export templates installed
+godot --headless --export-release "Web" builds/web/index.html
 ```
 
-- `stress_test` – carga la partida y simula rondas para detectar errores de runtime.
-- `hud_polish_test` – comprueba variaciones del tema, iconos de stats, estados de las tarjetas de la tienda y estructura del tooltip.
+### Project Structure
+```
+scenes/
+  game.tscn          # Main gameplay scene
+  ui/                # HUD, tooltips, menus
+  towers/            # 4 tower types
+  enemies/           # 7 enemy types
+scripts/
+  main.gd            # Game controller, HUD, waves
+  towers/            # Tower logic + branching
+  enemies/           # Enemy types + spawner
+  ui/                # Tooltip, pause, menus
+  effects/           # VFX pools, damage numbers
+ui_theme.tres        # Complete theme (plates, cards, tooltips)
+```
 
-Ambos salen con código `0` si todo va bien.
+---
 
-## Assets y créditos
+## Credits
 
-- **Kenney Tower Defense** (sprites de torres, terreno y enemigos) — [Kenney.nl](https://kenney.nl/), licencia **CC0**.
-- **Kenney UI Pack** (paneles, botones, estrellas) — licencia **CC0**.
-- **Kenney Game Icons** (iconos de iconos/UI) — licencia **CC0**.
-- **Kenney Board Game Icons** (icons: espada, reloj de arena) — licencia **CC0**.
-- **Kenney Future** (fuente) — por Kennney, **CC0**.
+- **Art:** [Kenney.nl](https://kenney.nl) — Tower sprites, UI icons, tilemap
+- **Font:** Kenney Future (included)
+- **Engine:** Godot Engine 4.7.2
 
-Todo el arte está bajo licencia CC0 (dominio público), tomado de los packs gratuitos de Kenney.
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE)
