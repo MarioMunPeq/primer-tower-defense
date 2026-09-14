@@ -908,23 +908,60 @@ func _update_shop_ui() -> void:
 		active.scale = Vector2(1.05, 1.05)
 	_update_shop_desc()
 
-## Small info line below the tower grid describing the selected tower.
-## The special-effect line embeds its icon (RichTextLabel [img]) to match the
-## icon+value pattern used in tooltips and the info panel.
+## Shop description panel (bottom of TowerShop) — mirrors tooltip design.
 func _update_shop_desc() -> void:
-	var idx := maxi(_tower_type_to_place, 0)
-	var scr = TOWER_SCRIPTS[idx]
+	var shop_desc: PanelContainer = $UI/TowerShop/VBox/ShopDesc
+	var box: VBoxContainer = shop_desc.get_node("ShopDescBox")
+	
+	if _tower_type_to_place < 0:
+		shop_desc.visible = false
+		return
+	
+	shop_desc.visible = true
+	var scr = TOWER_SCRIPTS[_tower_type_to_place]
 	var names := ["Basic", "Rapid", "Sniper", "Cryo"]
-	var special_line: String = scr.SPECIAL_SUMMARY
-	var icon: Texture2D = _special_icon(scr.SPECIAL_ID)
-	if icon != null:
-		special_line = "[img width=16]%s[/img]  %s" % [icon.resource_path, scr.SPECIAL_SUMMARY]
-	var desc := "%s Tower\nDMG %d • RNG %d\n%.2f/s — $%d\n%s" % [
-		names[idx],
-		scr.DAMAGE, scr.RANGE,
-		1.0 / scr.ATTACK_COOLDOWN, scr.COST,
-		special_line]
-	$UI/TowerShop/VBox/ShopDesc.text = desc
+	var special_chip := _special_chip_type(scr.SPECIAL_ID)
+	var special_icon: Texture2D = _special_icon(scr.SPECIAL_ID)
+	
+	box.get_node("ShopDescTitle").text = "%s Tower" % names[_tower_type_to_place]
+	box.get_node("ShopDescDivider").visible = true
+	
+	# Damage row
+	var dmg_row = box.get_node("ShopDescStatDamage")
+	dmg_row.visible = true
+	dmg_row.get_node("ShopDescStatDamageChip/ShopDescStatDamageIcon").texture = ICON_DAMAGE
+	dmg_row.get_node("ShopDescStatDamageText/ShopDescStatDamageLabel").text = "Damage"
+	dmg_row.get_node("ShopDescStatDamageText/ShopDescStatDamageValue").text = "%d" % scr.DAMAGE
+	
+	# Range row
+	var rng_row = box.get_node("ShopDescStatRange")
+	rng_row.visible = true
+	rng_row.get_node("ShopDescStatRangeChip/ShopDescStatRangeIcon").texture = ICON_RANGE
+	rng_row.get_node("ShopDescStatRangeText/ShopDescStatRangeLabel").text = "Range"
+	rng_row.get_node("ShopDescStatRangeText/ShopDescStatRangeValue").text = "%d" % scr.RANGE
+	
+	# Attack Speed row
+	var spd_row = box.get_node("ShopDescStatSpeed")
+	spd_row.visible = true
+	spd_row.get_node("ShopDescStatSpeedChip/ShopDescStatSpeedIcon").texture = ICON_SPEED
+	spd_row.get_node("ShopDescStatSpeedText/ShopDescStatSpeedLabel").text = "Attack Speed"
+	spd_row.get_node("ShopDescStatSpeedText/ShopDescStatSpeedValue").text = "%.2f/s" % (1.0 / scr.ATTACK_COOLDOWN)
+	
+	# Cost row
+	var cost_row = box.get_node("ShopDescStatCost")
+	cost_row.visible = true
+	cost_row.get_node("ShopDescStatCostIcon").texture = ICON_COST
+	cost_row.get_node("ShopDescStatCostText/ShopDescStatCostLabel").text = "Cost"
+	cost_row.get_node("ShopDescStatCostText/ShopDescStatCostValue").text = "$%d" % scr.COST
+	
+	# Special row
+	var spec_row = box.get_node("ShopDescStatSpecial")
+	spec_row.visible = true
+	var spec_chip = spec_row.get_node("ShopDescStatSpecialChip")
+	spec_chip.theme_type_variation = _special_chip_theme(scr.SPECIAL_ID)
+	spec_row.get_node("ShopDescStatSpecialChip/ShopDescStatSpecialIcon").texture = special_icon
+	spec_row.get_node("ShopDescStatSpecialText/ShopDescStatSpecialLabel").text = scr.SPECIAL_NAME
+	spec_row.get_node("ShopDescStatSpecialText/ShopDescStatSpecialValue").text = scr.SPECIAL_SUMMARY
 
 func _on_speed_pressed(multiplier: int) -> void:
 	GameAudio.ui_click()

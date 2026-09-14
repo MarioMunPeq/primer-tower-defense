@@ -499,13 +499,244 @@ stretch_mode = 5
 [node name="Separator" type="HSeparator" parent="UI/TowerShop/VBox"]
 layout_mode = 2
 
-[node name="ShopDesc" type="RichTextLabel" parent="UI/TowerShop/VBox"]
+[node name="ShopDesc" type="PanelContainer" parent="UI/TowerShop/VBox"]
 layout_mode = 2
-bbcode_enabled = true
-fit_content = true
-scroll_active = false
-theme_override_colors/default_color = Color(0.86, 0.85, 0.82, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"tooltip_panel"
+custom_minimum_size = Vector2(280, 0)
+size_flags_horizontal = 3
+
+[node name="ShopDescBox" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc"]
+layout_mode = 2
+theme_override_constants/separation = 11
+theme_override_margins/margin_left = 16
+theme_override_margins/margin_top = 16
+theme_override_margins/margin_right = 16
+theme_override_margins/margin_bottom = 16
+
+[node name="ShopDescTitle" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+layout_mode = 2
+theme_type_variation = &"tooltip_title"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 24
+text = ""
+
+[node name="ShopDescDivider" type="PanelContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+layout_mode = 2
+theme_type_variation = &"tooltip_divider"
+custom_minimum_size = Vector2(0, 1)
+size_flags_horizontal = 3
+visible = false
+
+[node name="ShopDescStatDamage" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+visible = false
+
+[node name="ShopDescStatDamageChip" type="PanelContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatDamage"]
+layout_mode = 2
+theme_type_variation = &"tooltip_chip_damage"
+custom_minimum_size = Vector2(32, 32)
+size_flags_vertical = 4
+size_flags_horizontal = 4
+
+[node name="ShopDescStatDamageIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatDamage/ShopDescStatDamageChip"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = -7.0
+offset_bottom = -7.0
+size_flags_vertical = 4
+size_flags_horizontal = 4
+stretch_mode = 5
+
+[node name="ShopDescStatDamageText" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatDamage"]
+layout_mode = 2
+theme_override_constants/separation = 2
+size_flags_horizontal = 3
+
+[node name="ShopDescStatDamageLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatDamage/ShopDescStatDamageText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_label"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 14
+text = "Damage"
+
+[node name="ShopDescStatDamageValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatDamage/ShopDescStatDamageText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_value"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 17
+text = "1"
+
+[node name="ShopDescStatRange" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+visible = false
+
+[node name="ShopDescStatRangeChip" type="PanelContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatRange"]
+layout_mode = 2
+theme_type_variation = &"tooltip_chip_range"
+custom_minimum_size = Vector2(32, 32)
+size_flags_vertical = 4
+size_flags_horizontal = 4
+
+[node name="ShopDescStatRangeIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatRange/ShopDescStatRangeChip"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = -7.0
+offset_bottom = -7.0
+size_flags_vertical = 4
+size_flags_horizontal = 4
+stretch_mode = 5
+
+[node name="ShopDescStatRangeText" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatRange"]
+layout_mode = 2
+theme_override_constants/separation = 2
+size_flags_horizontal = 3
+
+[node name="ShopDescStatRangeLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatRange/ShopDescStatRangeText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_label"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 14
+text = "Range"
+
+[node name="ShopDescStatRangeValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatRange/ShopDescStatRangeText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_value"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 17
+text = "260"
+
+[node name="ShopDescStatSpeed" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+visible = false
+
+[node name="ShopDescStatSpeedChip" type="PanelContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpeed"]
+layout_mode = 2
+theme_type_variation = &"tooltip_chip_speed"
+custom_minimum_size = Vector2(32, 32)
+size_flags_vertical = 4
+size_flags_horizontal = 4
+
+[node name="ShopDescStatSpeedIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpeed/ShopDescStatSpeedChip"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = -7.0
+offset_bottom = -7.0
+size_flags_vertical = 4
+size_flags_horizontal = 4
+stretch_mode = 5
+
+[node name="ShopDescStatSpeedText" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpeed"]
+layout_mode = 2
+theme_override_constants/separation = 2
+size_flags_horizontal = 3
+
+[node name="ShopDescStatSpeedLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpeed/ShopDescStatSpeedText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_label"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 14
+text = "Attack Speed"
+
+[node name="ShopDescStatSpeedValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpeed/ShopDescStatSpeedText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_value"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 17
+text = "1.25/s"
+
+[node name="ShopDescStatCost" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+visible = false
+
+[node name="ShopDescStatCostIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatCost"]
+custom_minimum_size = Vector2(32, 32)
+layout_mode = 2
+size_flags_vertical = 4
+size_flags_horizontal = 4
+stretch_mode = 5
+
+[node name="ShopDescStatCostText" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatCost"]
+layout_mode = 2
+theme_override_constants/separation = 2
+size_flags_horizontal = 3
+
+[node name="ShopDescStatCostLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatCost/ShopDescStatCostText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_label"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 14
+text = "Cost"
+
+[node name="ShopDescStatCostValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatCost/ShopDescStatCostText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_value"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 17
+text = "$50"
+
+[node name="ShopDescStatSpecial" type="HBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+visible = false
+
+[node name="ShopDescStatSpecialChip" type="PanelContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpecial"]
+layout_mode = 2
+theme_type_variation = &"tooltip_chip_damage"
+custom_minimum_size = Vector2(32, 32)
+size_flags_vertical = 4
+size_flags_horizontal = 4
+
+[node name="ShopDescStatSpecialIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpecial/ShopDescStatSpecialChip"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = 7.0
+offset_right = -7.0
+offset_bottom = -7.0
+size_flags_vertical = 4
+size_flags_horizontal = 4
+stretch_mode = 5
+
+[node name="ShopDescStatSpecialText" type="VBoxContainer" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpecial"]
+layout_mode = 2
+theme_override_constants/separation = 2
+size_flags_horizontal = 3
+
+[node name="ShopDescStatSpecialLabel" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpecial/ShopDescStatSpecialText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_label"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 14
+text = "Special"
+
+[node name="ShopDescStatSpecialValue" type="Label" parent="UI/TowerShop/VBox/ShopDesc/ShopDescBox/ShopDescStatSpecial/ShopDescStatSpecialText"]
+layout_mode = 2
+theme_type_variation = &"tooltip_stat_value"
+horizontal_alignment = 0
+theme_override_font_sizes/font_size = 17
+text = "—"
 
 [node name="TowerInfoPanel" type="PanelContainer" parent="UI"]
 layout_mode = 2
