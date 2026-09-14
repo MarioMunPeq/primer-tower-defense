@@ -49,21 +49,30 @@ func _run_checks(game: Node) -> void:
 
 	print("== Shop card states (money=100, costs 50/75/120) ==")
 	var cards := {
-		"BasicCard": "TowerCardSelected",  # default active tower
+		"BasicCard": "TowerCard",      # nothing armed by default (tap-tap placements)
 		"RapidCard": "TowerCard",
 		"SniperCard": "TowerCardLocked",  # 120 > 100 -> candado + dim border
 	}
 	for card_name: String in cards:
-		var card: Button = game.get_node("UI/TowerShop/VBox/ShopGrid/%s" % card_name)
+		var card: Button = game.get_node("UI/TowerShop/VBox/ScrollContainer/ShopGrid/%s" % card_name)
 		_check(card.theme_type_variation == cards[card_name],
 			"%s variation -> %s (got %s)" % [card_name, cards[card_name], card.theme_type_variation])
-	var sniper_lock: Control = game.get_node("UI/TowerShop/VBox/ShopGrid/SniperCard/CardLock")
+	var sniper_lock: Control = game.get_node("UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardLock")
 	_check(sniper_lock.visible, "SniperCard lock overlay visible (no funds)")
 	var lock_icon: TextureRect = sniper_lock.get_node("LockIcon")
 	_check(lock_icon != null and lock_icon.texture != null,
 		"SniperCard lock overlay has a lock icon texture")
 	_check(lock_icon.texture != null and lock_icon.texture.resource_path.contains("lock"),
 		"SniperCard lock icon uses a lock asset")
+
+	print("== Tap-tap toggle (arm / disarm) ==")
+	var basic: Button = game.get_node("UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard")
+	basic.pressed.emit()
+	_check(basic.theme_type_variation == &"TowerCardSelected"
+		and game._tower_type_to_place == 0, "Pressing BasicCard arms it (toggle ON)")
+	basic.pressed.emit()
+	_check(basic.theme_type_variation == &"TowerCard"
+		and game._tower_type_to_place == -1, "Pressing the armed card again disarms (toggle OFF)")
 
 	print("== HUD money icon ==")
 	var money_icon: TextureRect = game.get_node("UI/HUDBar/HUDTop/ResourcesPanel/HBox/MoneyIcon")

@@ -200,20 +200,25 @@ theme_type_variation = &"title"
 horizontal_alignment = 1
 text = "TORRES"
 
-[node name="ShopGrid" type="GridContainer" parent="UI/TowerShop/VBox"]
+[node name="ScrollContainer" type="ScrollContainer" parent="UI/TowerShop/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ShopGrid" type="GridContainer" parent="UI/TowerShop/VBox/ScrollContainer"]
 layout_mode = 2
 columns = 2
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 alignment = 1
 
-[node name="BasicCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid"]
+[node name="BasicCard" type="Button" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid"]
 layout_mode = 2
 custom_minimum_size = Vector2(80, 80)
 mouse_default_cursor_shape = 2
 theme_type_variation = &"TowerCard"
 
-[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/BasicCard"]
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -229,7 +234,7 @@ grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("6_basicicon")
 
-[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ShopGrid/BasicCard"]
+[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard"]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -244,13 +249,13 @@ grow_vertical = 0
 mouse_filter = 2
 theme_type_variation = &"CostOverlay"
 
-[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ShopGrid/BasicCard/CardCostBg"]
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard/CardCostBg"]
 layout_mode = 2
 theme_type_variation = &"card_cost"
 horizontal_alignment = 1
 text = "$50"
 
-[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ShopGrid/BasicCard"]
+[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -261,7 +266,7 @@ mouse_filter = 2
 color = Color(0.09, 0.09, 0.1, 0.75)
 visible = false
 
-[node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/BasicCard/CardLock"]
+[node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard/CardLock"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -278,13 +283,13 @@ mouse_filter = 2
 texture = ExtResource("15_lockicon")
 stretch_mode = 5
 
-[node name="RapidCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid"]
+[node name="RapidCard" type="Button" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid"]
 layout_mode = 2
 custom_minimum_size = Vector2(80, 80)
 mouse_default_cursor_shape = 2
 theme_type_variation = &"TowerCard"
 
-[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/RapidCard"]
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -300,7 +305,7 @@ grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("7_rapidicon")
 
-[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ShopGrid/RapidCard"]
+[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard"]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -315,13 +320,13 @@ grow_vertical = 0
 mouse_filter = 2
 theme_type_variation = &"CostOverlay"
 
-[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ShopGrid/RapidCard/CardCostBg"]
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard/CardCostBg"]
 layout_mode = 2
 theme_type_variation = &"card_cost"
 horizontal_alignment = 1
 text = "$75"
 
-[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ShopGrid/RapidCard"]
+[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -332,7 +337,7 @@ mouse_filter = 2
 color = Color(0.09, 0.09, 0.1, 0.75)
 visible = false
 
-[node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/RapidCard/CardLock"]
+[node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard/CardLock"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -349,13 +354,13 @@ mouse_filter = 2
 texture = ExtResource("15_lockicon")
 stretch_mode = 5
 
-[node name="SniperCard" type="Button" parent="UI/TowerShop/VBox/ShopGrid"]
+[node name="SniperCard" type="Button" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid"]
 layout_mode = 2
 custom_minimum_size = Vector2(80, 80)
 mouse_default_cursor_shape = 2
 theme_type_variation = &"TowerCard"
 
-[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/SniperCard"]
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -371,7 +376,7 @@ grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("8_snipericon")
 
-[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ShopGrid/SniperCard"]
+[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard"]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -386,13 +391,13 @@ grow_vertical = 0
 mouse_filter = 2
 theme_type_variation = &"CostOverlay"
 
-[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ShopGrid/SniperCard/CardCostBg"]
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardCostBg"]
 layout_mode = 2
 theme_type_variation = &"card_cost"
 horizontal_alignment = 1
 text = "$120"
 
-[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ShopGrid/SniperCard"]
+[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -403,7 +408,7 @@ mouse_filter = 2
 color = Color(0.09, 0.09, 0.1, 0.75)
 visible = false
 
-[node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ShopGrid/SniperCard/CardLock"]
+[node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardLock"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5

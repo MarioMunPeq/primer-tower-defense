@@ -57,9 +57,9 @@ const ICON_COST := preload("res://assets/ui/kenney_ui-pack/PNG/Yellow/Default/st
 
 const BASE_HP_MAX := 100
 
-## Which tower type is currently selected for placement.
-## 0 = Basic Tower, 1 = Rapid Tower, 2 = Sniper Tower
-var _tower_type_to_place := 0
+## Which tower type is currently armed for placement.
+## 0 = Basic Tower, 1 = Rapid Tower, 2 = Sniper Tower, -1 = nothing armed.
+var _tower_type_to_place := -1
 
 var _towers := {}
 var _tiles_by_tower := {}
@@ -118,8 +118,10 @@ func _ready():
 	_setup_tilemap()
 	_paint_map()
 	_setup_path()
-	_setup_camera()
 	_cache_preview_textures()
+	# Apply the responsive layout and re-apply it whenever the viewport resizes.
+	get_viewport().size_changed.connect(_apply_responsive_layout)
+	_apply_responsive_layout()
 
 	var towers := Node2D.new()
 	towers.name = "Towers"
@@ -142,7 +144,7 @@ func _ready():
 	_tooltip = tooltip
 
 	# Connect tower card hover for tooltips
-	var grid = $UI/TowerShop/VBox/ShopGrid
+	var grid = $UI/TowerShop/VBox/ScrollContainer/ShopGrid
 	var cards := {
 		0: grid.get_node("BasicCard"),
 		1: grid.get_node("RapidCard"),
@@ -167,9 +169,9 @@ func _ready():
 	$EndScreen/EndPanel/Center/VBox/MainMenuButton.pressed.connect(_on_main_menu_pressed)
 	
 	# Connect tower selection buttons
-	$UI/TowerShop/VBox/ShopGrid/BasicCard.pressed.connect(Callable(self, "_set_tower_type").bind(0))
-	$UI/TowerShop/VBox/ShopGrid/RapidCard.pressed.connect(Callable(self, "_set_tower_type").bind(1))
-	$UI/TowerShop/VBox/ShopGrid/SniperCard.pressed.connect(Callable(self, "_set_tower_type").bind(2))
+	$UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard.pressed.connect(Callable(self, "_set_tower_type").bind(0))
+	$UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard.pressed.connect(Callable(self, "_set_tower_type").bind(1))
+	$UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard.pressed.connect(Callable(self, "_set_tower_type").bind(2))
 	
 	# Connect upgrade + sell buttons
 	$UI/TowerInfoPanel/VBox/Actions/UpgradeButton.pressed.connect(_on_upgrade_pressed)
@@ -355,17 +357,80 @@ func _setup_path():
 	var exit: Marker2D = $Exit
 	exit.position = Vector2(MAP_COLS * TILE_SIZE + TILE_SIZE / 2.0, y7)
 
-## Fits the map into the play area left of the right-side tower panel.
-## Map 1792x1024, viewport 1280x720 with a 196px panel on the right and a 64px
-## top bar: available play area is ~1068x640, so zoom ≈ 0.6 works.
-func _setup_camera():
-	var zoom := 0.6
-	# Center the map in the play area: x-center at (1280-196)/2, y-center at 392.
-	$Camera2D.position = Vector2(
-		MAP_COLS * TILE_SIZE * 0.5 - (542.0 - 640.0) / zoom,
-		MAP_ROWS * TILE_SIZE * 0.5 - (392.0 - 360.0) / zoom
-	)
+## Shared responsive metrics derived from the live viewport size.
+## The HUDBar height and TowerShop width are proportional with hard clamps, so
+## the rest of the HUD (and the camera) stays consistent on every layout pass.
+func _layout_metrics() -> Dictionary:
+	var vp := get_viewport().get_visible_rect().size
+	var hud_h := clampf(vp.y * 0.09, 56.0, 72.0)
+	var shop_w := clampf(vp.x * 0.15, 140.0, 196.0)
+	return {"vp": vp, "hud_h": hud_h, "shop_w": shop_w}
+
+## Applies the responsive HUD geometry and re-fits the camera to the play area.
+## Called once on _ready and again on every viewport size change.
+func _apply_responsive_layout() -> void:
+	var m := _layout_metrics()
+	var vp: Vector2 = m["vp"]
+	var hud_h: float = m["hud_h"]
+	var shop_w: float = m["shop_w"]
+
+	# HUDBar: full width, height proportional to the viewport (clamped).
+	$UI/HUDBar.offset_bottom = hud_h
+
+	# TowerShop: pinned under the HUDBar, full height to the bottom edge. Width
+	# is proportional to the viewport (clamped), never a fixed 700px bottom.
+	var shop: Control = $UI/TowerShop
+	shop.offset_left = -16.0 - shop_w
+	shop.offset_right = -16.0
+	shop.offset_top = hud_h + 12.0
+	shop.offset_bottom = vp.y - 16.0
+
+	# Tower cards: derive their size from the real panel width (2 columns) with
+	# a 56px floor (still above the 44px minimum touch target at 1.0 scale).
+	var grid: GridContainer = $UI/TowerShop/VBox/ScrollContainer/ShopGrid
+	var card_w := maxf(56.0, (shop_w - 24.0 - 8.0) / 2.0)
+	for card in grid.get_children():
+		card.custom_minimum_size = Vector2(card_w, card_w)
+		var icon := card.get_node_or_null("CardIcon") as Control
+		if icon != null:
+			var icon_s := maxf(32.0, card_w - 14.0)
+			icon.offset_left = -icon_s / 2.0
+			icon.offset_right = icon_s / 2.0
+			icon.offset_top = -icon_s / 2.0
+			icon.offset_bottom = icon_s / 2.0
+
+	# TowerInfoPanel: desktop size by default, but never covering more than a
+	# fixed fraction of the viewport on small screens.
+	var tip: Control = $UI/TowerInfoPanel
+	var tip_w := minf(312.0, vp.x * 0.9)
+	var tip_h := minf(222.0, vp.y * 0.4)
+	tip.offset_left = 18.0
+	tip.offset_right = 18.0 + tip_w
+	tip.offset_top = -18.0 - tip_h
+	tip.offset_bottom = -18.0
+
+	_setup_camera()
+
+## Fits the whole map into the play area left of the TowerShop and below the
+## HUDBar, centered on that area. Zoom uses the real map world size and the
+## real panel widths, so nothing is cropped or stretched at any resolution.
+func _setup_camera() -> void:
+	var m := _layout_metrics()
+	var vp: Vector2 = m["vp"]
+	var hud_h: float = m["hud_h"]
+	var shop_w: float = m["shop_w"]
+
+	var map_w := MAP_COLS * TILE_SIZE * 1.0
+	var map_h := MAP_ROWS * TILE_SIZE * 1.0
+	var play_w := vp.x - shop_w - 16.0
+	var play_h := vp.y - hud_h
+	var zoom := minf(play_w / map_w, play_h / map_h)
+
+	var vp_center := vp / 2.0
+	var play_center := Vector2(play_w / 2.0, hud_h + play_h / 2.0)
+	var map_center := Vector2(map_w / 2.0, map_h / 2.0)
 	$Camera2D.zoom = Vector2(zoom, zoom)
+	$Camera2D.position = map_center - (play_center - vp_center) / zoom
 
 func _on_wave_started(current_wave: int) -> void:
 	var total_waves: int = $WaveSpawner.TOTAL_WAVES
@@ -462,11 +527,22 @@ func _unhandled_input(event: InputEvent) -> void:
 		var world_pos := get_global_mouse_position()
 		var tile := _mouse_to_tile(world_pos)
 		if _towers.has(tile):
+			if _tower_type_to_place != -1:
+				_disarm_tower_type()
 			_select_tower(_towers[tile])
-		else:
-			if _selected_tower != null:
-				_deselect_tower()
-			_try_place_tower(world_pos)
+			return
+		if _selected_tower != null:
+			_deselect_tower()
+		if _tower_type_to_place == -1:
+			return
+		# Tap outside the map cancels the armed tower.
+		if tile == Vector2i(-1, -1):
+			_disarm_tower_type()
+			return
+		# Tap on an invalid in-map cell (road/grass/occupied/no-funds) keeps the
+		# tower armed so an imprecise tap doesn't force the player to re-select.
+		if _try_place_tower(world_pos):
+			_disarm_tower_type()
 
 ## Converts a world position to tilemap coordinates. Returns (-1,-1) off-map.
 func _mouse_to_tile(world_pos: Vector2) -> Vector2i:
@@ -485,13 +561,13 @@ func _can_place(tile: Vector2i) -> bool:
 	var coords: Vector2i = $Map.get_cell_atlas_coords(tile)
 	return coords == ATLAS_SAND
 
-func _try_place_tower(world_pos: Vector2) -> void:
+func _try_place_tower(world_pos: Vector2) -> bool:
 	var tile := _mouse_to_tile(world_pos)
 	if not _can_place(tile):
-		return
+		return false
 	var cost := _preview_cost()
 	if _money < cost:
-		return
+		return false
 
 	var tower := _preview_scene().instantiate()
 	tower.position = _tile_center(tile)
@@ -504,6 +580,7 @@ func _try_place_tower(world_pos: Vector2) -> void:
 	_update_money_ui()
 	queue_redraw()
 	_update_range_preview()
+	return true
 
 func _on_tower_impact(position: Vector2) -> void:
 	var effect := IMPACT_EFFECT.instantiate()
@@ -517,7 +594,7 @@ func _tile_center(tile: Vector2i) -> Vector2:
 ## Tile rect: red = invalid, yellow = valid but poor, green = valid + affordable.
 ## Ghost tower: red tint if invalid, yellow if valid but poor, white (alpha 0.6) if ok.
 func _draw() -> void:
-	if _hover_tile == Vector2i(-1, -1):
+	if _tower_type_to_place == -1 or _hover_tile == Vector2i(-1, -1):
 		return
 
 	var placeable := _can_place(_hover_tile)
@@ -568,6 +645,10 @@ func _update_range_preview() -> void:
 	if is_instance_valid(_selected_tower):
 		var tower: Node2D = _selected_tower
 		$RangePreview.show_range(tower.position, tower.range, Color(0.4, 0.9, 1.0))
+		return
+
+	if _tower_type_to_place == -1:
+		$RangePreview.hide_range()
 		return
 
 	var tile := _hover_tile
@@ -670,12 +751,23 @@ func _do_sell(tower: Node2D) -> void:
 	queue_redraw()
 
 func _set_tower_type(type_idx: int) -> void:
+	# Toggle: pressing the already-armed card disarms without spending anything.
+	if _tower_type_to_place == type_idx:
+		_disarm_tower_type()
+		return
 	_tower_type_to_place = type_idx
+	if is_instance_valid(_selected_tower):
+		_deselect_tower()
+	_update_shop_ui()
+	_update_range_preview()
+
+func _disarm_tower_type() -> void:
+	_tower_type_to_place = -1
 	_update_shop_ui()
 	_update_range_preview()
 
 func _update_shop_ui() -> void:
-	var grid = $UI/TowerShop/VBox/ShopGrid
+	var grid = $UI/TowerShop/VBox/ScrollContainer/ShopGrid
 	var cards := {
 		0: grid.get_node("BasicCard"),
 		1: grid.get_node("RapidCard"),
@@ -710,20 +802,22 @@ func _update_shop_ui() -> void:
 		card.pivot_offset = card.size / 2.0
 		card.scale = Vector2.ONE
 
-	var active: Button = cards[_tower_type_to_place]
-	active.theme_type_variation = "TowerCardSelected"
-	active.pivot_offset = active.size / 2.0
-	active.scale = Vector2(1.05, 1.05)
+	if _tower_type_to_place >= 0:
+		var active: Button = cards[_tower_type_to_place]
+		active.theme_type_variation = "TowerCardSelected"
+		active.pivot_offset = active.size / 2.0
+		active.scale = Vector2(1.05, 1.05)
 	_update_shop_desc()
 
 ## Small info line below the tower grid describing the selected tower.
 func _update_shop_desc() -> void:
+	var idx := maxi(_tower_type_to_place, 0)
 	var desc := ""
-	if _tower_type_to_place == 0:
+	if idx == 0:
 		desc = "Basic Tower\nDMG %d • RNG %d\n%.2f/s — $%d" % [
 			BASIC_TOWER_SCRIPT.DAMAGE, BASIC_TOWER_SCRIPT.RANGE,
 			1.0 / BASIC_TOWER_SCRIPT.ATTACK_COOLDOWN, BASIC_TOWER_SCRIPT.COST]
-	elif _tower_type_to_place == 1:
+	elif idx == 1:
 		desc = "Rapid Tower\nDMG %d • RNG %d\n%.2f/s — $%d" % [
 			RAPID_TOWER_SCRIPT.DAMAGE, RAPID_TOWER_SCRIPT.RANGE,
 			1.0 / RAPID_TOWER_SCRIPT.ATTACK_COOLDOWN, RAPID_TOWER_SCRIPT.COST]
