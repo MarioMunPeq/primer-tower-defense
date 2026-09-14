@@ -4,6 +4,13 @@
 [ext_resource type="Theme" path="res://ui_theme.tres" id="2_theme"]
 
 [node name="PauseMenu" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 theme = ExtResource("2_theme")
 script = ExtResource("1_script")
 
@@ -37,51 +44,51 @@ theme_override_margins/margin_top = 40
 theme_override_margins/margin_right = 40
 theme_override_margins/margin_bottom = 40
 
-[node name="Title" type="Label" parent="VBox"]
+[node name="Title" type="Label" parent="Panel/VBox"]
 layout_mode = 2
 theme_type_variation = "title"
 horizontal_alignment = 1
 text = "PAUSA"
 theme_override_font_sizes/font_size = 48
 
-[node name="Spacer1" type="Control" parent="VBox"]
+[node name="Spacer1" type="Control" parent="Panel/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="ResumeButton" type="Button" parent="VBox"]
+[node name="ResumeButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(280, 60)
 theme_override_font_sizes/font_size = 26
 text = "REANUDAR"
 
-[node name="RestartButton" type="Button" parent="VBox"]
+[node name="RestartButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(280, 60)
 theme_override_font_sizes/font_size = 26
 text = "REINICIAR NIVEL"
 
-[node name="MenuButton" type="Button" parent="VBox"]
+[node name="MenuButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(280, 60)
 theme_override_font_sizes/font_size = 26
 text = "MENÚ PRINCIPAL"
 
-[node name="Spacer2" type="Control" parent="VBox"]
+[node name="Spacer2" type="Control" parent="Panel/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="VolumeBox" type="HBoxContainer" parent="VBox"]
+[node name="VolumeBox" type="HBoxContainer" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="VolumeLabel" type="Label" parent="VBox/VolumeBox"]
+[node name="VolumeLabel" type="Label" parent="Panel/VBox/VolumeBox"]
 layout_mode = 2
 theme_type_variation = "body"
 horizontal_alignment = 1
 text = "Volumen: 100%"
 size_flags_horizontal = 1
 
-[node name="VolumeSlider" type="HSlider" parent="VBox/VolumeBox"]
+[node name="VolumeSlider" type="HSlider" parent="Panel/VBox/VolumeBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 min_value = 0.0
