@@ -78,6 +78,10 @@ func _run_checks(game: Node) -> void:
 		"SniperCard lock overlay has a lock icon texture")
 	_check(lock_icon.texture != null and lock_icon.texture.resource_path.contains("lock"),
 		"SniperCard lock icon uses a lock asset")
+	var lock_center: Vector2 = lock_icon.position + lock_icon.size / 2.0
+	var lock_box_center: Vector2 = sniper_lock.size / 2.0
+	_check((lock_center - lock_box_center).length() < 3.0,
+		"SniperCard lock icon stays centered (Panel overlay, %.1fpx off)" % (lock_center - lock_box_center).length())
 
 	print("== Tap-tap toggle (arm / disarm) ==")
 	var basic: Button = game.get_node("UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard")

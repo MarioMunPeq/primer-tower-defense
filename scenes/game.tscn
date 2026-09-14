@@ -258,7 +258,7 @@ theme_type_variation = &"card_cost"
 horizontal_alignment = 1
 text = "$50"
 
-[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard"]
+[node name="CardLock" type="Panel" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -266,9 +266,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.09, 0.09, 0.1, 0.75)
+theme_type_variation = &"LockOverlay"
 visible = false
-
 [node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard/CardLock"]
 layout_mode = 1
 anchors_preset = 8
@@ -329,7 +328,7 @@ theme_type_variation = &"card_cost"
 horizontal_alignment = 1
 text = "$75"
 
-[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard"]
+[node name="CardLock" type="Panel" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -337,9 +336,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.09, 0.09, 0.1, 0.75)
+theme_type_variation = &"LockOverlay"
 visible = false
-
 [node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard/CardLock"]
 layout_mode = 1
 anchors_preset = 8
@@ -400,7 +398,7 @@ theme_type_variation = &"card_cost"
 horizontal_alignment = 1
 text = "$120"
 
-[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard"]
+[node name="CardLock" type="Panel" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -408,9 +406,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.09, 0.09, 0.1, 0.75)
+theme_type_variation = &"LockOverlay"
 visible = false
-
 [node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard/CardLock"]
 layout_mode = 1
 anchors_preset = 8
@@ -472,7 +469,7 @@ theme_type_variation = &"card_cost"
 horizontal_alignment = 1
 text = "$100"
 
-[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard"]
+[node name="CardLock" type="Panel" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -480,9 +477,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0.09, 0.09, 0.1, 0.75)
+theme_type_variation = &"LockOverlay"
 visible = false
-
 [node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard/CardLock"]
 layout_mode = 1
 anchors_preset = 8

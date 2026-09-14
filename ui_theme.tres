@@ -37,54 +37,45 @@ shadow_size = 4
 shadow_offset = Vector2(0, 2)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tx2sp"]
-bg_color = Color(0.22, 0.22, 0.243, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.3, 0.3, 0.333, 1)
+bg_color = Color(0.267, 0.267, 0.298, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.29, 0.29, 0.322, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
-shadow_color = Color(0, 0, 0, 0.4)
-shadow_size = 5
-shadow_offset = Vector2(0, 2)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_81bjo"]
-bg_color = Color(0.18, 0.18, 0.2, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.239, 0.239, 0.267, 1)
+bg_color = Color(0.239, 0.239, 0.267, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.29, 0.29, 0.322, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
-shadow_color = Color(0, 0, 0, 0.35)
-shadow_size = 4
-shadow_offset = Vector2(0, 2)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_f8p3a"]
-bg_color = Color(0.14, 0.14, 0.157, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.2, 0.2, 0.22, 1)
+bg_color = Color(0.204, 0.204, 0.231, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.29, 0.29, 0.322, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
-shadow_color = Color(0, 0, 0, 0.35)
-shadow_size = 3
-shadow_offset = Vector2(0, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p0o6x"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l0f20"]
-bg_color = Color(0.09, 0.09, 0.1, 0.72)
+bg_color = Color(0.137, 0.137, 0.165, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
@@ -99,16 +90,16 @@ shadow_size = 4
 shadow_offset = Vector2(0, 2)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jl36u"]
-bg_color = Color(0.18, 0.18, 0.2, 0.985)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
+bg_color = Color(0.18, 0.18, 0.2, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
 border_color = Color(0.239, 0.239, 0.267, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 shadow_color = Color(0, 0, 0, 0.7)
 shadow_size = 12
 shadow_offset = Vector2(0, 5)
@@ -346,11 +337,11 @@ corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p0"]
 bg_color = Color(0.137, 0.137, 0.165, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.239, 0.239, 0.267, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.18, 0.18, 0.2, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -361,10 +352,10 @@ shadow_offset = Vector2(0, 2)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_p1"]
 bg_color = Color(0.18, 0.18, 0.2, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
 border_color = Color(0.239, 0.239, 0.267, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
@@ -414,7 +405,7 @@ corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_l2_pressed"]
-bg_color = Color(0.21, 0.21, 0.24, 1)
+bg_color = Color(0.204, 0.204, 0.231, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
@@ -431,7 +422,7 @@ border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.29, 0.29, 0.322, 1)
+border_color = Color(0.239, 0.239, 0.267, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -441,12 +432,12 @@ shadow_size = 3
 shadow_offset = Vector2(0, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card_hover"]
-bg_color = Color(0.2, 0.2, 0.224, 1)
+bg_color = Color(0.204, 0.204, 0.231, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.29, 0.29, 0.322, 1)
+border_color = Color(0.239, 0.239, 0.267, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -456,12 +447,12 @@ shadow_size = 3
 shadow_offset = Vector2(0, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card_pressed"]
-bg_color = Color(0.15, 0.15, 0.17, 1)
+bg_color = Color(0.145, 0.145, 0.165, 1)
 border_width_left = 1
 border_width_top = 1
 border_width_right = 1
 border_width_bottom = 1
-border_color = Color(0.29, 0.29, 0.322, 1)
+border_color = Color(0.239, 0.239, 0.267, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -480,12 +471,24 @@ corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nofunds_hover"]
-bg_color = Color(0.2, 0.2, 0.224, 1)
+bg_color = Color(0.204, 0.204, 0.231, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.882, 0.294, 0.294, 0.5)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_kovl"]
+bg_color = Color(0.09, 0.09, 0.1, 0.78)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.353, 0.353, 0.353, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
@@ -520,6 +523,8 @@ HUDChip/base_type = &"PanelContainer"
 HUDChip/styles/panel = SubResource("StyleBoxFlat_l5xii")
 Label/colors/font_color = Color(0.92, 0.92, 0.9, 1)
 Label/font_sizes/font_size = 16
+LockOverlay/base_type = &"Panel"
+LockOverlay/styles/panel = SubResource("StyleBoxFlat_kovl")
 MenuButton/styles/disabled = SubResource("StyleBoxFlat_2ny8k")
 MenuButton/styles/focus = SubResource("StyleBoxFlat_78t5u")
 MenuButton/styles/hover = SubResource("StyleBoxFlat_tx2sp")
