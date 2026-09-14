@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile207.png" id="1_sprite"]
+[ext_resource type="Script" path="res://scripts/towers/ice_tower.gd" id="2_script"]
+
+[sub_resource type="CircleShape2D" id="SubResource_1"]
+radius = 200.0
+
+[node name="IceTower" type="Node2D"]
+script = ExtResource("2_script")
+script/range = 200.0
+script/damage = 1
+script/attack_cooldown = 1.4
+script/cost = 100
+script/MAX_PROJECTILES = 6
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_sprite")
+
+[node name="DetectionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("SubResource_1")

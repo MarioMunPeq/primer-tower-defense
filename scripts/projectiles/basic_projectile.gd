@@ -9,15 +9,21 @@ extends Node2D
 const MAX_LIFETIME := 5.0
 
 signal impact
+## Fired right after impact, carrying the exact enemy that was hit. Towers use
+## this to apply special effects (splash damage, slows) without hard-coding who
+## took the direct hit.
+signal did_hit(enemy: Node2D)
 
 var _damage: int = 1
 var _target: Node2D = null
+var _pierce := false
 var _age := 0.0
 var _resolved := false
 
-func init(dmg: int, target: Node2D) -> void:
+func init(dmg: int, target: Node2D, pierce := false) -> void:
 	_damage = dmg
 	_target = target
+	_pierce = pierce
 
 func _physics_process(delta: float) -> void:
 	if _resolved:
@@ -37,8 +43,9 @@ func _physics_process(delta: float) -> void:
 
 	if distance <= step:
 		if _target.has_method("take_damage"):
-			_target.take_damage(_damage)
+			_target.take_damage(_damage, _pierce)
 		impact.emit(global_position)
+		did_hit.emit(_target)
 		_free_self()
 		return
 

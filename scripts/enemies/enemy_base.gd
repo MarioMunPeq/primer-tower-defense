@@ -7,6 +7,12 @@ extends Node2D
 signal died(reward_amount: int)
 signal reached_base(damage: int)
 
+## Slow effect state: fraction of speed removed (0 = not slowed) and how long
+## the current slow still applies. Non-stacking: the strongest factor and the
+## longest remaining duration always win.
+var _slow_factor := 0.0
+var _slow_left := 0.0
+
 const GameFx := preload("res://scripts/effects/game_fx.gd")
 
 @export var speed: float = 100.0
@@ -48,6 +54,7 @@ var _baked_length := 0.0
 
 func _ready() -> void:
 	max_health = health
+	add_to_group("enemies")
 	_follow = get_parent() as PathFollow2D
 	if _follow != null:
 		var path := _follow.get_parent() as Path2D
@@ -73,12 +80,29 @@ func _physics_process(delta: float) -> void:
 	if _follow == null:
 		return
 
-	_follow.progress += speed * delta
+	if _slow_left > 0.0:
+		_slow_left -= delta
+		if _slow_left <= 0.0:
+			_slow_left = 0.0
+			_slow_factor = 0.0
+			queue_redraw()
+
+	var eff_speed := speed * (1.0 - _slow_factor)
+	_follow.progress += eff_speed * delta
 	path_progress = _follow.progress
 	_face_movement_direction()
 
 	if _follow.progress_ratio >= 1.0:
 		_reach_end()
+
+## Applies a movement slow. Never stacks: only the strongest factor is kept (for
+## its own full duration), so overlapping slows can't compound cheaply.
+func apply_slow(factor: float, duration: float) -> void:
+	if _resolved:
+		return
+	_slow_factor = maxf(_slow_factor, factor)
+	_slow_left = maxf(_slow_left, duration)
+	queue_redraw()
 
 ## Makes the sprite look along the path tangent so it always faces the travel
 ## direction. The sprite base art points right (angle 0). Only the Sprite2D is
@@ -95,12 +119,14 @@ func _face_movement_direction() -> void:
 	if dir.length_squared() > 0.00001:
 		_sprite.rotation = dir.angle()
 
-## Applies damage to the enemy. The enemy flashes white, shows a floating number,
-## keeps its HP bar updated, and dies (with particles + fade-out) at zero health.
-func take_damage(amount: int) -> void:
+## Applies damage to the enemy. Pass `pierce = true` to ignore damage_reduction
+## (used by the Sniper tower's armor-piercing shots). The enemy flashes white,
+## shows a floating number, keeps its HP bar updated, and dies (with particles
+## + fade-out) at zero health.
+func take_damage(amount: int, pierce := false) -> void:
 	if _resolved or health <= 0:
 		return
-	var hit := maxi(1, amount - damage_reduction)
+	var hit := amount if pierce else maxi(1, amount - damage_reduction)
 	health -= hit
 	queue_redraw()
 	_flash()
@@ -151,7 +177,11 @@ func _draw() -> void:
 	if _resolved and modulate.a <= 0.01:
 		return
 	# Ground ring (per-type colour) rendered before the sprite child on top.
-	draw_ellipse(_ring_pos, _ring_radius, _ring_radius * 0.4, ring_color)
+	# While slowed the ring shifts toward ice blue so the debuff reads at a glance.
+	var draw_color := ring_color
+	if _slow_factor > 0.0:
+		draw_color = draw_color.lerp(Color(0.35, 0.65, 1.0, 0.4), 0.6)
+	draw_ellipse(_ring_pos, _ring_radius, _ring_radius * 0.4, draw_color)
 	# HP bar only shows while the enemy is damaged (keeps the screen uncluttered).
 	if health < max_health:
 		_draw_hp_bar()

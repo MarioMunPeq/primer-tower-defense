@@ -43,17 +43,29 @@ const RAPID_TOWER := preload("res://scenes/towers/rapid_tower.tscn")
 const RAPID_TOWER_SCRIPT := preload("res://scripts/towers/rapid_tower.gd")
 const SNIPER_TOWER := preload("res://scenes/towers/sniper_tower.tscn")
 const SNIPER_TOWER_SCRIPT := preload("res://scripts/towers/sniper_tower.gd")
+const CRYO_TOWER := preload("res://scenes/towers/ice_tower.tscn")
+const CRYO_TOWER_SCRIPT := preload("res://scripts/towers/ice_tower.gd")
 const IMPACT_EFFECT := preload("res://scenes/effects/impact_effect.tscn")
 const GameFx := preload("res://scripts/effects/game_fx.gd")
 const TooltipScene := preload("res://scenes/ui/tooltip.tscn")
 const PauseMenuScene := preload("res://scenes/ui/pause_menu.tscn")
 const SellConfirmScene := preload("res://scenes/ui/sell_confirm.tscn")
 
+## All tower types, indexed by the shop order (0..3).
+const TOWER_SCENES: Array = [BASIC_TOWER, RAPID_TOWER, SNIPER_TOWER, CRYO_TOWER]
+const TOWER_SCRIPTS: Array = [BASIC_TOWER_SCRIPT, RAPID_TOWER_SCRIPT, SNIPER_TOWER_SCRIPT, CRYO_TOWER_SCRIPT]
+const TOWER_NAMES: Array = ["Basic", "Rapid", "Sniper", "Cryo"]
+
 ## Stat icons shared by shop tooltips and the tower info panel.
 const ICON_DAMAGE := preload("res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/sword.png")
 const ICON_RANGE := preload("res://assets/ui/kenney_game-icons/PNG/White/1x/target.png")
 const ICON_SPEED := preload("res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/hourglass.png")
 const ICON_COST := preload("res://assets/ui/kenney_ui-pack/PNG/Yellow/Default/star.png")
+## Special-effect icons, resolved by special_id through _special_icon().
+const ICON_SPECIAL_SPLASH := preload("res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/fire.png")
+const ICON_SPECIAL_SLOW := preload("res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/arrow_clockwise.png")
+const ICON_SPECIAL_PIERCE := preload("res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/shield.png")
+const ICON_SPECIAL_FROST := preload("res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/arrow_clockwise.png")
 
 const BASE_HP_MAX := 100
 
@@ -85,27 +97,19 @@ var _shake_time := 0.0
 
 ## The placement-preview range comes from the currently selected tower type.
 func _preview_range() -> float:
-	if _tower_type_to_place == 0:
-		return BASIC_TOWER_SCRIPT.RANGE
-	elif _tower_type_to_place == 1:
-		return RAPID_TOWER_SCRIPT.RANGE
-	return SNIPER_TOWER_SCRIPT.RANGE
+	if _tower_type_to_place < 0 or _tower_type_to_place >= TOWER_SCRIPTS.size():
+		return 0.0
+	return TOWER_SCRIPTS[_tower_type_to_place].RANGE
 
 ## Cost of the currently selected tower type.
 func _preview_cost() -> int:
-	if _tower_type_to_place == 0:
-		return BASIC_TOWER_SCRIPT.COST
-	elif _tower_type_to_place == 1:
-		return RAPID_TOWER_SCRIPT.COST
-	return SNIPER_TOWER_SCRIPT.COST
+	if _tower_type_to_place < 0 or _tower_type_to_place >= TOWER_SCRIPTS.size():
+		return 0
+	return TOWER_SCRIPTS[_tower_type_to_place].COST
 
 ## Scene of the currently selected tower type.
 func _preview_scene() -> PackedScene:
-	if _tower_type_to_place == 0:
-		return BASIC_TOWER
-	elif _tower_type_to_place == 1:
-		return RAPID_TOWER
-	return SNIPER_TOWER
+	return TOWER_SCENES[_tower_type_to_place]
 
 ## Texture of the currently selected tower type (cached by _ready).
 func _preview_texture() -> Texture2D:
@@ -113,7 +117,7 @@ func _preview_texture() -> Texture2D:
 
 func _cache_preview_textures() -> void:
 	_preview_textures.clear()
-	for scene in [BASIC_TOWER, RAPID_TOWER, SNIPER_TOWER]:
+	for scene in TOWER_SCENES:
 		var node: Node = scene.instantiate()
 		var tex: Texture2D = null
 		var sprite := node.get_node_or_null("Sprite") as Sprite2D
@@ -157,13 +161,9 @@ func _ready():
 		0: grid.get_node("BasicCard"),
 		1: grid.get_node("RapidCard"),
 		2: grid.get_node("SniperCard"),
+		3: grid.get_node("CryoCard"),
 	}
-	var scripts := {
-		0: BASIC_TOWER_SCRIPT,
-		1: RAPID_TOWER_SCRIPT,
-		2: SNIPER_TOWER_SCRIPT,
-	}
-	for idx in [0, 1, 2]:
+	for idx in cards:
 		var card: Button = cards[idx]
 		card.mouse_entered.connect(Callable(self, "_show_tower_card_tooltip").bind(idx))
 		card.mouse_exited.connect(_hide_tooltip)
@@ -180,10 +180,13 @@ func _ready():
 	$UI/TowerShop/VBox/ScrollContainer/ShopGrid/BasicCard.pressed.connect(Callable(self, "_set_tower_type").bind(0))
 	$UI/TowerShop/VBox/ScrollContainer/ShopGrid/RapidCard.pressed.connect(Callable(self, "_set_tower_type").bind(1))
 	$UI/TowerShop/VBox/ScrollContainer/ShopGrid/SniperCard.pressed.connect(Callable(self, "_set_tower_type").bind(2))
+	$UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard.pressed.connect(Callable(self, "_set_tower_type").bind(3))
 	
-	# Connect upgrade + sell buttons
+	# Connect upgrade + sell + specialization branch buttons
 	$UI/TowerInfoPanel/VBox/Actions/UpgradeButton.pressed.connect(_on_upgrade_pressed)
 	$UI/TowerInfoPanel/VBox/Actions/SellButton.pressed.connect(_on_sell_pressed)
+	$UI/TowerInfoPanel/VBox/BranchRow/BranchAButton.pressed.connect(Callable(self, "_on_branch_pressed").bind("A"))
+	$UI/TowerInfoPanel/VBox/BranchRow/BranchBButton.pressed.connect(Callable(self, "_on_branch_pressed").bind("B"))
 	
 	# Connect speed + pause buttons
 	$UI/HUDBar/HUDTop/SpeedPanel/Speed1Button.pressed.connect(Callable(self, "_on_speed_pressed").bind(1))
@@ -408,10 +411,11 @@ func _apply_responsive_layout() -> void:
 			icon.offset_bottom = icon_s / 2.0
 
 	# TowerInfoPanel: desktop size by default, but never covering more than a
-	# fixed fraction of the viewport on small screens.
+	# fixed fraction of the viewport on small screens. Taller than before to fit
+	# the special-stats row and the branch-choice buttons.
 	var tip: Control = $UI/TowerInfoPanel
 	var tip_w := minf(312.0, vp.x * 0.9)
-	var tip_h := minf(222.0, vp.y * 0.4)
+	var tip_h := minf(300.0, vp.y * 0.5)
 	tip.offset_left = 18.0
 	tip.offset_right = 18.0 + tip_w
 	tip.offset_top = -18.0 - tip_h
@@ -711,26 +715,69 @@ func _update_tower_info_panel() -> void:
 		
 		var vbox = panel.get_node("VBox")
 		vbox.get_node("TowerTypeLabel").text = tower.name.get_slice("Tower", 0).strip_edges().to_upper() + " TOWER"
-		vbox.get_node("LevelLabel").text = "Level: %d" % tower.level
+		if tower.level >= 2:
+			var branch_label: String = tower.branch_name_a if tower.branch == "A" else tower.branch_name_b
+			vbox.get_node("LevelLabel").text = "Level: %d · %s" % [tower.level, branch_label]
+		else:
+			vbox.get_node("LevelLabel").text = "Level: 1 · CHOOSE"
 		
 		vbox.get_node("StatsGrid/StatDamageValue").text = "%d" % tower.damage
 		vbox.get_node("StatsGrid/StatRangeValue").text = "%d" % tower.range
 		vbox.get_node("StatsGrid/StatSpeedValue").text = "%.2f/s" % tower.attack_speed
 		vbox.get_node("StatsGrid/StatCostValue").text = "$%d" % tower.cost
 		
+		# Special-effect row (icon switched per tower type).
+		var special_icon: TextureRect = vbox.get_node("StatsGrid/StatSpecialRow/StatSpecialIcon")
+		special_icon.texture = _special_icon(tower.special_id)
+		vbox.get_node("StatsGrid/StatSpecialRow/StatSpecialLabel").text = tower.special_name
+		vbox.get_node("StatsGrid/StatSpecialValue").text = tower.special_value_text()
+		
+		var branch_row: HBoxContainer = vbox.get_node("BranchRow")
 		var upgrade_btn: Button = vbox.get_node("Actions/UpgradeButton")
-		var upgrade_cost: int = tower.get_upgrade_cost()
-		if upgrade_cost >= 0:
-			upgrade_btn.text = "UPGRADE $%d" % upgrade_cost
-			upgrade_btn.disabled = (_money < upgrade_cost)
+		if tower.level == 1:
+			# Level 1: offer the two specializations instead of a plain upgrade.
+			upgrade_btn.visible = false
+			branch_row.visible = true
+			var cost_a: int = tower.get_branch_cost("A")
+			var cost_b: int = tower.get_branch_cost("B")
+			var branch_a: Button = branch_row.get_node("BranchAButton")
+			var branch_b: Button = branch_row.get_node("BranchBButton")
+			branch_a.text = "%s +$%d" % [tower.branch_name_a, cost_a]
+			branch_b.text = "%s +$%d" % [tower.branch_name_b, cost_b]
+			branch_a.disabled = _money < cost_a
+			branch_b.disabled = _money < cost_b
 		else:
-			upgrade_btn.text = "MAX LEVEL"
-			upgrade_btn.disabled = true
+			branch_row.visible = false
+			upgrade_btn.visible = true
+			var upgrade_cost: int = tower.get_upgrade_cost()
+			if upgrade_cost >= 0:
+				upgrade_btn.text = "UPGRADE $%d" % upgrade_cost
+				upgrade_btn.disabled = (_money < upgrade_cost)
+			else:
+				upgrade_btn.text = "MAX LEVEL"
+				upgrade_btn.disabled = true
 		
 		var sell_btn: Button = vbox.get_node("Actions/SellButton")
 		sell_btn.text = "SELL +$%d" % _sell_value(tower)
 	else:
 		panel.visible = false
+
+func _on_branch_pressed(branch_id: String) -> void:
+	GameAudio.ui_click()
+	if not is_instance_valid(_selected_tower):
+		return
+	var tower: Node2D = _selected_tower
+	var cost: int = tower.get_branch_cost(branch_id)
+	if cost < 0 or _money < cost:
+		return
+	
+	_money -= cost
+	_money = max(_money, 0)
+	_update_money_ui()
+	
+	tower.try_set_branch(branch_id)
+	_update_tower_info_panel()
+	_update_range_preview()
 
 func _on_upgrade_pressed() -> void:
 	GameAudio.ui_click()
@@ -751,11 +798,12 @@ func _on_upgrade_pressed() -> void:
 	_update_tower_info_panel()
 	_update_range_preview()
 
-## Refund for selling a tower: 70% of total invested (base cost + upgrades).
+## Refund for selling a tower: 70% of total invested (base cost + the branch
+## upgrade costs the player actually paid).
 func _sell_value(tower: Node2D) -> int:
 	var invested: int = tower.cost
-	for i in range(tower.level - 1):
-		invested += tower.UPGRADE_COSTS[i]
+	for paid in tower.paid_upgrade_costs():
+		invested += paid
 	return int(round(invested * 0.7))
 
 func _on_sell_pressed() -> void:
@@ -811,11 +859,7 @@ func _update_shop_ui() -> void:
 		0: grid.get_node("BasicCard"),
 		1: grid.get_node("RapidCard"),
 		2: grid.get_node("SniperCard"),
-	}
-	var scripts := {
-		0: BASIC_TOWER_SCRIPT,
-		1: RAPID_TOWER_SCRIPT,
-		2: SNIPER_TOWER_SCRIPT,
+		3: grid.get_node("CryoCard"),
 	}
 
 	# Card state model:
@@ -826,7 +870,7 @@ func _update_shop_ui() -> void:
 	# The selected card always overrides with the gold TowerCardSelected border.
 	for idx in cards:
 		var card: Button = cards[idx]
-		var cost: int = scripts[idx].COST
+		var cost: int = TOWER_SCRIPTS[idx].COST
 		var locked: bool = false
 		var affordable: bool = _money >= cost
 		card.get_node("CardLock").visible = locked or not affordable
@@ -851,19 +895,12 @@ func _update_shop_ui() -> void:
 ## Small info line below the tower grid describing the selected tower.
 func _update_shop_desc() -> void:
 	var idx := maxi(_tower_type_to_place, 0)
-	var desc := ""
-	if idx == 0:
-		desc = "Basic Tower\nDMG %d • RNG %d\n%.2f/s — $%d" % [
-			BASIC_TOWER_SCRIPT.DAMAGE, BASIC_TOWER_SCRIPT.RANGE,
-			1.0 / BASIC_TOWER_SCRIPT.ATTACK_COOLDOWN, BASIC_TOWER_SCRIPT.COST]
-	elif idx == 1:
-		desc = "Rapid Tower\nDMG %d • RNG %d\n%.2f/s — $%d" % [
-			RAPID_TOWER_SCRIPT.DAMAGE, RAPID_TOWER_SCRIPT.RANGE,
-			1.0 / RAPID_TOWER_SCRIPT.ATTACK_COOLDOWN, RAPID_TOWER_SCRIPT.COST]
-	else:
-		desc = "Sniper Tower\nDMG %d • RNG %d\n%.2f/s — $%d" % [
-			SNIPER_TOWER_SCRIPT.DAMAGE, SNIPER_TOWER_SCRIPT.RANGE,
-			1.0 / SNIPER_TOWER_SCRIPT.ATTACK_COOLDOWN, SNIPER_TOWER_SCRIPT.COST]
+	var scr = TOWER_SCRIPTS[idx]
+	var desc := "%s Tower\nDMG %d • RNG %d\n%.2f/s — $%d\n%s" % [
+		["Basic", "Rapid", "Sniper", "Cryo"][idx],
+		scr.DAMAGE, scr.RANGE,
+		1.0 / scr.ATTACK_COOLDOWN, scr.COST,
+		scr.SPECIAL_SUMMARY]
 	$UI/TowerShop/VBox/ShopDesc.text = desc
 
 func _on_speed_pressed(multiplier: int) -> void:
@@ -942,28 +979,42 @@ func _update_wave_state_ui() -> void:
 func _show_tower_card_tooltip(idx: int) -> void:
 	if _tooltip == null:
 		return
-	var scripts: Dictionary = {0: BASIC_TOWER_SCRIPT, 1: RAPID_TOWER_SCRIPT, 2: SNIPER_TOWER_SCRIPT}
-	var scr := scripts[idx] as GDScript
-	var name: String = ["Basic", "Rapid", "Sniper"][idx]
+	var scr := TOWER_SCRIPTS[idx] as GDScript
+	var name: String = TOWER_NAMES[idx]
 	_tooltip.show_stats("%s Tower" % name, [
 		{"icon": ICON_DAMAGE, "label": "Damage", "value": "%d" % scr.DAMAGE},
 		{"icon": ICON_RANGE, "label": "Range", "value": "%d" % scr.RANGE},
 		{"icon": ICON_SPEED, "label": "Attack Speed", "value": "%.2f/s" % (1.0 / scr.ATTACK_COOLDOWN)},
 		{"icon": ICON_COST, "label": "Cost", "value": "$%d" % scr.COST},
-	], ["Ideal contra oleadas rápidas y numerosas.",
-		"Dispara rápido, alcance corto. Para enemigos débiles y rápidos.",
-		"Alto daño, gran alcance, cadencia lenta. Para tanques y jefes."][idx])
+		{"icon": _special_icon(scr.SPECIAL_ID), "label": scr.SPECIAL_NAME, "value": scr.SPECIAL_SUMMARY},
+	], ["Ideal contra oleadas numerosas: splash area y daño fiable.",
+		"Dispara rápido, alcance corto. Ralentiza a su objetivo.",
+		"Alto daño, gran alcance, perfora armaduras. Para tanques y jefes.",
+		"Congela en área: ralentiza grupos enteros sin acumularse."][idx])
 
 ## Tooltip for a placed tower on the map
 func _show_tower_tooltip(tower: Node2D) -> void:
 	if _tooltip == null:
 		return
 	var name := tower.name.get_slice("Tower", 0).strip_edges().to_upper()
-	_tooltip.show_stats("%s Tower (Lvl %d)" % [name, tower.level], [
+	var branch_label: String = "CHOOSE"
+	if tower.level >= 2:
+		branch_label = tower.branch_name_a if tower.branch == "A" else tower.branch_name_b
+	_tooltip.show_stats("%s Tower (Lvl %d · %s)" % [name, tower.level, branch_label], [
 		{"icon": ICON_DAMAGE, "label": "Damage", "value": "%d" % tower.damage},
 		{"icon": ICON_RANGE, "label": "Range", "value": "%d" % tower.range},
 		{"icon": ICON_SPEED, "label": "Attack Speed", "value": "%.2f/s" % tower.attack_speed},
+		{"icon": _special_icon(tower.special_id), "label": tower.special_name, "value": tower.special_value_text()},
 	])
+
+## Icon for a special effect id (shared by panels and tooltips).
+func _special_icon(special_id: String) -> Texture2D:
+	match special_id:
+		"splash": return ICON_SPECIAL_SPLASH
+		"slow": return ICON_SPECIAL_SLOW
+		"armor_pierce": return ICON_SPECIAL_PIERCE
+		"frost": return ICON_SPECIAL_FROST
+	return null
 
 ## Tooltip for an enemy on the map
 func _show_enemy_tooltip(enemy: Node2D) -> void:

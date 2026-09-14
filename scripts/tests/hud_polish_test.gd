@@ -47,11 +47,25 @@ func _run_checks(game: Node) -> void:
 	_check(spd_icon.texture.resource_path.contains("hourglass"), "Attack Speed icon is hourglass.png")
 	_check(cost_icon.texture.resource_path.contains("kenney_ui-pack"), "Cost icon is the gold star")
 
-	print("== Shop card states (money=100, costs 50/75/120) ==")
+	print("== Special effect row + branch choice row ==")
+	var sp_icon: TextureRect = grid.get_node("StatSpecialRow/StatSpecialIcon")
+	var sp_label: Label = grid.get_node("StatSpecialRow/StatSpecialLabel")
+	var sp_value: Label = grid.get_node("StatSpecialValue")
+	_check(sp_icon is TextureRect and sp_icon.texture != null, "Special row has an icon")
+	_check(sp_label is Label and sp_label.text != "", "Special row has a label")
+	_check(sp_value is Label and sp_value.text != "", "Special row has a value label")
+	var branch_row: HBoxContainer = info.get_node("VBox/BranchRow")
+	_check(branch_row is HBoxContainer, "BranchRow exists")
+	_check(branch_row.get_node("BranchAButton") is Button, "Branch A button exists")
+	_check(branch_row.get_node("BranchBButton") is Button, "Branch B button exists")
+	_check(not branch_row.visible, "BranchRow hidden by default (no tower selected)")
+
+	print("== Shop card states (money=100, costs 50/75/120/100) ==")
 	var cards := {
 		"BasicCard": "TowerCard",      # nothing armed by default (tap-tap placements)
 		"RapidCard": "TowerCard",
 		"SniperCard": "TowerCardLocked",  # 120 > 100 -> candado + dim border
+		"CryoCard": "TowerCard",          # 100 <= 100 -> affordable
 	}
 	for card_name: String in cards:
 		var card: Button = game.get_node("UI/TowerShop/VBox/ScrollContainer/ShopGrid/%s" % card_name)

@@ -1,5 +1,6 @@
 extends "res://scripts/towers/tower_base.gd"
-## Rapid Tower: lower damage per hit, much faster attack speed, shorter range.
+## Rapid Tower: low damage per hit, very fast attack speed, shorter range.
+## Special: every hit slows the target (never stacks).
 
 const RANGE := 150.0
 const DAMAGE := 1
@@ -7,17 +8,36 @@ const ATTACK_COOLDOWN := 0.33
 const COST := 75
 const MAX_PROJECTILES_CONST := 12
 
-# Level 1: Damage 1, Range 150, Attack cooldown 0.33, Cost 75
-# Level 2: Damage 2, Range 165, Attack cooldown 0.29
-# Level 3: Damage 3, Range 180, Attack cooldown 0.25
+const SPECIAL_ID := "slow"
+const SPECIAL_NAME := "Slow"
+## Level-1 overview line used by the shop description/tooltip.
+const SPECIAL_SUMMARY := "Slow 16% · 1s"
+
+# Level 1: Damage 1, Range 150, cooldown 0.33, slow 16% for 1s, cost $75 (also
+# slows only the direct target).
+# Branch A (damage): each level raises damage per bullet.
+# Branch B (speed): fires faster and upgrades the slow to 22%.
 
 func _init() -> void:
 	STATS_PER_LEVEL = [
-		{"damage": 1, "range": 150.0, "attack_cooldown": 0.33},   # Level 1
-		{"damage": 2, "range": 165.0, "attack_cooldown": 0.29},   # Level 2
-		{"damage": 3, "range": 180.0, "attack_cooldown": 0.25}    # Level 3
+		{"damage": 1, "range": 150.0, "attack_cooldown": 0.33, "special": 0.16},
 	]
-	UPGRADE_COSTS = [100, 150]  # 1->2: $100, 2->3: $150
+	BRANCH_A_STATS = [
+		{"damage": 2, "range": 165.0, "attack_cooldown": 0.30, "special": 0.16},
+		{"damage": 3, "range": 180.0, "attack_cooldown": 0.28, "special": 0.16},
+	]
+	BRANCH_B_STATS = [
+		{"damage": 1, "range": 170.0, "attack_cooldown": 0.22, "special": 0.16},
+		{"damage": 1, "range": 185.0, "attack_cooldown": 0.16, "special": 0.22},
+	]
+	BRANCH_A_COSTS = [100, 130]  # DMG branch: 1->2 $100, 2->3 $130
+	BRANCH_B_COSTS = [100, 130]  # SPD branch: 1->2 $100, 2->3 $130
+	branch_name_a = "DAMAGE"
+	branch_name_b = "SPEED"
 	max_level = 3
 	cost = COST
 	MAX_PROJECTILES = MAX_PROJECTILES_CONST
+	special_id = SPECIAL_ID
+	special_name = SPECIAL_NAME
+	special_value = 0.16
+	special_duration = 1.0

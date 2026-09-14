@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://d25s0dg06vagc"]
+[gd_scene load_steps=20 format=3 uid="uid://d25s0dg06vagc"]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
 [ext_resource type="Script" path="res://scripts/waves/wave_spawner.gd" id="2_spawner"]
@@ -15,6 +15,10 @@
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/hourglass.png" id="13_hourglassicon"]
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_game-icons/PNG/White/2x/shoppingCart.png" id="14_moneycarticon"]
 [ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/lock_closed.png" id="15_lockicon"]
+[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile207.png" id="16_cryoicon"]
+[ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/fire.png" id="17_fireicon"]
+[ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/arrow_clockwise.png" id="18_slowicon"]
+[ext_resource type="Texture2D" path="res://assets/ui/kenney_board-game-icons/PNG/Default (64px)/shield.png" id="19_shieldicon"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_main")
@@ -425,6 +429,77 @@ mouse_filter = 2
 texture = ExtResource("15_lockicon")
 stretch_mode = 5
 
+[node name="CryoCard" type="Button" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid"]
+layout_mode = 2
+custom_minimum_size = Vector2(80, 80)
+mouse_default_cursor_shape = 2
+theme_type_variation = &"TowerCard"
+
+[node name="CardIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -32.0
+offset_right = 32.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("16_cryoicon")
+
+[node name="CardCostBg" type="PanelContainer" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = -26.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_type_variation = &"CostOverlay"
+
+[node name="CardCost" type="Label" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard/CardCostBg"]
+layout_mode = 2
+theme_type_variation = &"card_cost"
+horizontal_alignment = 1
+text = "$100"
+
+[node name="CardLock" type="ColorRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.09, 0.09, 0.1, 0.75)
+visible = false
+
+[node name="LockIcon" type="TextureRect" parent="UI/TowerShop/VBox/ScrollContainer/ShopGrid/CryoCard/CardLock"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -14.0
+offset_top = -14.0
+offset_right = 14.0
+offset_bottom = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("15_lockicon")
+stretch_mode = 5
+
 [node name="Separator" type="HSeparator" parent="UI/TowerShop/VBox"]
 layout_mode = 2
 
@@ -562,6 +637,28 @@ theme_type_variation = &"card_cost"
 horizontal_alignment = 2
 text = "$50"
 
+[node name="StatSpecialRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="StatSpecialIcon" type="TextureRect" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpecialRow"]
+custom_minimum_size = Vector2(18, 18)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("17_fireicon")
+stretch_mode = 5
+
+[node name="StatSpecialLabel" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid/StatSpecialRow"]
+layout_mode = 2
+theme_type_variation = &"stat_label"
+text = "Special"
+
+[node name="StatSpecialValue" type="Label" parent="UI/TowerInfoPanel/VBox/StatsGrid"]
+layout_mode = 2
+theme_type_variation = &"stat_value"
+horizontal_alignment = 2
+text = "—"
+
 [node name="Separator2" type="HSeparator" parent="UI/TowerInfoPanel/VBox"]
 layout_mode = 2
 
@@ -582,6 +679,25 @@ size_flags_horizontal = 3
 custom_minimum_size = Vector2(0, 44)
 theme_type_variation = &"PanelLevel2"
 text = "SELL +$35"
+
+[node name="BranchRow" type="HBoxContainer" parent="UI/TowerInfoPanel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+visible = false
+
+[node name="BranchAButton" type="Button" parent="UI/TowerInfoPanel/VBox/BranchRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 44)
+theme_type_variation = &"PanelLevel2"
+text = "DAMAGE +$75"
+
+[node name="BranchBButton" type="Button" parent="UI/TowerInfoPanel/VBox/BranchRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+custom_minimum_size = Vector2(0, 44)
+theme_type_variation = &"PanelLevel2"
+text = "SPEED +$75"
 
 [node name="EndScreen" type="CanvasLayer" parent="."]
 process_mode = 3
