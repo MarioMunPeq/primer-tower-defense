@@ -1,0 +1,29 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile248.png" id="1_sprite"]
+[ext_resource type="Script" path="res://scripts/enemies/splitter_enemy.gd" id="2_script"]
+
+[sub_resource type="CircleShape2D" id="SubResource_1"]
+radius = 42.0
+
+[node name="SplitterEnemy" type="Node2D"]
+script = ExtResource("2_script")
+script/speed = 90.0
+script/health = 8
+script/reward = 14
+script/base_damage = 1
+script/hp_bar_width = 44.0
+script/ring_color = Color(0.8, 0.55, 1, 0.28)
+script/death_start_color = Color(0.8, 0.55, 1, 1)
+script/death_end_color = Color(0.95, 0.85, 1, 1)
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_sprite")
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("SubResource_1")

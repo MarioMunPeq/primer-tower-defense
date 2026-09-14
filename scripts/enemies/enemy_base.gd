@@ -6,6 +6,10 @@ extends Node2D
 
 signal died(reward_amount: int)
 signal reached_base(damage: int)
+## Fired by types that spawn extra enemies when they die (e.g. the Splitter).
+## Carries the newly created, already-in-tree enemy instances so the wave
+## spawner can keep counting live enemies; otherwise waves could end early.
+signal spawned_subunits(units: Array)
 
 ## Slow effect state: fraction of speed removed (0 = not slowed) and how long
 ## the current slow still applies. Non-stacking: the strongest factor and the
@@ -148,6 +152,7 @@ func _die() -> void:
 		return
 	_resolved = true
 	died.emit(reward)
+	_on_death()
 	GameFx.death_effect(global_position, [death_start_color, death_end_color])
 	GameAudio.explosion_sfx()
 	# Stop moving, fade the sprite out, then free its PathFollow2D.
@@ -157,6 +162,12 @@ func _die() -> void:
 	var tw := create_tween()
 	tw.tween_property(self, "modulate:a", 0.0, 0.2)
 	tw.tween_callback(_free_follow)
+
+## Called once, right when the enemy dies (after reward and before the fade,
+## while the PathFollow2D parent is still alive). Subclasses override this to
+## spawn extra units mid-path (e.g. the Splitter's mini melee units).
+func _on_death() -> void:
+	pass
 
 ## Called when the enemy completes the path. Emits `reached_base` carrying this
 ## enemy's base damage (no reward for a leaked enemy), then frees itself.

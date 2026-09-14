@@ -1,0 +1,32 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/towerDefense_tile252.png" id="1_sprite"]
+[ext_resource type="Script" path="res://scripts/enemies/boss_enemy.gd" id="2_script"]
+
+[sub_resource type="CircleShape2D" id="SubResource_1"]
+radius = 72.0
+
+[node name="BossEnemy" type="Node2D"]
+script = ExtResource("2_script")
+script/speed = 35.0
+script/health = 60
+script/reward = 500
+script/base_damage = 3
+script/damage_reduction = 1
+script/hp_bar_width = 120.0
+script/ring_color = Color(1, 0.25, 0.2, 0.32)
+script/death_start_color = Color(1, 0.3, 0.2, 1)
+script/death_end_color = Color(1, 0.75, 0.4, 1)
+
+[node name="Sprite" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
+texture = ExtResource("1_sprite")
+
+[node name="Hitbox" type="Area2D" parent="."]
+position = Vector2(0, -34)
+collision_layer = 2
+collision_mask = 0
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("SubResource_1")

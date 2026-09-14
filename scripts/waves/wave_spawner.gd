@@ -10,64 +10,125 @@ signal game_complete
 const BASIC_ENEMY := preload("res://scenes/enemies/basic_enemy.tscn")
 const FAST_ENEMY := preload("res://scenes/enemies/fast_enemy.tscn")
 const TANK_ENEMY := preload("res://scenes/enemies/tank_enemy.tscn")
+const SWARM_ENEMY := preload("res://scenes/enemies/swarm_enemy.tscn")
+const SPLITTER_ENEMY := preload("res://scenes/enemies/splitter_enemy.tscn")
+const BOSS_ENEMY := preload("res://scenes/enemies/boss_enemy.tscn")
 
 ## Waves are defined as data so new waves can be added without touching logic.
 ## Each entry is a Dictionary with:
 ##   "enemies": Array of enemy configurations to spawn in sequence
 ##   "interval": seconds between spawns
 ##   "inter_wave_delay": delay after wave clears before next (optional, defaults to INTER_WAVE_DELAY)
-## Each enemy config: { "type": "basic"/"fast"/"tank", "count": N }
+## Each enemy config: { "type": "basic"/"fast"/"tank"/"swarm"/"splitter"/"boss", "count": N }
 ## The game wins after this finite set of waves is cleared.
 const WAVES: Array[Dictionary] = [
 	# Wave 1: Only basic enemies
 	{
-		"enemies": [{"type": "basic", "count": 5}],
+		"enemies": [{"type": "basic", "count": 6}],
 		"interval": 1.0,
 		"inter_wave_delay": 3.0
 	},
 	# Wave 2: Basic + some fast
 	{
 		"enemies": [
-			{"type": "basic", "count": 4},
-			{"type": "fast", "count": 4}
+			{"type": "basic", "count": 8},
+			{"type": "fast", "count": 3}
 		],
 		"interval": 0.8,
 		"inter_wave_delay": 3.0
 	},
-	# Wave 3: Basic + fast + some tank
+	# Wave 3: Runners lean in
 	{
 		"enemies": [
-			{"type": "basic", "count": 5},
-			{"type": "fast", "count": 4},
-			{"type": "tank", "count": 3}
+			{"type": "basic", "count": 6},
+			{"type": "fast", "count": 6}
 		],
 		"interval": 0.7,
 		"inter_wave_delay": 3.0
 	},
-	# Wave 4: More variety
+	# Wave 4: Armor enters the field
 	{
 		"enemies": [
-			{"type": "basic", "count": 6},
+			{"type": "basic", "count": 8},
 			{"type": "fast", "count": 5},
-			{"type": "tank", "count": 5}
+			{"type": "tank", "count": 4}
 		],
-		"interval": 0.6,
+		"interval": 0.7,
 		"inter_wave_delay": 3.0
 	},
-	# Wave 5: Mix of all three
+	# Wave 5: First swarm strain
 	{
 		"enemies": [
-			{"type": "basic", "count": 7},
+			{"type": "basic", "count": 10},
 			{"type": "fast", "count": 6},
-			{"type": "tank", "count": 7}
+			{"type": "tank", "count": 4},
+			{"type": "swarm", "count": 8}
+		],
+		"interval": 0.6,
+		"inter_wave_delay": 3.5
+	},
+	# Wave 6: Splitters show up (AoE check)
+	{
+		"enemies": [
+			{"type": "swarm", "count": 6},
+			{"type": "basic", "count": 8},
+			{"type": "fast", "count": 5},
+			{"type": "tank", "count": 3},
+			{"type": "splitter", "count": 3}
+		],
+		"interval": 0.55,
+		"inter_wave_delay": 3.0
+	},
+	# Wave 7: Splitter pressure + more swarm
+	{
+		"enemies": [
+			{"type": "swarm", "count": 10},
+			{"type": "fast", "count": 6},
+			{"type": "tank", "count": 5},
+			{"type": "splitter", "count": 5}
 		],
 		"interval": 0.5,
 		"inter_wave_delay": 3.0
+	},
+	# Wave 8: Swarm flood alongside the big boys
+	{
+		"enemies": [
+			{"type": "swarm", "count": 12},
+			{"type": "fast", "count": 7},
+			{"type": "tank", "count": 6},
+			{"type": "splitter", "count": 7}
+		],
+		"interval": 0.45,
+		"inter_wave_delay": 3.0
+	},
+	# Wave 9: Full pressure ramp
+	{
+		"enemies": [
+			{"type": "swarm", "count": 14},
+			{"type": "fast", "count": 8},
+			{"type": "basic", "count": 6},
+			{"type": "tank", "count": 8},
+			{"type": "splitter", "count": 8}
+		],
+		"interval": 0.4,
+		"inter_wave_delay": 3.5
+	},
+	# Wave 10: The boss arrives with an escort
+	{
+		"enemies": [
+			{"type": "boss", "count": 1},
+			{"type": "fast", "count": 4},
+			{"type": "tank", "count": 6},
+			{"type": "swarm", "count": 8},
+			{"type": "splitter", "count": 4}
+		],
+		"interval": 0.9,
+		"inter_wave_delay": 4.0
 	}
 ]
 
 ## Number of waves (for victory). Should match WAVES.size().
-const TOTAL_WAVES := 5
+const TOTAL_WAVES := 10
 const INTER_WAVE_DELAY := 3.0
 
 ## Safety ceiling on simultaneously-live enemies. Far above normal gameplay
@@ -193,15 +254,34 @@ func _spawn_enemy() -> void:
 	enemy.tree_exited.connect(_on_enemy_gone)
 	enemy.died.connect(_on_enemy_died)
 	enemy.reached_base.connect(_on_enemy_reached_base)
+	enemy.spawned_subunits.connect(_on_enemy_spawned_subunits)
 
 func _get_enemy_scene(type: String) -> PackedScene:
 	match type:
 		"basic": return BASIC_ENEMY
 		"fast": return FAST_ENEMY
 		"tank": return TANK_ENEMY
+		"swarm": return SWARM_ENEMY
+		"splitter": return SPLITTER_ENEMY
+		"boss": return BOSS_ENEMY
 		_:
 			push_warning("Unknown enemy type '%s', falling back to basic." % type)
 			return BASIC_ENEMY
+
+## Called when an enemy spawns extra units on death (e.g. the Splitter's two
+## mini melee units). Counts them as live and hooks up the same accounting so
+## waves only clear once every survivor is gone.
+func _on_enemy_spawned_subunits(units: Array) -> void:
+	if _tearing_down:
+		return
+	for unit in units:
+		if not is_instance_valid(unit) or not unit.has_method("take_damage"):
+			continue
+		_alive += 1
+		unit.tree_exited.connect(_on_enemy_gone)
+		unit.died.connect(_on_enemy_died)
+		unit.reached_base.connect(_on_enemy_reached_base)
+		unit.spawned_subunits.connect(_on_enemy_spawned_subunits)
 
 func _on_enemy_gone() -> void:
 	if _tearing_down:

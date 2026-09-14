@@ -510,7 +510,7 @@ func _end_game(text: String) -> void:
 	# Show stats
 	var waves_survived: int = $WaveSpawner._display_wave
 	if text == "YOU WIN":
-		waves_survived = 5
+		waves_survived = $WaveSpawner.TOTAL_WAVES
 	end_panel.get_node("EndStats").text = "Oleadas: %d\nDinero: $%d\nVida base: %d" % [waves_survived, _money, _base_hp]
 	
 	$EndScreen.visible = true
