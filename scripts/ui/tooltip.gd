@@ -42,6 +42,7 @@ func _ready() -> void:
 	_title.theme_type_variation = &"tooltip_title"
 	_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_title.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_title.add_theme_font_size_override("font_size", 24)
 	_title.visible = false
 	_box.add_child(_title)
 
@@ -55,6 +56,7 @@ func _ready() -> void:
 	_footer = Label.new()
 	_footer.theme_type_variation = &"tooltip_desc"
 	_footer.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_footer.add_theme_font_size_override("font_size", 13)
 	_footer.visible = false
 	_box.add_child(_footer)
 
@@ -136,12 +138,14 @@ func _build_stats(title: String, rows: Array, footer: String = "") -> void:
 		var label := Label.new()
 		label.theme_type_variation = &"tooltip_stat_label"
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		label.add_theme_font_size_override("font_size", 14)
 		label.text = row.label
 		vbox.add_child(label)
 
 		var value := Label.new()
 		value.theme_type_variation = &"tooltip_stat_value"
 		value.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		value.add_theme_font_size_override("font_size", 17)
 		value.text = row.value
 		vbox.add_child(value)
 
@@ -155,7 +159,18 @@ func _build_stats(title: String, rows: Array, footer: String = "") -> void:
 	await get_tree().process_frame
 	_follow_mouse()
 
-func _create_icon_chip(icon_tex: Texture2D, chip_type: String) -> PanelContainer:
+func _create_icon_chip(icon_tex: Texture2D, chip_type: String) -> Control:
+	# Cost row: no chip, just the icon
+	if chip_type == "cost" or chip_type == "":
+		var icon := TextureRect.new()
+		icon.custom_minimum_size = Vector2(STAT_ICON_SIZE, STAT_ICON_SIZE)
+		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		icon.mouse_filter = MOUSE_FILTER_IGNORE
+		icon.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		if icon_tex != null:
+			icon.texture = icon_tex
+		return icon
+
 	var chip := PanelContainer.new()
 	var chip_theme := "tooltip_chip_damage"
 	match chip_type:
@@ -166,7 +181,6 @@ func _create_icon_chip(icon_tex: Texture2D, chip_type: String) -> PanelContainer
 		"slow": chip_theme = "tooltip_chip_slow"
 		"splash": chip_theme = "tooltip_chip_splash"
 		"pierce": chip_theme = "tooltip_chip_pierce"
-		"cost": chip_theme = "tooltip_chip_damage"
 	chip.theme_type_variation = chip_theme
 	chip.custom_minimum_size = Vector2(ICON_CHIP_SIZE, ICON_CHIP_SIZE)
 	chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
