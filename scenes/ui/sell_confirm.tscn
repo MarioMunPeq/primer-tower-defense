@@ -70,7 +70,7 @@ alignment = 1
 unique_name_in_owner = true
 custom_minimum_size = Vector2(150, 56)
 layout_mode = 2
-theme_type_variation = &"MenuButton"
+theme_type_variation = &"MenuBtn"
 theme_override_font_sizes/font_size = 20
 text = "CANCELAR"
 

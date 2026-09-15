@@ -113,13 +113,13 @@ text = "JUGAR"
 [node name="OptionsButton" type="Button" parent="CenterContainer/VBox"]
 layout_mode = 1
 custom_minimum_size = Vector2(300, 70)
-theme_type_variation = "MenuButton"
+theme_type_variation = "MenuBtn"
 theme_override_font_sizes/font_size = 26
 text = "OPCIONES"
 
 [node name="QuitButton" type="Button" parent="CenterContainer/VBox"]
 layout_mode = 1
 custom_minimum_size = Vector2(300, 70)
-theme_type_variation = "MenuButton"
+theme_type_variation = "MenuBtn"
 theme_override_font_sizes/font_size = 26
 text = "SALIR"

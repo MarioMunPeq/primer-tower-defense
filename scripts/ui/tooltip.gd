@@ -1,17 +1,17 @@
 extends Control
 class_name Tooltip
-## Reusable tooltip: a themed panel (TooltipPanel) that shows a title + stat rows
-## with inline icons, or a plain text block. Follows the mouse cursor
-## (clamped to viewport). Call show_stats(title, rows, footer) or show_for(text)
-## on mouse_entered, hide_tooltip() on mouse_exited.
+## Compact contextual tooltip: a slim themed panel (TooltipPanel) with a
+## title + stat rows (icon / label / value) or plain text. Follows the mouse,
+## clamped to the viewport. Call show_stats()/show_for() on mouse_entered and
+## hide_tooltip() on mouse_exited.
 
-const MAX_WIDTH := 260
-const PANEL_PADDING := 14
-const ROW_SPACING := 8
-const ICON_SIZE := 20
+const MAX_WIDTH := 230
+const PANEL_PADDING := 10
+const ROW_SPACING := 6
+const ICON_SIZE := 16
 
 @export var delay: float = 0.35
-@export var margin: int = 14
+@export var margin: int = 12
 
 var _timer: float = 0.0
 var _pending: Callable
@@ -31,10 +31,6 @@ func _ready() -> void:
 
 	_box = VBoxContainer.new()
 	_box.add_theme_constant_override("separation", ROW_SPACING)
-	_box.add_theme_constant_override("margin_left", PANEL_PADDING)
-	_box.add_theme_constant_override("margin_top", PANEL_PADDING)
-	_box.add_theme_constant_override("margin_right", PANEL_PADDING)
-	_box.add_theme_constant_override("margin_bottom", PANEL_PADDING)
 	_panel.add_child(_box)
 
 	_title = Label.new()
@@ -45,7 +41,7 @@ func _ready() -> void:
 	_box.add_child(_title)
 
 	_divider = PanelContainer.new()
-	_divider.theme_type_variation = &"sb_divider"
+	_divider.theme_type_variation = &"DividerSlim"
 	_divider.custom_minimum_size = Vector2(0, 1)
 	_divider.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_divider.visible = false
@@ -89,7 +85,7 @@ func _clear_content() -> void:
 	for child in _box.get_children():
 		if child == _title or child == _divider or child == _footer:
 			continue
-		child.queue_free()
+		child.free()
 	_title.text = ""
 	_title.visible = false
 	_divider.visible = false
@@ -123,10 +119,11 @@ func _build_stats(title: String, rows: Array, footer: String = "") -> void:
 
 	for row in rows:
 		var line := HBoxContainer.new()
-		line.add_theme_constant_override("separation", 10)
+		line.add_theme_constant_override("separation", 8)
 
 		var icon := TextureRect.new()
 		icon.custom_minimum_size = Vector2(ICON_SIZE, ICON_SIZE)
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.mouse_filter = MOUSE_FILTER_IGNORE
 		if row.has("icon") and row.icon != null:
