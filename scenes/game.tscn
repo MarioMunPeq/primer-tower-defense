@@ -54,12 +54,16 @@ mouse_filter = 2
 theme = ExtResource("4_theme")
 
 [node name="TopBarBox" type="HBoxContainer" parent="UI/TopBar"]
-layout_mode = 2
-theme_override_constants/separation = 14
-theme_override_margins/margin_left = 16
-theme_override_margins/margin_top = 6
-theme_override_margins/margin_right = 16
-theme_override_margins/margin_bottom = 6
+layout_mode = 3
+anchors_preset = 15
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 6.0
+offset_right = -16.0
+offset_bottom = -6.0
 
 [node name="ResourcesRow" type="HBoxContainer" parent="UI/TopBar/TopBarBox"]
 layout_mode = 2

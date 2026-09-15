@@ -716,6 +716,16 @@ func _update_tower_info_panel() -> void:
 	var panel: PanelContainer = $UI/TowerInfo
 	if is_instance_valid(_selected_tower):
 		var tower: Node2D = _selected_tower
+		# Force correct position/size BEFORE showing (anchors need visible=false -> true transition)
+		panel.anchors_preset = Control.PRESET_RIGHT_WIDE
+		panel.anchor_left = 1.0
+		panel.anchor_top = 0.0
+		panel.anchor_right = 1.0
+		panel.anchor_bottom = 1.0
+		panel.offset_left = -280.0
+		panel.offset_top = 66.0
+		panel.offset_right = -12.0
+		panel.offset_bottom = -12.0
 		panel.visible = true
 		
 		var vbox = panel.get_node("TowerInfoBox")
@@ -903,12 +913,23 @@ func _update_shop_ui() -> void:
 
 ## Armed tower description panel (bottom-left) â€” mirrors tooltip design.
 func _update_armed_info() -> void:
-	var box: VBoxContainer = $UI/ArmedInfo/ArmedInfoBox
+	var panel: PanelContainer = $UI/ArmedInfo
+	var box: VBoxContainer = panel.get_node("ArmedInfoBox")
 	if _tower_type_to_place < 0:
-		$UI/ArmedInfo.visible = false
+		panel.visible = false
 		return
 	
-	$UI/ArmedInfo.visible = true
+	# Force correct position BEFORE showing
+	panel.anchors_preset = Control.PRESET_BOTTOM_LEFT
+	panel.anchor_left = 0.0
+	panel.anchor_top = 1.0
+	panel.anchor_right = 0.0
+	panel.anchor_bottom = 1.0
+	panel.offset_left = 12.0
+	panel.offset_top = -150.0
+	panel.offset_right = 222.0
+	panel.offset_bottom = -12.0
+	panel.visible = true
 	var scr = TOWER_SCRIPTS[_tower_type_to_place]
 	var names := ["Basic", "Rapid", "Sniper", "Cryo"]
 	var special_icon: Texture2D = _special_icon(scr.SPECIAL_ID)
